@@ -32,12 +32,12 @@ export function SignupForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-80">
+    <form onSubmit={handleSubmit} className="flex w-80 flex-col gap-3">
       <input
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Username"
-        className="border rounded px-3 py-2"
+        className="rounded border px-3 py-2"
       />
 
       <input
@@ -45,7 +45,7 @@ export function SignupForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
-        className="border rounded px-3 py-2"
+        className="rounded border px-3 py-2"
       />
 
       <input
@@ -53,7 +53,7 @@ export function SignupForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
-        className="border rounded px-3 py-2"
+        className="rounded border px-3 py-2"
       />
 
       <input
@@ -61,14 +61,14 @@ export function SignupForm() {
         value={passwordConfirm}
         onChange={(e) => setPasswordConfirm(e.target.value)}
         placeholder="Confirm password"
-        className="border rounded px-3 py-2"
+        className="rounded border px-3 py-2"
       />
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
       <button
         type="submit"
-        className="bg-teal-500 text-white rounded px-4 py-2"
+        className="rounded bg-teal-500 px-4 py-2 text-white"
       >
         Sign up
       </button>

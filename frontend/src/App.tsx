@@ -10,7 +10,7 @@ export default function App() {
 
   if (!isValid) {
     return (
-      <div className="flex h-screen items-center justify-center flex-col gap-4">
+      <div className="flex h-screen flex-col items-center justify-center gap-4">
         {showSignup ? <SignupForm /> : <LoginForm />}
 
         <button
@@ -26,7 +26,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center flex-col gap-4">
+    <div className="flex h-screen flex-col items-center justify-center gap-4">
       <p>Welcome back {user.name}</p>
       <p>Email: {user.email}</p>
 
