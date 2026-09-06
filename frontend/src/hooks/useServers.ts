@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
+import type { Server } from "../lib/types";
 
+// fetches all servers that the user is a member of
 export function useServers() {
-  return useQuery({
-    queryKey: ["servers"],
+  const userId = pb.authStore.record?.id;
+
+  return useQuery<Server[]>({
+    queryKey: ["servers", userId],
     queryFn: async () => {
-      const memberships = await pb.collection("server_members").getFullList({
-        filter: `user = "${pb.authStore.record?.id}"`,
-        expand: "server",
-      });
-      return memberships.map((m) => m.expand?.server).filter(Boolean);
+      if (!userId) return [];
+      return await pb.collection("servers").getFullList<Server>();
     },
+    enabled: !!userId,
   });
 }

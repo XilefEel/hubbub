@@ -7,8 +7,8 @@ export function MemberList({ serverId }: { serverId: string }) {
   const queryClient = useQueryClient();
 
   const currentUserId = pb.authStore.record?.id;
-  const currentMembership = members?.find((m) => m.user === currentUserId);
-  const isOwner = currentMembership?.role === "owner";
+  const currentMember = members?.find((m) => m.user === currentUserId);
+  const isOwner = currentMember?.role === "owner";
 
   const handlePromote = async (membershipId: string) => {
     if (!isOwner) return;
@@ -17,6 +17,7 @@ export function MemberList({ serverId }: { serverId: string }) {
       await pb
         .collection("server_members")
         .update(membershipId, { role: "admin" });
+
       queryClient.invalidateQueries({ queryKey: ["server_members", serverId] });
     } catch (err) {
       console.error("Failed to promote member:", err);
@@ -30,6 +31,7 @@ export function MemberList({ serverId }: { serverId: string }) {
       await pb
         .collection("server_members")
         .update(membershipId, { role: "member" });
+
       queryClient.invalidateQueries({ queryKey: ["server_members", serverId] });
     } catch (err) {
       console.error("Failed to demote member:", err);
