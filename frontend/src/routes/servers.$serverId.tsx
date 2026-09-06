@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
+import { MemberList } from "../components/MemberList";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,
@@ -25,6 +26,9 @@ function ServerPage() {
     <div className="flex flex-col gap-4 p-8">
       <h1 className="text-2xl font-bold">{server?.name}</h1>
       <p className="text-sm text-gray-500">Invite code: {server?.inviteCode}</p>
+
+      <h2 className="mt-6 font-semibold">Members</h2>
+      <MemberList serverId={serverId} />
     </div>
   );
 }
