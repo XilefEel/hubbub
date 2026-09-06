@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { pb } from "../lib/pocketbase";
+import { useNavigate } from "@tanstack/react-router";
 
 export function SignupForm() {
   const [username, setUsername] = useState("");
@@ -7,6 +8,8 @@ export function SignupForm() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -26,8 +29,10 @@ export function SignupForm() {
       });
 
       await pb.collection("users").authWithPassword(email, password);
+      navigate({ to: "/" });
     } catch (err) {
-      setError(err?.response?.message || "Signup failed");
+      console.error(err);
+      setError("Signup failed");
     }
   };
 

@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { pb } from "../lib/pocketbase";
+import { useNavigate } from "@tanstack/react-router";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -12,6 +15,7 @@ export function LoginForm() {
 
     try {
       await pb.collection("users").authWithPassword(email, password);
+      navigate({ to: "/" });
     } catch {
       setError("Invalid email or password");
     }
