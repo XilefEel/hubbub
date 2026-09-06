@@ -3,6 +3,7 @@ import { pb } from "../lib/pocketbase";
 import { CreateServerForm } from "../components/CreateServerForm";
 import { ServerList } from "../components/ServerList";
 import { useAuth } from "../hooks/useAuth";
+import { JoinServerForm } from "../components/JoinForm";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -30,6 +31,7 @@ function HomePage() {
       </div>
 
       <CreateServerForm />
+      <JoinServerForm />
       <ServerList />
     </div>
   );
