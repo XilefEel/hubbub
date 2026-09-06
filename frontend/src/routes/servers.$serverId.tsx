@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
 import { MemberList } from "../components/MemberList";
+import { ChannelList } from "../components/ChannelList";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,
@@ -29,6 +30,9 @@ function ServerPage() {
 
       <h2 className="mt-6 font-semibold">Members</h2>
       <MemberList serverId={serverId} />
+
+      <h2 className="mt-6 font-semibold">Channels</h2>
+      <ChannelList serverId={serverId} />
     </div>
   );
 }

@@ -13,12 +13,25 @@ export type Server = RecordModel & {
   };
 };
 
+export type ServerRole = "owner" | "admin" | "member";
+
 export type ServerMember = RecordModel & {
   server: string; // server id
   user: string; // user id
-  role: "owner" | "admin" | "member";
+  role: ServerRole;
   expand?: {
     user?: User;
+    server?: Server;
+  };
+};
+
+export type ChannelType = "text" | "voice";
+
+export type Channel = RecordModel & {
+  name: string;
+  server: string; // server id
+  type: ChannelType;
+  expand?: {
     server?: Server;
   };
 };
