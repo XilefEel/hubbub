@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useServers } from "../hooks/useServers";
 
 export function ServerList() {
@@ -12,9 +13,13 @@ export function ServerList() {
         <>
           <li>Your Servers:</li>
           {servers.map((server) => (
-            <li key={server.id} className="rounded border px-3 py-2">
-              {server.name} - {server.inviteCode}
-            </li>
+            <Link
+              to="/servers/$serverId"
+              params={{ serverId: server.id }}
+              className="block rounded border px-3 py-2 hover:bg-gray-50"
+            >
+              {server.name}
+            </Link>
           ))}
         </>
       ) : (
