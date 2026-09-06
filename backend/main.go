@@ -12,10 +12,12 @@ import (
 func main() {
 	app := pocketbase.New()
 
+	// migration handler
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: true,
 	})
 
+	// add the owner to server_members when a server is created
 	app.OnRecordAfterCreateSuccess("servers").BindFunc(func(e *core.RecordEvent) error {
 		collection, err := e.App.FindCollectionByNameOrId("server_members")
 		if err != nil {
@@ -34,6 +36,7 @@ func main() {
 		return e.Next()
 	})
 
+	// custom endpoint to join servers via invite code
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Router.POST("/api/servers/join", func(e *core.RequestEvent) error {
 			data := struct {
@@ -91,6 +94,7 @@ func main() {
 		return se.Next()
 	})
 
+	// start the app
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
