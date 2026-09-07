@@ -3,8 +3,6 @@ import { useChannels } from "../hooks/useChannels";
 export function ChannelList({ serverId }: { serverId: string }) {
   const { data: channel, isLoading, error } = useChannels(serverId);
 
-  console.log("ChannelList data:", channel);
-
   if (isLoading)
     return <p className="text-sm text-gray-500">Loading channels...</p>;
 
