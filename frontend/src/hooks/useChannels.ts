@@ -8,7 +8,7 @@ export function useChannels(serverId: string) {
     queryFn: async () => {
       return await pb.collection("channels").getFullList<Channel>({
         filter: `server = "${serverId}"`,
-        sort: "name",
+        sort: "type,name",
       });
     },
     enabled: !!serverId,

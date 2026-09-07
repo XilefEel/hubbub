@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
 import { MemberList } from "../components/MemberList";
 import { ChannelList } from "../components/ChannelList";
+import { CreateChannelForm } from "../components/CreateChannelForm";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,
@@ -32,6 +33,7 @@ function ServerPage() {
       <MemberList serverId={serverId} />
 
       <h2 className="mt-6 font-semibold">Channels</h2>
+      <CreateChannelForm serverId={serverId} />
       <ChannelList serverId={serverId} />
     </div>
   );
