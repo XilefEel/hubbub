@@ -1,0 +1,19 @@
+// list -> list of items
+// detail -> single item
+export const queryKeys = {
+  servers: {
+    list: (userId: string) => ["servers", userId] as const,
+    detail: (serverId: string) => ["servers", "detail", serverId] as const,
+  },
+  serverMembers: {
+    list: (serverId: string) => ["server_members", serverId] as const,
+  },
+  channels: {
+    all: ["channels"] as const,
+    list: (serverId: string) => ["channels", serverId] as const,
+    detail: (channelId: string) => ["channels", "detail", channelId] as const,
+  },
+  messages: {
+    list: (channelId: string) => ["messages", channelId] as const,
+  },
+};

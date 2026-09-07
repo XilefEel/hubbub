@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
+import { queryKeys } from "../lib/querykeys";
 
 function generateInviteCode() {
   return Math.random().toString(36).slice(2, 10);
@@ -11,7 +12,7 @@ export function CreateServerForm() {
   const [error, setError] = useState("");
   const queryClient = useQueryClient();
 
-  async function handleSubmit(e: React.SubmitEvent) {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError("");
 
@@ -22,12 +23,12 @@ export function CreateServerForm() {
         inviteCode: generateInviteCode(),
       });
       setName("");
-      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.channels.all });
     } catch (err) {
       console.error(err);
       setError("Failed to create server");
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 text-sm">

@@ -5,6 +5,7 @@ import type { Channel } from "../lib/types";
 import { useMessages } from "../hooks/useMessages";
 import { useState } from "react";
 import { useSendMessage } from "../hooks/useSendMessage";
+import { queryKeys } from "../lib/querykeys";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -19,7 +20,7 @@ function ChannelPage() {
     isLoading: channelLoading,
     error: channelError,
   } = useQuery<Channel>({
-    queryKey: ["channels", "detail", channelId],
+    queryKey: queryKeys.channels.detail(channelId),
     queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
     enabled: !!channelId,
   });

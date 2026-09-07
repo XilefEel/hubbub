@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import { useCurrentMembership } from "../hooks/useCurrentMembership";
+import { queryKeys } from "../lib/querykeys";
 
 export function CreateChannelForm({ serverId }: { serverId: string }) {
   const { isOwner } = useCurrentMembership(serverId);
@@ -18,7 +19,9 @@ export function CreateChannelForm({ serverId }: { serverId: string }) {
 
     try {
       await pb.collection("channels").create({ name, server: serverId, type });
-      queryClient.invalidateQueries({ queryKey: ["channels", serverId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.list(serverId),
+      });
       setName("");
     } catch (err) {
       console.error(err);

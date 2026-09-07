@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerMembers } from "../hooks/useServerMembers";
 import { pb } from "../lib/pocketbase";
 import { useCurrentMembership } from "../hooks/useCurrentMembership";
+import { queryKeys } from "../lib/querykeys";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const queryClient = useQueryClient();
@@ -18,7 +19,9 @@ export function MemberList({ serverId }: { serverId: string }) {
         .collection("server_members")
         .update(membershipId, { role: "admin" });
 
-      queryClient.invalidateQueries({ queryKey: ["server_members", serverId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.serverMembers.list(serverId),
+      });
     } catch (err) {
       console.error("Failed to promote member:", err);
     }
@@ -32,7 +35,9 @@ export function MemberList({ serverId }: { serverId: string }) {
         .collection("server_members")
         .update(membershipId, { role: "member" });
 
-      queryClient.invalidateQueries({ queryKey: ["server_members", serverId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.serverMembers.list(serverId),
+      });
     } catch (err) {
       console.error("Failed to demote member:", err);
     }
@@ -43,7 +48,9 @@ export function MemberList({ serverId }: { serverId: string }) {
 
     try {
       await pb.collection("server_members").delete(membershipId);
-      queryClient.invalidateQueries({ queryKey: ["server_members", serverId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.serverMembers.list(serverId),
+      });
     } catch (err) {
       console.error("Failed to ban member:", err);
     }
