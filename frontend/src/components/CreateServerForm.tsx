@@ -30,7 +30,7 @@ export function CreateServerForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex gap-2 text-sm">
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}

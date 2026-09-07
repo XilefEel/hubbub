@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
-import { useServerMembers } from "../hooks/useServerMembers";
+import { useCurrentMembership } from "../hooks/useCurrentMembership";
 
 export function CreateChannelForm({ serverId }: { serverId: string }) {
-  const { data: members } = useServerMembers(serverId);
-  const currentUserId = pb.authStore.record?.id;
-  const currentMember = members?.find((m) => m.user === currentUserId);
-  const isOwner = currentMember?.role === "owner";
+  const { isOwner } = useCurrentMembership(serverId);
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"text" | "voice">("text");
@@ -31,7 +28,7 @@ export function CreateChannelForm({ serverId }: { serverId: string }) {
 
   if (isOwner)
     return (
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}

@@ -1,14 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerMembers } from "../hooks/useServerMembers";
 import { pb } from "../lib/pocketbase";
+import { useCurrentMembership } from "../hooks/useCurrentMembership";
 
 export function MemberList({ serverId }: { serverId: string }) {
-  const { data: members, isLoading, error } = useServerMembers(serverId);
   const queryClient = useQueryClient();
 
+  const { data: members, isLoading, error } = useServerMembers(serverId);
+  const { isOwner } = useCurrentMembership(serverId);
   const currentUserId = pb.authStore.record?.id;
-  const currentMember = members?.find((m) => m.user === currentUserId);
-  const isOwner = currentMember?.role === "owner";
 
   const handlePromote = async (membershipId: string) => {
     if (!isOwner) return;
@@ -50,7 +50,7 @@ export function MemberList({ serverId }: { serverId: string }) {
   };
 
   if (isLoading)
-    return <p className="text-sm text-gray-500">Loading members...</p>;
+    return <p className="text-sm text-zinc-500">Loading members...</p>;
 
   if (error)
     return <p className="text-sm text-red-500">Failed to load members</p>;
@@ -62,7 +62,8 @@ export function MemberList({ serverId }: { serverId: string }) {
           <p>
             {m.expand?.user?.name} {m.user === currentUserId && "(You)"}
           </p>
-          <p className="mr-auto text-gray-400">{m.role}</p>
+
+          <p className="mr-auto text-zinc-400">{m.role}</p>
 
           {isOwner && m.role === "member" && (
             <button

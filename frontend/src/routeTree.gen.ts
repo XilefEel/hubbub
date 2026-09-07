@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ServersServerIdRouteImport } from './routes/servers.$serverId'
+import { Route as ServersServerIdIndexRouteImport } from './routes/servers.$serverId.index'
+import { Route as ServersServerIdChannelsChannelIdRouteImport } from './routes/servers.$serverId.channels.$channelId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +30,66 @@ const ServersServerIdRoute = ServersServerIdRouteImport.update({
   path: '/servers/$serverId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServersServerIdIndexRoute = ServersServerIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ServersServerIdRoute,
+} as any)
+const ServersServerIdChannelsChannelIdRoute =
+  ServersServerIdChannelsChannelIdRouteImport.update({
+    id: '/channels/$channelId',
+    path: '/channels/$channelId',
+    getParentRoute: () => ServersServerIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/servers/$serverId': typeof ServersServerIdRoute
+  '/servers/$serverId': typeof ServersServerIdRouteWithChildren
+  '/servers/$serverId/': typeof ServersServerIdIndexRoute
+  '/servers/$serverId/channels/$channelId': typeof ServersServerIdChannelsChannelIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/servers/$serverId': typeof ServersServerIdRoute
+  '/servers/$serverId': typeof ServersServerIdIndexRoute
+  '/servers/$serverId/channels/$channelId': typeof ServersServerIdChannelsChannelIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/servers/$serverId': typeof ServersServerIdRoute
+  '/servers/$serverId': typeof ServersServerIdRouteWithChildren
+  '/servers/$serverId/': typeof ServersServerIdIndexRoute
+  '/servers/$serverId/channels/$channelId': typeof ServersServerIdChannelsChannelIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/servers/$serverId'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/servers/$serverId'
+    | '/servers/$serverId/'
+    | '/servers/$serverId/channels/$channelId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/servers/$serverId'
-  id: '__root__' | '/' | '/login' | '/servers/$serverId'
+  to:
+    | '/'
+    | '/login'
+    | '/servers/$serverId'
+    | '/servers/$serverId/channels/$channelId'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/servers/$serverId'
+    | '/servers/$serverId/'
+    | '/servers/$serverId/channels/$channelId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  ServersServerIdRoute: typeof ServersServerIdRoute
+  ServersServerIdRoute: typeof ServersServerIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -82,13 +115,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServersServerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/servers/$serverId/': {
+      id: '/servers/$serverId/'
+      path: '/'
+      fullPath: '/servers/$serverId/'
+      preLoaderRoute: typeof ServersServerIdIndexRouteImport
+      parentRoute: typeof ServersServerIdRoute
+    }
+    '/servers/$serverId/channels/$channelId': {
+      id: '/servers/$serverId/channels/$channelId'
+      path: '/channels/$channelId'
+      fullPath: '/servers/$serverId/channels/$channelId'
+      preLoaderRoute: typeof ServersServerIdChannelsChannelIdRouteImport
+      parentRoute: typeof ServersServerIdRoute
+    }
   }
 }
+
+interface ServersServerIdRouteChildren {
+  ServersServerIdIndexRoute: typeof ServersServerIdIndexRoute
+  ServersServerIdChannelsChannelIdRoute: typeof ServersServerIdChannelsChannelIdRoute
+}
+
+const ServersServerIdRouteChildren: ServersServerIdRouteChildren = {
+  ServersServerIdIndexRoute: ServersServerIdIndexRoute,
+  ServersServerIdChannelsChannelIdRoute: ServersServerIdChannelsChannelIdRoute,
+}
+
+const ServersServerIdRouteWithChildren = ServersServerIdRoute._addFileChildren(
+  ServersServerIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  ServersServerIdRoute: ServersServerIdRoute,
+  ServersServerIdRoute: ServersServerIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

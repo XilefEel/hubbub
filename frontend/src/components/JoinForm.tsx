@@ -3,9 +3,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 
 export function JoinServerForm() {
+  const queryClient = useQueryClient();
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
-  const queryClient = useQueryClient();
 
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();

@@ -16,7 +16,7 @@ export function ServerList() {
             <Link
               to="/servers/$serverId"
               params={{ serverId: server.id }}
-              className="block rounded border px-3 py-2 hover:bg-gray-50"
+              className="block rounded border px-3 py-2 hover:bg-zinc-50"
             >
               {server.name}
             </Link>
