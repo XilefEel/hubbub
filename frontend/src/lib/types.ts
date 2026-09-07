@@ -35,3 +35,12 @@ export type Channel = RecordModel & {
     server?: Server;
   };
 };
+
+export type Message = RecordModel & {
+  content: string;
+  channel: string; // channel id
+  user: string; // user id
+  expand?: {
+    user?: User;
+  };
+};
