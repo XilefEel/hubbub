@@ -6,17 +6,26 @@ import { queryKeys } from "../lib/querykeys";
 import { usePresence } from "../hooks/usePresence";
 import type { ServerMember } from "../lib/types";
 import { cn } from "cn";
+import { useState } from "react";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const { data: members, isLoading, error } = useServerMembers(serverId);
   const { isOwner } = useCurrentMembership(serverId);
   const { onlineUserIds } = usePresence();
 
+  const [query, setQuery] = useState("");
+
+  const filteredMembers =
+    members?.filter((m) => {
+      const name = m.expand?.user?.name || "";
+      return name.toLowerCase().includes(query.toLowerCase());
+    }) || [];
+
   const onlineMembers =
-    members?.filter((m) => onlineUserIds.includes(m.user)) || [];
+    filteredMembers?.filter((m) => onlineUserIds.includes(m.user)) || [];
 
   const offlineMembers =
-    members?.filter((m) => !onlineUserIds.includes(m.user)) || [];
+    filteredMembers?.filter((m) => !onlineUserIds.includes(m.user)) || [];
 
   if (isLoading)
     return <p className="text-sm text-zinc-500">Loading members...</p>;
@@ -26,39 +35,55 @@ export function MemberList({ serverId }: { serverId: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h3 className="mb-1 text-xs font-semibold text-zinc-400 uppercase">
-          Online - {onlineMembers.length}
-        </h3>
-        <ul className="flex flex-col gap-1">
-          {onlineMembers.map((m) => (
-            <MemberListItem
-              key={m.id}
-              member={m}
-              isOwner={isOwner}
-              serverId={serverId}
-              isOnline={true}
-            />
-          ))}
-        </ul>
-      </div>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search members..."
+        className="w-full rounded border border-zinc-200 px-2 py-1 text-sm outline-none focus:outline-none"
+      />
 
-      <div>
-        <h3 className="mb-1 text-xs font-semibold text-zinc-400 uppercase">
-          Offline - {offlineMembers.length}
-        </h3>
-        <ul className="flex flex-col gap-1">
-          {offlineMembers.map((m) => (
-            <MemberListItem
-              key={m.id}
-              member={m}
-              isOwner={isOwner}
-              serverId={serverId}
-              isOnline={false}
-            />
-          ))}
-        </ul>
-      </div>
+      {query && filteredMembers.length === 0 && (
+        <p className="text-xs text-zinc-400">No members match "{query}"</p>
+      )}
+
+      {onlineMembers.length > 0 && (
+        <div>
+          <h3 className="mb-1 text-xs font-semibold text-zinc-400 uppercase">
+            Online — {onlineMembers.length}
+          </h3>
+          <ul className="flex flex-col gap-1">
+            {onlineMembers.map((m) => (
+              <MemberListItem
+                key={m.id}
+                member={m}
+                isOwner={isOwner}
+                serverId={serverId}
+                isOnline={true}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {offlineMembers.length > 0 && (
+        <div>
+          <h3 className="mb-1 text-xs font-semibold text-zinc-400 uppercase">
+            Offline — {offlineMembers.length}
+          </h3>
+          <ul className="flex flex-col gap-1">
+            {offlineMembers.map((m) => (
+              <MemberListItem
+                key={m.id}
+                member={m}
+                isOwner={isOwner}
+                serverId={serverId}
+                isOnline={false}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -111,7 +136,12 @@ function MemberListItem({
   const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
 
   return (
-    <li className="flex items-center gap-2 py-1 text-sm">
+    <li
+      className={cn(
+        "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50",
+        !isOnline && "opacity-70 hover:opacity-100",
+      )}
+    >
       <div
         className={cn(
           "size-6 rounded-full bg-teal-100",
@@ -120,7 +150,12 @@ function MemberListItem({
       />
 
       <span
-        className={isOnline ? "font-medium text-zinc-800" : "text-zinc-500"}
+        className={cn(
+          "flex-1",
+          isSelf && "font-semibold",
+          member.role === "owner" && "text-teal-500",
+          member.role === "admin" && "text-purple-500",
+        )}
       >
         {member.expand?.user?.name || "Unknown User"}{" "}
         {isSelf && <span className="text-xs text-zinc-400">(You)</span>}
