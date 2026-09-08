@@ -8,6 +8,7 @@ import { useSendMessage } from "../hooks/useSendMessage";
 import { queryKeys } from "../lib/querykeys";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
+import { ArrowUp, Hash, Plus, Volume2 } from "lucide-react";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -89,8 +90,12 @@ function ChannelPage() {
 
   return (
     <div className="flex h-full flex-col p-4">
-      <h2 className="mb-4 text-xl font-bold">
-        {channel?.type === "text" ? "# " : "🔊 "}
+      <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+        {channel?.type === "voice" ? (
+          <Volume2 className="size-5 shrink-0" />
+        ) : (
+          <Hash className="size-5 shrink-0" />
+        )}
         {channel?.name}
       </h2>
 
@@ -129,16 +134,32 @@ function ChannelPage() {
         {renderTypingText(typingNames)}
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-auto flex gap-2">
-        <input
-          value={content}
-          onChange={(e) => {
-            setContent(e.target.value);
-            sendTyping();
-          }}
-          placeholder="Type a message..."
-          className="flex-1 rounded-xl border border-zinc-200 px-4 py-2 outline-none focus:outline-none"
-        />
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        <div className="relative flex-1">
+          <button
+            type="button"
+            className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500"
+          >
+            <Plus className="size-5 shrink-0" />
+          </button>
+
+          <input
+            value={content}
+            onChange={(e) => {
+              setContent(e.target.value);
+              sendTyping();
+            }}
+            placeholder="Type a message..."
+            className="w-full rounded-xl border border-zinc-200 px-12 py-2 outline-none focus:outline-none"
+          />
+
+          <button
+            type="submit"
+            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500"
+          >
+            <ArrowUp className="size-5 shrink-0" />
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useChannels } from "../hooks/useChannels";
+import { Volume2, Hash } from "lucide-react";
 
 export function ChannelList({ serverId }: { serverId: string }) {
   const { data: channel, isLoading, error } = useChannels(serverId);
@@ -17,10 +18,14 @@ export function ChannelList({ serverId }: { serverId: string }) {
           <Link
             to="/servers/$serverId/channels/$channelId"
             params={{ serverId, channelId: c.id }}
-            className="block w-full rounded px-2 py-1 hover:bg-zinc-50"
+            className="flex w-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-50"
             activeProps={{ className: "bg-zinc-100 font-medium" }}
           >
-            {c.type === "text" ? "# " : "🔊 "}
+            {c.type === "voice" ? (
+              <Volume2 className="size-4 shrink-0" />
+            ) : (
+              <Hash className="size-4 shrink-0" />
+            )}
             {c.name}
           </Link>
         </li>

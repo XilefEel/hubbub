@@ -5,6 +5,7 @@ import { MemberList } from "../components/MemberList";
 import { ChannelList } from "../components/ChannelList";
 import { CreateChannelForm } from "../components/CreateChannelForm";
 import { queryKeys } from "../lib/querykeys";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,
@@ -30,8 +31,11 @@ function ServerPage() {
     <div className="flex h-screen">
       <aside className="flex w-64 flex-col gap-4 border-r border-zinc-200 p-4">
         <div className="flex flex-col gap-0.5">
-          <Link to="/" className="text-sm text-zinc-500">
-            Back
+          <Link
+            to="/"
+            className="flex items-center gap-1 text-xs text-zinc-500"
+          >
+            <ArrowLeft className="size-3 shrink-0" /> Back to servers
           </Link>
 
           <h1 className="text-xl font-bold">{server?.name}</h1>

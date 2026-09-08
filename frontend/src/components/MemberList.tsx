@@ -7,6 +7,7 @@ import { usePresence } from "../hooks/usePresence";
 import type { ServerMember } from "../lib/types";
 import { cn } from "cn";
 import { useState } from "react";
+import { Crown, Search } from "lucide-react";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const { data: members, isLoading, error } = useServerMembers(serverId);
@@ -35,13 +36,17 @@ export function MemberList({ serverId }: { serverId: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search members..."
-        className="w-full rounded border border-zinc-200 px-2 py-1 text-sm outline-none focus:outline-none"
-      />
+      <div className="relative">
+        <Search className="absolute top-1/2 left-2 size-4 shrink-0 -translate-y-1/2 text-zinc-400" />
+
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search members..."
+          className="w-full rounded border border-zinc-200 py-1 pr-2 pl-8 text-sm outline-none focus:outline-none"
+        />
+      </div>
 
       {query && filteredMembers.length === 0 && (
         <p className="text-xs text-zinc-400">No members match "{query}"</p>
@@ -151,7 +156,6 @@ function MemberListItem({
 
       <span
         className={cn(
-          "flex-1",
           isSelf && "font-semibold",
           member.role === "owner" && "text-teal-500",
           member.role === "admin" && "text-purple-500",
@@ -161,7 +165,7 @@ function MemberListItem({
         {isSelf && <span className="text-xs text-zinc-400">(You)</span>}
       </span>
 
-      {member.role === "owner" && <span>👑</span>}
+      {member.role === "owner" && <Crown className="size-4 text-teal-500" />}
 
       {isOwner && !isSelf && (
         <div className="flex gap-2 text-xs">
