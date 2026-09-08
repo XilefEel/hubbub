@@ -88,8 +88,8 @@ function ChannelPage() {
     );
 
   return (
-    <div className="flex h-full flex-col gap-4 p-8">
-      <h2 className="text-xl font-bold">
+    <div className="flex h-full flex-col p-4">
+      <h2 className="mb-4 text-xl font-bold">
         {channel?.type === "text" ? "# " : "🔊 "}
         {channel?.name}
       </h2>
@@ -102,10 +102,13 @@ function ChannelPage() {
         </p>
       )}
 
-      <div className="flex flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
         {messages && messages.length > 0 ? (
           messages.map((message) => (
-            <div key={message.id} className="flex items-center gap-4">
+            <div
+              key={message.id}
+              className="flex items-center gap-4 rounded-lg px-2 py-1 hover:bg-zinc-50"
+            >
               <div className="size-10 rounded-full bg-teal-100" />
               <div>
                 <p className="font-semibold">
@@ -122,7 +125,7 @@ function ChannelPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="h-4 text-xs text-gray-400 italic">
+      <div className="mb-1 h-4 text-xs text-gray-400 italic">
         {renderTypingText(typingNames)}
       </div>
 
@@ -134,7 +137,7 @@ function ChannelPage() {
             sendTyping();
           }}
           placeholder="Type a message..."
-          className="flex-1 rounded border px-4 py-2"
+          className="flex-1 rounded-xl border border-zinc-200 px-4 py-2 outline-none focus:outline-none"
         />
       </form>
     </div>

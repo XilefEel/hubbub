@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
 import { MemberList } from "../components/MemberList";
 import { ChannelList } from "../components/ChannelList";
@@ -28,15 +28,21 @@ function ServerPage() {
 
   return (
     <div className="flex h-screen">
-      <aside className="flex w-64 flex-col gap-4 border-r p-4">
-        <h1 className="text-xl font-bold">{server?.name}</h1>
+      <aside className="flex w-64 flex-col gap-4 border-r border-zinc-200 p-4">
+        <div className="flex flex-col gap-0.5">
+          <Link to="/" className="text-sm text-zinc-500">
+            Back
+          </Link>
 
-        <p className="text-sm text-zinc-500">
-          Invite code: {server?.inviteCode}
-        </p>
+          <h1 className="text-xl font-bold">{server?.name}</h1>
 
-        <div className="flex flex-col gap-2">
-          <h2 className="mb-2 text-sm text-zinc-500">Channels</h2>
+          <p className="text-sm text-zinc-500">
+            Invite code: {server?.inviteCode}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <h2 className="text-sm text-zinc-500">Channels</h2>
           <ChannelList serverId={serverId} />
           <CreateChannelForm serverId={serverId} />
         </div>
@@ -47,8 +53,7 @@ function ServerPage() {
         <Outlet />
       </main>
 
-      <aside className="flex w-64 flex-col gap-2 border-l p-4">
-        <h2 className="mb-2 text-sm text-zinc-500">Members</h2>
+      <aside className="flex w-64 flex-col gap-2 border-l border-zinc-200 p-4">
         <MemberList serverId={serverId} />
       </aside>
     </div>

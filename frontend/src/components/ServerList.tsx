@@ -14,6 +14,7 @@ export function ServerList() {
           <li>Your Servers:</li>
           {servers.map((server) => (
             <Link
+              key={server.id}
               to="/servers/$serverId"
               params={{ serverId: server.id }}
               className="block rounded border px-3 py-2 hover:bg-zinc-50"

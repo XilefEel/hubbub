@@ -36,13 +36,13 @@ export function CreateChannelForm({ serverId }: { serverId: string }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Channel name"
-          className="rounded border px-3 py-2"
+          className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
         />
 
         <select
           value={type}
           onChange={(e) => setType(e.target.value as "text" | "voice")}
-          className="rounded border px-3 py-2"
+          className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
         >
           <option value="text">Text</option>
           <option value="voice">Voice</option>
@@ -52,7 +52,7 @@ export function CreateChannelForm({ serverId }: { serverId: string }) {
 
         <button
           type="submit"
-          className="rounded bg-teal-500 px-4 py-2 text-white"
+          className="rounded-lg bg-teal-500 px-3 py-1 text-white"
         >
           Create channel
         </button>
