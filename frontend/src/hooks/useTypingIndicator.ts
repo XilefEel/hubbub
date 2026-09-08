@@ -3,6 +3,7 @@ import { pb } from "../lib/pocketbase";
 
 export function useTypingIndicator(channelId: string) {
   const [typingUserIds, setTypingUserIds] = useState<string[]>([]);
+
   const timeoutsRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const lastEmittedRef = useRef<number>(0);
 
@@ -10,10 +11,11 @@ export function useTypingIndicator(channelId: string) {
     if (!channelId) return;
 
     const topic = `channel_${channelId}`;
+    let cancelled = false;
+    let unsub: (() => void) | undefined;
 
-    pb.realtime.subscribe(
-      topic,
-      (e: { name: string; type: string; userId: string }) => {
+    pb.realtime
+      .subscribe(topic, (e: { name: string; type: string; userId: string }) => {
         if (e.type !== "typing" || !e.userId) return;
 
         const userId = e.userId;
@@ -31,14 +33,20 @@ export function useTypingIndicator(channelId: string) {
           setTypingUserIds((prev) => prev.filter((id) => id !== userId));
           delete timeoutsRef.current[userId];
         }, 3000);
-      },
-    );
+      })
+      .then((fn) => {
+        if (cancelled) fn();
+        else unsub = fn;
+      })
+      .catch((err) => console.warn("typing subscription failed:", err));
 
     return () => {
       pb.realtime.unsubscribe(topic);
       Object.values(timeoutsRef.current).forEach(clearTimeout);
       timeoutsRef.current = {};
       setTypingUserIds([]);
+      cancelled = true;
+      unsub?.();
     };
   }, [channelId]);
 

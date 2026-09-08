@@ -28,7 +28,6 @@ function ChannelPage() {
   const { serverId, channelId } = Route.useParams();
   const [content, setContent] = useState("");
 
-  // Fetch channel details
   const {
     data: channel,
     isLoading: channelLoading,
