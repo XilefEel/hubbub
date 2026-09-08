@@ -10,10 +10,12 @@ export function useTypingIndicator(channelId: string) {
   useEffect(() => {
     if (!channelId) return;
 
-    const topic = `channel_${channelId}`;
     let cancelled = false;
     let unsub: (() => void) | undefined;
 
+    const topic = `channel_${channelId}`;
+
+    // Subscribe to real-time updates for typing events
     pb.realtime
       .subscribe(topic, (e: { name: string; type: string; userId: string }) => {
         if (e.type !== "typing" || !e.userId) return;
@@ -52,9 +54,9 @@ export function useTypingIndicator(channelId: string) {
 
   const sendTyping = useCallback(() => {
     if (!channelId) return;
+
     const now = Date.now();
     if (now - lastEmittedRef.current < 2000) return;
-
     lastEmittedRef.current = now;
 
     pb.send(`/api/channels/${channelId}/typing`, { method: "POST" }).catch(

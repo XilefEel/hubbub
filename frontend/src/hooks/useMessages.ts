@@ -23,43 +23,24 @@ export function useMessages(channelId: string) {
   useEffect(() => {
     if (!channelId) return;
 
-    let unsubscribe: () => void;
+    let cancelled = false;
+    let unsub: (() => void) | undefined;
 
-    const subscribeToMessages = async () => {
-      unsubscribe = await pb
-        .collection("messages")
-        .subscribe<Message>("*", async (e) => {
-          if (e.record.channel !== channelId) return;
-
+    // Subscribe to real-time updates for messages in the specified channel
+    pb.collection("messages")
+      .subscribe<Message>(
+        "*",
+        (e) => {
           if (e.action === "create") {
-            // fetch the expanded record to include the user data
-            const expandedRecord = await pb
-              .collection("messages")
-              .getOne<Message>(e.record.id, {
-                expand: "user",
-                requestKey: null,
-              });
-
             queryClient.setQueryData<Message[]>(queryKey, (old = []) => {
-              if (old.some((msg) => msg.id === expandedRecord.id)) {
-                return old;
-              }
-              return [...old, expandedRecord];
+              if (old.some((msg) => msg.id === e.record.id)) return old;
+              return [...old, e.record];
             });
           }
 
           if (e.action === "update") {
-            const expandedRecord = await pb
-              .collection("messages")
-              .getOne<Message>(e.record.id, {
-                expand: "user",
-                requestKey: null,
-              });
-
             queryClient.setQueryData<Message[]>(queryKey, (old = []) =>
-              old.map((msg) =>
-                msg.id === expandedRecord.id ? expandedRecord : msg,
-              ),
+              old.map((msg) => (msg.id === e.record.id ? e.record : msg)),
             );
           }
 
@@ -68,15 +49,21 @@ export function useMessages(channelId: string) {
               old.filter((msg) => msg.id !== e.record.id),
             );
           }
-        });
-    };
-
-    subscribeToMessages();
+        },
+        {
+          filter: `channel = "${channelId}"`,
+          expand: "user",
+        },
+      )
+      .then((fn) => {
+        if (cancelled) fn();
+        else unsub = fn;
+      })
+      .catch((err) => console.warn("message subscription failed:", err));
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      cancelled = true;
+      unsub?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, queryClient]);
