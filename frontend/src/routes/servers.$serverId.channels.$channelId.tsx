@@ -6,6 +6,7 @@ import { useMessages } from "../hooks/useMessages";
 import { useState } from "react";
 import { useSendMessage } from "../hooks/useSendMessage";
 import { queryKeys } from "../lib/querykeys";
+import { useTypingIndicator } from "../hooks/useTypingIndicator";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
 function ChannelPage() {
   const { channelId } = Route.useParams();
   const [content, setContent] = useState("");
+  const { typingUserIds, sendTyping } = useTypingIndicator(channelId);
 
   const {
     data: channel,
@@ -64,34 +66,37 @@ function ChannelPage() {
       )}
 
       <div className="flex flex-1 flex-col gap-3 overflow-y-auto">
-        {messages?.map((message) => (
-          <div key={message.id} className="flex gap-2">
-            <div>
-              <p className="font-semibold">
-                {message.expand?.user?.name || "Unknown User"}
-              </p>
-              <p>{message.content}</p>
+        {messages && messages.length > 0 ? (
+          messages.map((message) => (
+            <div key={message.id} className="flex items-center gap-4">
+              <div className="size-10 rounded-full bg-teal-100" />
+              <div>
+                <p className="font-semibold">
+                  {message.expand?.user?.name || "Unknown User"}
+                </p>
+                <p>{message.content}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No messages yet. Start the conversation!</p>
+        )}
       </div>
+
+      {typingUserIds.length > 0 && (
+        <p className="text-xs text-gray-400">{typingUserIds[0]} is typing...</p>
+      )}
 
       <form onSubmit={handleSubmit} className="mt-auto flex gap-2">
         <input
-          type="text"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => {
+            setContent(e.target.value);
+            sendTyping();
+          }}
           placeholder="Type a message..."
           className="flex-1 rounded border px-4 py-2"
         />
-
-        <button
-          type="submit"
-          disabled={sendMessage.isPending}
-          className="rounded bg-teal-500 px-4 py-2 text-white hover:bg-teal-600"
-        >
-          {sendMessage.isPending ? "Sending..." : "Send"}
-        </button>
       </form>
     </div>
   );

@@ -31,14 +31,16 @@ export function CreateServerForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 text-sm">
+    <form onSubmit={handleSubmit} className="flex gap-2">
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Server name"
         className="rounded border px-3 py-2"
       />
+
       {error && <p className="text-sm text-red-500">{error}</p>}
+
       <button
         type="submit"
         className="rounded bg-teal-500 px-4 py-2 text-white"

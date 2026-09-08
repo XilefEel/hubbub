@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
+	"net/http"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
+	"github.com/pocketbase/pocketbase/tools/subscriptions"
 )
 
 func main() {
@@ -51,8 +54,8 @@ func main() {
 		return e.Next()
 	})
 
-	// custom endpoint to join servers via invite code
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		// custom endpoint to join servers via invite code
 		se.Router.POST("/api/servers/join", func(e *core.RequestEvent) error {
 			data := struct {
 				InviteCode string `json:"inviteCode"`
@@ -104,6 +107,47 @@ func main() {
 				"message": "Successfully joined the server",
 				"server":  server,
 			})
+		}).Bind(apis.RequireAuth())
+
+		// custom endpoint to send typing events to a channel
+		se.Router.POST("/api/channels/{channelId}/typing", func(e *core.RequestEvent) error {
+			channelId := e.Request.PathValue("channelId")
+			subscription := "channel_" + channelId
+
+			payload, err := json.Marshal(map[string]any{
+				"name":   e.Auth.GetString("name"),
+				"type":   "typing",
+				"userId": e.Auth.Id,
+			})
+
+			if err != nil {
+				return e.InternalServerError("Failed to marshal payload", err)
+			}
+
+			msg := subscriptions.Message{Name: subscription, Data: payload}
+
+			// protect agaisnt unauthorized users
+			senderId := ""
+			if e.Auth != nil {
+				senderId = e.Auth.Id
+			}
+
+			// for each client subscribed to the channel, send the typing event
+			for _, client := range e.App.SubscriptionsBroker().Clients() {
+				if !client.HasSubscription(subscription) {
+					continue
+				}
+
+				authRecord, _ := client.Get(apis.RealtimeClientAuthKey).(*core.Record)
+
+				if authRecord != nil && authRecord.Id == senderId {
+					continue
+				}
+
+				client.Send(msg)
+			}
+
+			return e.NoContent(http.StatusOK)
 		}).Bind(apis.RequireAuth())
 
 		return se.Next()

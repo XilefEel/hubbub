@@ -1,5 +1,3 @@
-// list -> list of items
-// detail -> single item
 export const queryKeys = {
   servers: {
     list: (userId: string) => ["servers", userId] as const,
