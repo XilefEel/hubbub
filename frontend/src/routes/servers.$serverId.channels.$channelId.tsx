@@ -7,16 +7,28 @@ import { useState } from "react";
 import { useSendMessage } from "../hooks/useSendMessage";
 import { queryKeys } from "../lib/querykeys";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
+import { useServerMembers } from "../hooks/useServerMembers";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
 });
 
-function ChannelPage() {
-  const { channelId } = Route.useParams();
-  const [content, setContent] = useState("");
-  const { typingUserIds, sendTyping } = useTypingIndicator(channelId);
+function renderTypingText(typingNames: string[]) {
+  if (typingNames.length === 0) return "";
+  if (typingNames.length === 1) return `${typingNames[0]} is typing...`;
+  if (typingNames.length === 2)
+    return `${typingNames[0]} and ${typingNames[1]} are typing...`;
 
+  return `${typingNames[0]}, ${typingNames[1]}, and ${
+    typingNames.length - 2
+  } others are typing...`;
+}
+
+function ChannelPage() {
+  const { serverId, channelId } = Route.useParams();
+  const [content, setContent] = useState("");
+
+  // Fetch channel details
   const {
     data: channel,
     isLoading: channelLoading,
@@ -27,11 +39,15 @@ function ChannelPage() {
     enabled: !!channelId,
   });
 
+  const { data: members } = useServerMembers(serverId);
+
   const {
     data: messages,
     isLoading: messagesLoading,
     error: messagesError,
   } = useMessages(channelId);
+
+  const { typingUserIds, sendTyping } = useTypingIndicator(channelId);
 
   const sendMessage = useSendMessage();
 
@@ -42,6 +58,13 @@ function ChannelPage() {
     sendMessage.mutate({ content, channelId });
     setContent("");
   };
+
+  const typingNames = typingUserIds
+    .map(
+      (id) =>
+        members?.find((m) => m.user === id)?.expand?.user?.name || "Someone",
+    )
+    .filter(Boolean);
 
   if (channelLoading) return <p className="p-8">Loading channel...</p>;
 
@@ -83,9 +106,9 @@ function ChannelPage() {
         )}
       </div>
 
-      {typingUserIds.length > 0 && (
-        <p className="text-xs text-gray-400">{typingUserIds[0]} is typing...</p>
-      )}
+      <div className="h-4 text-xs text-gray-400 italic">
+        {renderTypingText(typingNames)}
+      </div>
 
       <form onSubmit={handleSubmit} className="mt-auto flex gap-2">
         <input

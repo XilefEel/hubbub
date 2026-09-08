@@ -14,9 +14,7 @@ export function useTypingIndicator(channelId: string) {
     pb.realtime.subscribe(
       topic,
       (e: { name: string; type: string; userId: string }) => {
-        console.log("Received event:", JSON.stringify(e));
-
-        if (e.type !== "typing") return;
+        if (e.type !== "typing" || !e.userId) return;
 
         const userId = e.userId;
 
