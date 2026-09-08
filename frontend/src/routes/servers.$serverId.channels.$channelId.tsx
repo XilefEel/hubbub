@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import type { Channel } from "../lib/types";
 import { useMessages } from "../hooks/useMessages";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSendMessage } from "../hooks/useSendMessage";
 import { queryKeys } from "../lib/querykeys";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
@@ -66,6 +66,21 @@ function ChannelPage() {
     )
     .filter(Boolean);
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+  };
+
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [channelId]);
+
   if (channelLoading) return <p className="p-8">Loading channel...</p>;
 
   if (channelError)
@@ -104,6 +119,8 @@ function ChannelPage() {
         ) : (
           <p>No messages yet. Start the conversation!</p>
         )}
+
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="h-4 text-xs text-gray-400 italic">
