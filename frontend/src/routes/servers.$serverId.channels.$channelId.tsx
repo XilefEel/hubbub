@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import type { Channel } from "../lib/types";
 import { useMessages } from "../hooks/useMessages";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSendMessage } from "../hooks/useSendMessage";
 import { queryKeys } from "../lib/querykeys";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
-import { ArrowUp, Hash, Plus, Volume2 } from "lucide-react";
+import { ArrowUp, Hash, Plus, Volume2, X } from "lucide-react";
 import { MessageItem } from "../components/MessageItem";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
@@ -76,6 +76,11 @@ function ChannelPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
+  const previewUrl = useMemo(() => {
+    if (!file) return null;
+    return URL.createObjectURL(file);
+  }, [file]);
+
   useEffect(() => {
     if (!messages || messages.length === 0) return;
     scrollToBottom();
@@ -125,6 +130,37 @@ function ChannelPage() {
         {renderTypingText(typingNames)}
       </div>
 
+      {file && (
+        <div className="mb-2 flex items-center gap-3 rounded-lg border border-zinc-200 p-2 text-xs">
+          <img
+            src={previewUrl || ""}
+            alt="Upload preview"
+            className="size-12 rounded border border-zinc-200 object-cover"
+          />
+
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate font-medium text-zinc-700">
+              {file.name}
+            </span>
+
+            <span className="text-zinc-400">
+              {(file.size / 1024).toFixed(1)} KB
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setFile(null);
+              if (fileInputRef.current) fileInputRef.current.value = "";
+            }}
+            className="ml-auto text-zinc-400 hover:text-red-500"
+          >
+            <X className="size-4 shrink-0" />
+          </button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="relative flex-1">
           <input
@@ -154,7 +190,8 @@ function ChannelPage() {
 
           <button
             type="submit"
-            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500"
+            disabled={sendMessage.isPending || content.trim() === ""}
+            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed"
           >
             <ArrowUp className="size-5 shrink-0" />
           </button>
