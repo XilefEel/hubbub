@@ -9,7 +9,7 @@ import { queryKeys } from "../lib/querykeys";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
 import { ArrowUp, Hash, Plus, Volume2 } from "lucide-react";
-import { formatMessageDate } from "../lib/utils";
+import { MessageItem } from "../components/MessageItem";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -110,26 +110,7 @@ function ChannelPage() {
 
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
         {messages && messages.length > 0 ? (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className="flex items-center gap-4 rounded-lg px-2 py-1 hover:bg-zinc-50"
-            >
-              <div className="size-10 rounded-full bg-teal-100" />
-              <div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-semibold">
-                    {message.expand?.user?.name || "Unknown User"}
-                  </span>
-
-                  <span className="text-xs text-zinc-400">
-                    {formatMessageDate(message.created)}
-                  </span>
-                </div>
-                <p>{message.content}</p>
-              </div>
-            </div>
-          ))
+          messages.map((m) => <MessageItem message={m} />)
         ) : (
           <p>No messages yet. Start the conversation!</p>
         )}
