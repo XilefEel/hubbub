@@ -9,6 +9,7 @@ import { queryKeys } from "../lib/querykeys";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
 import { ArrowUp, Hash, Plus, Volume2 } from "lucide-react";
+import { formatMessageDate } from "../lib/utils";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -116,9 +117,15 @@ function ChannelPage() {
             >
               <div className="size-10 rounded-full bg-teal-100" />
               <div>
-                <p className="font-semibold">
-                  {message.expand?.user?.name || "Unknown User"}
-                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-semibold">
+                    {message.expand?.user?.name || "Unknown User"}
+                  </span>
+
+                  <span className="text-xs text-zinc-400">
+                    {formatMessageDate(message.created)}
+                  </span>
+                </div>
                 <p>{message.content}</p>
               </div>
             </div>
