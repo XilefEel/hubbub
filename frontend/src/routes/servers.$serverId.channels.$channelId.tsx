@@ -76,6 +76,23 @@ function ChannelPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      alert("File is too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setFile(selectedFile);
+  };
+
+  const handleRemoveFile = () => {
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const previewUrl = useMemo(() => {
     if (!file) return null;
     return URL.createObjectURL(file);
@@ -150,10 +167,7 @@ function ChannelPage() {
 
           <button
             type="button"
-            onClick={() => {
-              setFile(null);
-              if (fileInputRef.current) fileInputRef.current.value = "";
-            }}
+            onClick={handleRemoveFile}
             className="ml-auto text-zinc-400 hover:text-red-500"
           >
             <X className="size-4 shrink-0" />
@@ -166,7 +180,7 @@ function ChannelPage() {
           <input
             type="file"
             ref={fileInputRef}
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            onChange={(e) => handleFileChange(e)}
             className="hidden"
           />
 
