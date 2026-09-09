@@ -29,6 +29,8 @@ function renderTypingText(typingNames: string[]) {
 function ChannelPage() {
   const { serverId, channelId } = Route.useParams();
   const [content, setContent] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     data: channel,
@@ -54,10 +56,11 @@ function ChannelPage() {
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() && !file) return;
 
-    sendMessage.mutate({ content, channelId });
+    sendMessage.mutate({ content, channelId, file });
     setContent("");
+    setFile(null);
   };
 
   const typingNames = typingUserIds
@@ -124,9 +127,17 @@ function ChannelPage() {
 
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="relative flex-1">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="hidden"
+          />
+
           <button
             type="button"
-            className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:cursor-pointer hover:text-zinc-500"
           >
             <Plus className="size-5 shrink-0" />
           </button>

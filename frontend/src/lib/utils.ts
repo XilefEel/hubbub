@@ -1,3 +1,6 @@
+import { pb } from "./pocketbase";
+import type { Message } from "./types";
+
 export function formatMessageDate(dateString: string) {
   const date = new Date(dateString);
 
@@ -11,4 +14,9 @@ export function formatMessageDate(dateString: string) {
   });
 
   return `${day}/${month}/${year}, ${time}`;
+}
+
+export function getMessageImageUrl(message: Message) {
+  if (!message.attachment) return null;
+  return pb.files.getURL(message, message.attachment);
 }

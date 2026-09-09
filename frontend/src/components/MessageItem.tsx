@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
-import { formatMessageDate } from "../lib/utils";
+import { formatMessageDate, getMessageImageUrl } from "../lib/utils";
 import type { Message } from "../lib/types";
 
 export function MessageItem({ message }: { message: Message }) {
@@ -38,6 +38,8 @@ export function MessageItem({ message }: { message: Message }) {
       setEditContent(message.content);
     }
   };
+
+  const imageUrl = getMessageImageUrl(message);
 
   const isOwner = message.user === currentUserId;
   const isPending = editMutation.isPending || deleteMutation.isPending;
@@ -101,6 +103,22 @@ export function MessageItem({ message }: { message: Message }) {
           </form>
         ) : (
           <p className="text-sm text-zinc-800">{message.content}</p>
+        )}
+
+        {imageUrl && (
+          <a
+            href={imageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 block overflow-hidden rounded-xl border border-zinc-200"
+          >
+            <img
+              src={imageUrl}
+              alt="Attachment"
+              loading="lazy"
+              className="w-auto object-cover hover:opacity-95"
+            />
+          </a>
         )}
       </div>
     </div>
