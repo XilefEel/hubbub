@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { MessageItem } from "./MessageItem";
-import type { Message } from "../lib/types";
+import type { Message } from "../../lib/types";
 
 function isSameGroup(
   prev: Message | undefined,

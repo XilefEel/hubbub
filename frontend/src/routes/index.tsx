@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
-import { CreateServerForm } from "../components/CreateServerForm";
-import { ServerList } from "../components/ServerList";
+import { CreateServerForm } from "../components/servers/CreateServerForm";
+import { JoinServerForm } from "../components/servers/JoinServerForm";
+import { ServerList } from "../components/servers/ServerList";
 import { useAuth } from "../hooks/useAuth";
-import { JoinServerForm } from "../components/JoinForm";
 
 export const Route = createFileRoute("/")({
   component: HomePage,

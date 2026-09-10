@@ -1,15 +1,15 @@
-import {
-  useBanMember,
-  useServerMembers,
-  useUpdateMemberRole,
-} from "../hooks/useServerMembers";
-import { pb } from "../lib/pocketbase";
-import { useCurrentMembership } from "../hooks/useCurrentMembership";
-import { usePresence } from "../hooks/usePresence";
-import type { ServerMember } from "../lib/types";
 import { cn } from "cn";
 import { useState } from "react";
 import { Crown, Search } from "lucide-react";
+import { useCurrentMembership } from "../../hooks/useCurrentMembership";
+import { usePresence } from "../../hooks/usePresence";
+import {
+  useServerMembers,
+  useUpdateMemberRole,
+  useBanMember,
+} from "../../hooks/useServerMembers";
+import { pb } from "../../lib/pocketbase";
+import type { ServerMember } from "../../lib/types";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const { data: members, isLoading, error } = useServerMembers(serverId);

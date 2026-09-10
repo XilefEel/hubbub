@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback } from "react";
 import { ArrowUp, Plus, Upload } from "lucide-react";
 import { FilePreview } from "./FilePreview";
-import { useFileDrop } from "../hooks/useFileDrop";
+import { useFileDrop } from "../../hooks/useFileDrop";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_FILES = 10;

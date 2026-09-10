@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useChannels } from "../hooks/useChannels";
+import { useChannels } from "../../hooks/useChannels";
 import { Volume2, Hash } from "lucide-react";
 
 export function ChannelList({ serverId }: { serverId: string }) {

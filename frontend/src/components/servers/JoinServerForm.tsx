@@ -1,41 +1,36 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { pb } from "../lib/pocketbase";
-import { queryKeys } from "../lib/querykeys";
+import { pb } from "../../lib/pocketbase";
+import { queryKeys } from "../../lib/querykeys";
 
-function generateInviteCode() {
-  return Math.random().toString(36).slice(2, 10);
-}
-
-export function CreateServerForm() {
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
+export function JoinServerForm() {
   const queryClient = useQueryClient();
+  const [inviteCode, setInviteCode] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError("");
 
     try {
-      await pb.collection("servers").create({
-        name,
-        owner: pb.authStore.record?.id,
-        inviteCode: generateInviteCode(),
+      await pb.send("/api/servers/join", {
+        method: "POST",
+        body: { inviteCode },
       });
-      setName("");
+      setInviteCode("");
       queryClient.invalidateQueries({ queryKey: queryKeys.channels.all });
     } catch (err) {
       console.error(err);
-      setError("Failed to create server");
+      setError("Failed to join server");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
       <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Server name"
+        value={inviteCode}
+        onChange={(e) => setInviteCode(e.target.value)}
+        placeholder="Invite code"
         className="rounded border px-3 py-2"
       />
 
@@ -45,7 +40,7 @@ export function CreateServerForm() {
         type="submit"
         className="rounded bg-teal-500 px-4 py-2 text-white"
       >
-        Create server
+        Join server
       </button>
     </form>
   );

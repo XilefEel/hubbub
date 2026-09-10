@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { pb } from "../lib/pocketbase";
+import { pb } from "../../lib/pocketbase";
 import { useNavigate } from "@tanstack/react-router";
 
 export function LoginForm() {

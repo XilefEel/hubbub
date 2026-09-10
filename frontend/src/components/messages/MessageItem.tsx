@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { pb } from "../lib/pocketbase";
-import { formatMessageDate } from "../lib/utils";
-import type { Message } from "../lib/types";
-import { useEditMessage, useDeleteMessage } from "../hooks/useMessages";
-import { AttachmentGrid } from "./AttachmentGrid";
 import { MessageActions } from "./MessageActions";
 import { MessageEditForm } from "./MessageEditForm";
+import { useEditMessage, useDeleteMessage } from "../../hooks/useMessages";
+import { pb } from "../../lib/pocketbase";
+import type { Message } from "../../lib/types";
+import { formatMessageDate } from "../../lib/utils";
+import { AttachmentGrid } from "./AttachmentGrid";
 
 export function MessageItem({
   message,

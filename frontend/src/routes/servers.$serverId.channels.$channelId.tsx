@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMessages, useSendMessage } from "../hooks/useMessages";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
-import { MessageList } from "../components/MessageList";
-import { MessageInput } from "../components/MessageInput";
-import { TypingIndicator } from "../components/TypingIndicator";
+import { TypingIndicator } from "../components/messages/TypingIndicator";
 import { Volume2, Hash } from "lucide-react";
 import { useChannelDetail } from "../hooks/useChannels";
+import { MessageInput } from "../components/messages/MessageInput";
+import { MessageList } from "../components/messages/MessageList";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,

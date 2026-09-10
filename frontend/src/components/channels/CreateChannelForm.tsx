@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { pb } from "../lib/pocketbase";
-import { useCurrentMembership } from "../hooks/useCurrentMembership";
-import { queryKeys } from "../lib/querykeys";
+import { pb } from "../../lib/pocketbase";
+import { useCurrentMembership } from "../../hooks/useCurrentMembership";
+import { queryKeys } from "../../lib/querykeys";
 
 export function CreateChannelForm({ serverId }: { serverId: string }) {
   const { isOwner } = useCurrentMembership(serverId);

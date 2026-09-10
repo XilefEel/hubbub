@@ -1,7 +1,4 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { MemberList } from "../components/MemberList";
-import { ChannelList } from "../components/ChannelList";
-import { CreateChannelForm } from "../components/CreateChannelForm";
 import { ArrowLeft } from "lucide-react";
 import { useServerDetail } from "../hooks/useServers";
 import {
@@ -10,6 +7,9 @@ import {
   Separator,
   useDefaultLayout,
 } from "react-resizable-panels";
+import { ChannelList } from "../components/channels/ChannelList";
+import { CreateChannelForm } from "../components/channels/CreateChannelForm";
+import { MemberList } from "../components/servers/MemberList";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,

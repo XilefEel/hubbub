@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useServers } from "../hooks/useServers";
+import { useServers } from "../../hooks/useServers";
 
 export function ServerList() {
   const { data: servers, isLoading, error } = useServers();
