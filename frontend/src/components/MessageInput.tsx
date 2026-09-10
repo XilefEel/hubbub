@@ -1,6 +1,9 @@
-import { useMemo, useRef, useState } from "react";
-import { ArrowUp, Plus } from "lucide-react";
+import { useMemo, useRef, useState, useCallback } from "react";
+import { ArrowUp, Plus, Upload } from "lucide-react";
 import { FilePreview } from "./FilePreview";
+import { useFileDrop } from "../hooks/useFileDrop";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export function MessageInput({
   onSubmit,
@@ -20,16 +23,23 @@ export function MessageInput({
     return URL.createObjectURL(file);
   }, [file]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
+  const applyFile = useCallback((selectedFile: File | undefined) => {
     if (!selectedFile) return;
 
-    if (selectedFile.size > 5 * 1024 * 1024) {
+    if (selectedFile.size > MAX_FILE_SIZE) {
       alert("File is too large. Maximum size is 5MB.");
       return;
     }
 
     setFile(selectedFile);
+  }, []);
+
+  const { isDragging } = useFileDrop({
+    onFileDrop: applyFile,
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    applyFile(e.target.files?.[0]);
   };
 
   const handleRemoveFile = () => {
@@ -49,6 +59,13 @@ export function MessageInput({
 
   return (
     <>
+      {isDragging && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-teal-400 bg-teal-50/90 text-teal-500">
+          <Upload className="size-8 shrink-0" />
+          <span className="text-lg font-medium">Drop file to attach</span>
+        </div>
+      )}
+
       {file && (
         <FilePreview
           file={file}
