@@ -110,7 +110,7 @@ export function MessageItem({ message }: { message: Message }) {
             href={imageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 block overflow-hidden rounded-xl border border-zinc-200"
+            className="mt-2 block max-w-sm overflow-hidden rounded-xl border border-zinc-200"
           >
             <img
               src={imageUrl}
