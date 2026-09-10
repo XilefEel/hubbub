@@ -1,11 +1,19 @@
 import { useState } from "react";
-import { Pencil, Trash } from "lucide-react";
 import { pb } from "../lib/pocketbase";
 import { formatMessageDate } from "../lib/utils";
 import type { Message } from "../lib/types";
 import { useEditMessage, useDeleteMessage } from "../hooks/useMessages";
+import { AttachmentGrid } from "./AttachmentGrid";
+import { MessageActions } from "./MessageActions";
+import { MessageEditForm } from "./MessageEditForm";
 
-export function MessageItem({ message }: { message: Message }) {
+export function MessageItem({
+  message,
+  showHeader = true,
+}: {
+  message: Message;
+  showHeader?: boolean;
+}) {
   const currentUserId = pb.authStore.record?.id;
 
   const [isEditing, setIsEditing] = useState(false);
@@ -30,11 +38,56 @@ export function MessageItem({ message }: { message: Message }) {
     }
   };
 
+  const startEditing = () => {
+    setIsEditing(true);
+    setEditContent(message.content);
+  };
+
+  const handleDelete = () => {
+    if (confirm("Are you sure you want to delete this message?")) {
+      deleteMutation.mutate(message.id);
+    }
+  };
+
   const isOwner = message.user === currentUserId;
   const isPending = editMutation.isPending || deleteMutation.isPending;
 
+  if (!showHeader) {
+    return (
+      <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
+        <div className="w-10 shrink-0" />
+
+        <div className="flex flex-1 flex-col">
+          {isEditing ? (
+            <MessageEditForm
+              value={editContent}
+              onChange={setEditContent}
+              onSubmit={handleEditSubmit}
+              onKeyDown={handleKeyDown}
+              disabled={isPending}
+            />
+          ) : (
+            <div className="flex items-baseline justify-between">
+              <p className="text-sm text-zinc-800">{message.content}</p>
+
+              {isOwner && (
+                <MessageActions
+                  isPending={isPending}
+                  onEdit={startEditing}
+                  onDelete={handleDelete}
+                />
+              )}
+            </div>
+          )}
+
+          <AttachmentGrid message={message} />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
+    <div className="group mt-2 flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
       <div className="size-10 shrink-0 rounded-full bg-teal-100" />
 
       <div className="flex flex-1 flex-col">
@@ -52,67 +105,27 @@ export function MessageItem({ message }: { message: Message }) {
           )}
 
           {isOwner && !isEditing && (
-            <div className="ml-auto hidden items-center gap-2 group-hover:flex">
-              <button
-                disabled={isPending}
-                onClick={() => {
-                  setIsEditing(true);
-                  setEditContent(message.content);
-                }}
-                className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
-              >
-                <Pencil className="size-4 shrink-0" />
-              </button>
-
-              <button
-                disabled={isPending}
-                onClick={() => {
-                  if (confirm("Are you sure you want to delete this message?"))
-                    deleteMutation.mutate(message.id);
-                }}
-                className="text-zinc-400 hover:text-red-500 disabled:opacity-50"
-              >
-                <Trash className="size-4 shrink-0" />
-              </button>
-            </div>
+            <MessageActions
+              isPending={isPending}
+              onEdit={startEditing}
+              onDelete={handleDelete}
+            />
           )}
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleEditSubmit} className="flex items-center gap-2">
-            <input
-              type="text"
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus
-              disabled={isPending}
-              className="flex-1 rounded border border-zinc-300 px-2 py-0.5 text-sm outline-none focus:border-zinc-500"
-            />
-          </form>
+          <MessageEditForm
+            value={editContent}
+            onChange={setEditContent}
+            onSubmit={handleEditSubmit}
+            onKeyDown={handleKeyDown}
+            disabled={isPending}
+          />
         ) : (
           <p className="text-sm text-zinc-800">{message.content}</p>
         )}
 
-        {message.attachments && message.attachments.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {message.attachments.map((filename) => (
-              <a
-                href={pb.files.getURL(message, filename)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 block max-w-sm overflow-hidden rounded-xl border border-zinc-200"
-              >
-                <img
-                  src={pb.files.getURL(message, filename)}
-                  alt="Attachment"
-                  loading="lazy"
-                  className="w-auto object-cover hover:opacity-95"
-                />
-              </a>
-            ))}
-          </div>
-        )}
+        <AttachmentGrid message={message} />
       </div>
     </div>
   );
