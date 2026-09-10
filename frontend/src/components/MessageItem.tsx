@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Pencil, Trash } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import { formatMessageDate, getMessageImageUrl } from "../lib/utils";
 import type { Message } from "../lib/types";
+import { useEditMessage, useDeleteMessage } from "../hooks/useMessages";
 
 export function MessageItem({ message }: { message: Message }) {
   const currentUserId = pb.authStore.record?.id;
@@ -11,17 +11,8 @@ export function MessageItem({ message }: { message: Message }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
 
-  const editMutation = useMutation({
-    mutationFn: async (newContent: string) =>
-      await pb
-        .collection("messages")
-        .update(message.id, { content: newContent }),
-    onSuccess: () => setIsEditing(false),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async () => await pb.collection("messages").delete(message.id),
-  });
+  const editMutation = useEditMessage(() => setIsEditing(false));
+  const deleteMutation = useDeleteMessage();
 
   const handleEditSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -29,7 +20,7 @@ export function MessageItem({ message }: { message: Message }) {
       setIsEditing(false);
       return;
     }
-    editMutation.mutate(editContent);
+    editMutation.mutate({ messageId: message.id, content: editContent });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -79,7 +70,7 @@ export function MessageItem({ message }: { message: Message }) {
                 disabled={isPending}
                 onClick={() => {
                   if (confirm("Are you sure you want to delete this message?"))
-                    deleteMutation.mutate();
+                    deleteMutation.mutate(message.id);
                 }}
                 className="text-zinc-400 hover:text-red-500 disabled:opacity-50"
               >

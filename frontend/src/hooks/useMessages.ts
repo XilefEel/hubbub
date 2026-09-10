@@ -38,6 +38,26 @@ export function useSendMessage() {
   });
 }
 
+export function useEditMessage(onSuccess?: () => void) {
+  return useMutation({
+    mutationFn: async ({
+      messageId,
+      content,
+    }: {
+      messageId: string;
+      content: string;
+    }) => await pb.collection("messages").update(messageId, { content }),
+    onSuccess,
+  });
+}
+
+export function useDeleteMessage() {
+  return useMutation({
+    mutationFn: async (messageId: string) =>
+      await pb.collection("messages").delete(messageId),
+  });
+}
+
 export function useMessages(channelId: string) {
   const queryClient = useQueryClient();
   const queryKey = queryKeys.messages.list(channelId);

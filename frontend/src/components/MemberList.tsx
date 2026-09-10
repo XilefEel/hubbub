@@ -1,8 +1,10 @@
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { useServerMembers } from "../hooks/useServerMembers";
+import {
+  useBanMember,
+  useServerMembers,
+  useUpdateMemberRole,
+} from "../hooks/useServerMembers";
 import { pb } from "../lib/pocketbase";
 import { useCurrentMembership } from "../hooks/useCurrentMembership";
-import { queryKeys } from "../lib/querykeys";
 import { usePresence } from "../hooks/usePresence";
 import type { ServerMember } from "../lib/types";
 import { cn } from "cn";
@@ -104,39 +106,11 @@ function MemberListItem({
   serverId: string;
   isOnline: boolean;
 }) {
-  const queryClient = useQueryClient();
   const currentUserId = pb.authStore.record?.id;
   const isSelf = member.user === currentUserId;
 
-  const updateRoleMutation = useMutation({
-    mutationFn: async ({
-      membershipId,
-      role,
-    }: {
-      membershipId: string;
-      role: "admin" | "member";
-    }) => {
-      return await pb
-        .collection("server_members")
-        .update(membershipId, { role });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.serverMembers.list(serverId),
-      });
-    },
-  });
-
-  const banMemberMutation = useMutation({
-    mutationFn: async (membershipId: string) => {
-      return await pb.collection("server_members").delete(membershipId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.serverMembers.list(serverId),
-      });
-    },
-  });
+  const updateRoleMutation = useUpdateMemberRole(serverId);
+  const banMemberMutation = useBanMember(serverId);
 
   const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
 
