@@ -15,3 +15,11 @@ export function useChannels(serverId: string) {
     enabled: !!serverId,
   });
 }
+
+export function useChannelDetail(channelId: string) {
+  return useQuery<Channel>({
+    queryKey: queryKeys.channels.detail(channelId),
+    queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
+    enabled: !!channelId,
+  });
+}

@@ -1,16 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { pb } from "../lib/pocketbase";
-import type { Channel } from "../lib/types";
-import { useMessages } from "../hooks/useMessages";
-import { useSendMessage } from "../hooks/useSendMessage";
-import { queryKeys } from "../lib/querykeys";
+import { useMessages, useSendMessage } from "../hooks/useMessages";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
 import { MessageList } from "../components/MessageList";
 import { MessageInput } from "../components/MessageInput";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Volume2, Hash } from "lucide-react";
+import { useChannelDetail } from "../hooks/useChannels";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -23,11 +19,7 @@ function ChannelPage() {
     data: channel,
     isLoading: channelLoading,
     error: channelError,
-  } = useQuery<Channel>({
-    queryKey: queryKeys.channels.detail(channelId),
-    queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
-    enabled: !!channelId,
-  });
+  } = useChannelDetail(channelId);
 
   const { data: members } = useServerMembers(serverId);
   const {
@@ -35,6 +27,7 @@ function ChannelPage() {
     isLoading: messagesLoading,
     error: messagesError,
   } = useMessages(channelId);
+
   const { typingUserIds, sendTyping } = useTypingIndicator(channelId);
   const sendMessage = useSendMessage();
 

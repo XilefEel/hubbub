@@ -1,11 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { pb } from "../lib/pocketbase";
 import { MemberList } from "../components/MemberList";
 import { ChannelList } from "../components/ChannelList";
 import { CreateChannelForm } from "../components/CreateChannelForm";
-import { queryKeys } from "../lib/querykeys";
 import { ArrowLeft } from "lucide-react";
+import { useServerDetail } from "../hooks/useServers";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,
@@ -13,18 +11,9 @@ export const Route = createFileRoute("/servers/$serverId")({
 
 function ServerPage() {
   const { serverId } = Route.useParams();
-
-  const {
-    data: server,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: queryKeys.servers.list(serverId),
-    queryFn: () => pb.collection("servers").getOne(serverId),
-  });
+  const { data: server, isLoading, error } = useServerDetail(serverId);
 
   if (isLoading) return <p>Loading server...</p>;
-
   if (error) return <p className="text-red-500">Failed to load server</p>;
 
   return (
