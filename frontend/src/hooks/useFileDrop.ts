@@ -4,7 +4,7 @@ export function useFileDrop({
   onFileDrop,
   disabled = false,
 }: {
-  onFileDrop: (file: File) => void;
+  onFileDrop: (files: File[]) => void;
   disabled?: boolean;
 }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -48,8 +48,8 @@ export function useFileDrop({
       dragCounter.current = 0;
       setIsDragging(false);
 
-      const droppedFile = e.dataTransfer.files?.[0];
-      if (droppedFile) onFileDropRef.current(droppedFile);
+      const droppedFiles = e.dataTransfer.files;
+      onFileDropRef.current(Array.from(droppedFiles));
     };
 
     window.addEventListener("dragenter", handleDragEnter);

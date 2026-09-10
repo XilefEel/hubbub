@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pencil, Trash } from "lucide-react";
 import { pb } from "../lib/pocketbase";
-import { formatMessageDate, getMessageImageUrl } from "../lib/utils";
+import { formatMessageDate } from "../lib/utils";
 import type { Message } from "../lib/types";
 import { useEditMessage, useDeleteMessage } from "../hooks/useMessages";
 
@@ -29,8 +29,6 @@ export function MessageItem({ message }: { message: Message }) {
       setEditContent(message.content);
     }
   };
-
-  const imageUrl = getMessageImageUrl(message);
 
   const isOwner = message.user === currentUserId;
   const isPending = editMutation.isPending || deleteMutation.isPending;
@@ -96,20 +94,24 @@ export function MessageItem({ message }: { message: Message }) {
           <p className="text-sm text-zinc-800">{message.content}</p>
         )}
 
-        {imageUrl && (
-          <a
-            href={imageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 block max-w-sm overflow-hidden rounded-xl border border-zinc-200"
-          >
-            <img
-              src={imageUrl}
-              alt="Attachment"
-              loading="lazy"
-              className="w-auto object-cover hover:opacity-95"
-            />
-          </a>
+        {message.attachments && message.attachments.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {message.attachments.map((filename) => (
+              <a
+                href={pb.files.getURL(message, filename)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 block max-w-sm overflow-hidden rounded-xl border border-zinc-200"
+              >
+                <img
+                  src={pb.files.getURL(message, filename)}
+                  alt="Attachment"
+                  loading="lazy"
+                  className="w-auto object-cover hover:opacity-95"
+                />
+              </a>
+            ))}
+          </div>
         )}
       </div>
     </div>

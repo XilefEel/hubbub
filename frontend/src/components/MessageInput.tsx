@@ -1,59 +1,75 @@
-import { useMemo, useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback } from "react";
 import { ArrowUp, Plus, Upload } from "lucide-react";
 import { FilePreview } from "./FilePreview";
 import { useFileDrop } from "../hooks/useFileDrop";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILES = 10;
 
 export function MessageInput({
   onSubmit,
   onTyping,
   isSending,
 }: {
-  onSubmit: (content: string, file: File | null) => void;
+  onSubmit: (content: string, files: File[]) => void;
   onTyping: () => void;
   isSending: boolean;
 }) {
   const [content, setContent] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const previewUrl = useMemo(() => {
-    if (!file) return null;
-    return URL.createObjectURL(file);
-  }, [file]);
+  const applyFiles = useCallback(
+    (incoming: FileList | File[]) => {
+      const incomingArray = Array.from(incoming);
+      const validFiles: File[] = [];
 
-  const applyFile = useCallback((selectedFile: File | undefined) => {
-    if (!selectedFile) return;
+      for (const f of incomingArray) {
+        if (f.size > MAX_FILE_SIZE) {
+          alert(`${f.name} is too large. Maximum size is 5MB.`);
+        } else {
+          validFiles.push(f);
+        }
+      }
 
-    if (selectedFile.size > MAX_FILE_SIZE) {
-      alert("File is too large. Maximum size is 5MB.");
-      return;
-    }
+      if (validFiles.length === 0) return;
 
-    setFile(selectedFile);
-  }, []);
+      const availableSlots = MAX_FILES - files.length;
+
+      if (availableSlots <= 0) {
+        alert(`You can only attach up to ${MAX_FILES} files.`);
+        return;
+      }
+
+      if (validFiles.length > availableSlots) {
+        alert(`You can only attach up to ${MAX_FILES} files.`);
+      }
+
+      const filesToAdd = validFiles.slice(0, availableSlots);
+      setFiles((prev) => [...prev, ...filesToAdd]);
+    },
+    [files],
+  );
 
   const { isDragging } = useFileDrop({
-    onFileDrop: applyFile,
+    onFileDrop: applyFiles,
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    applyFile(e.target.files?.[0]);
+    if (e.target.files) applyFiles(e.target.files);
   };
 
-  const handleRemoveFile = () => {
-    setFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const handleRemoveFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!content.trim() && !file) return;
+    if (!content.trim() && files.length === 0) return;
 
-    onSubmit(content, file);
+    onSubmit(content, files);
     setContent("");
-    setFile(null);
+    setFiles([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -66,12 +82,16 @@ export function MessageInput({
         </div>
       )}
 
-      {file && (
-        <FilePreview
-          file={file}
-          previewUrl={previewUrl}
-          onRemove={handleRemoveFile}
-        />
+      {files.length > 0 && (
+        <div className="mb-2 flex flex-wrap gap-2">
+          {files.map((file, index) => (
+            <FilePreview
+              key={`${file.name}-${index}`}
+              file={file}
+              onRemove={() => handleRemoveFile(index)}
+            />
+          ))}
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="flex gap-2">
@@ -81,6 +101,7 @@ export function MessageInput({
             ref={fileInputRef}
             onChange={handleFileChange}
             className="hidden"
+            multiple
           />
 
           <button

@@ -1,16 +1,20 @@
 import { X } from "lucide-react";
+import { useMemo } from "react";
 
 export function FilePreview({
   file,
-  previewUrl,
   onRemove,
 }: {
   file: File;
-  previewUrl: string | null;
   onRemove: () => void;
 }) {
+  const previewUrl = useMemo(() => {
+    if (!file) return null;
+    return URL.createObjectURL(file);
+  }, [file]);
+
   return (
-    <div className="mb-2 flex items-center gap-3 rounded-lg border border-zinc-200 p-2 text-xs">
+    <div className="mb-2 flex w-full items-center gap-3 rounded-lg border border-zinc-200 p-2 text-xs">
       <img
         src={previewUrl || ""}
         alt="Upload preview"

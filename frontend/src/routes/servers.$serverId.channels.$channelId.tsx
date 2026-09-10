@@ -69,8 +69,8 @@ function ChannelPage() {
       <TypingIndicator typingNames={typingNames} />
 
       <MessageInput
-        onSubmit={(content, file) =>
-          sendMessage.mutate({ content, channelId, file })
+        onSubmit={(content, files) =>
+          sendMessage.mutate({ content, channelId, files })
         }
         onTyping={sendTyping}
         isSending={sendMessage.isPending}
