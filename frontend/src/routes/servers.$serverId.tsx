@@ -8,7 +8,6 @@ import {
   useDefaultLayout,
 } from "react-resizable-panels";
 import { ChannelList } from "../components/channels/ChannelList";
-import { CreateChannelForm } from "../components/channels/CreateChannelForm";
 import { MemberList } from "../components/servers/MemberList";
 
 export const Route = createFileRoute("/servers/$serverId")({
@@ -47,11 +46,7 @@ function ServerPage() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <h2 className="text-sm text-zinc-500">Channels</h2>
-              <ChannelList serverId={serverId} />
-              <CreateChannelForm serverId={serverId} />
-            </div>
+            <ChannelList serverId={serverId} />
           </aside>
         </Panel>
 

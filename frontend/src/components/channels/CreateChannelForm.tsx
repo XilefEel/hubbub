@@ -4,7 +4,13 @@ import { pb } from "../../lib/pocketbase";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { queryKeys } from "../../lib/querykeys";
 
-export function CreateChannelForm({ serverId }: { serverId: string }) {
+export function CreateChannelForm({
+  serverId,
+  onSuccess,
+}: {
+  serverId: string;
+  onSuccess?: () => void;
+}) {
   const { isOwner } = useCurrentMembership(serverId);
 
   const [name, setName] = useState("");
@@ -23,41 +29,43 @@ export function CreateChannelForm({ serverId }: { serverId: string }) {
         queryKey: queryKeys.channels.list(serverId),
       });
       setName("");
+      onSuccess?.();
     } catch (err) {
       console.error(err);
       setError("Failed to create channel");
     }
   }
 
-  if (isOwner)
-    return (
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Channel name"
-          className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
-        />
+  if (!isOwner) return null;
 
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as "text" | "voice")}
-          className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
-        >
-          <option value="text">Text</option>
-          <option value="voice">Voice</option>
-        </select>
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
+      <select
+        value={type}
+        onChange={(e) => setType(e.target.value as "text" | "voice")}
+        className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
+      >
+        <option value="text">Text</option>
+        <option value="voice">Voice</option>
+      </select>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Channel name"
+        className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
+      />
 
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
+      <div className="flex justify-end gap-2">
         <button
           type="submit"
-          className="rounded-lg bg-teal-500 px-3 py-1 text-white"
+          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white"
         >
           Create channel
         </button>
-      </form>
-    );
-
-  return null;
+      </div>
+    </form>
+  );
 }

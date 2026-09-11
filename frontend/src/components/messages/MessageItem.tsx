@@ -44,9 +44,7 @@ export function MessageItem({
   };
 
   const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this message?")) {
-      deleteMutation.mutate(message.id);
-    }
+    deleteMutation.mutate(message.id);
   };
 
   const isOwner = message.user === currentUserId;
