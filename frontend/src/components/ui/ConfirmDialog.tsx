@@ -25,7 +25,7 @@ export function ConfirmDialog({
 
         <AlertDialog.Content
           className={cn(
-            "fixed w-full max-w-sm rounded-xl p-4 shadow-lg transition duration-200",
+            "fixed w-full max-w-sm rounded-xl p-4 shadow-lg",
             "top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
             "border border-zinc-200",
             "bg-white",
