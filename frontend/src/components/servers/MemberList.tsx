@@ -10,6 +10,7 @@ import {
 } from "../../hooks/useServerMembers";
 import { pb } from "../../lib/pocketbase";
 import type { ServerMember } from "../../lib/types";
+import { MemberContextMenu } from "../ui/MemberContextMenu";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const { data: members, isLoading, error } = useServerMembers(serverId);
@@ -114,76 +115,51 @@ function MemberListItem({
 
   const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
 
-  return (
-    <li
-      className={cn(
-        "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50",
-        !isOnline && "opacity-70 hover:opacity-100",
-      )}
-    >
-      <div
-        className={cn(
-          "size-6 rounded-full bg-teal-100",
-          !isOnline && "bg-zinc-100",
-        )}
-      />
+  const handlePromote = () =>
+    updateRoleMutation.mutate({ membershipId: member.id, role: "admin" });
 
-      <span
+  const handleDemote = () =>
+    updateRoleMutation.mutate({ membershipId: member.id, role: "member" });
+
+  const handleBan = () => banMemberMutation.mutate(member.id);
+
+  return (
+    <MemberContextMenu
+      member={member}
+      isOwner={isOwner}
+      isSelf={isSelf}
+      isPending={isPending}
+      onPromote={handlePromote}
+      onDemote={handleDemote}
+      onBan={handleBan}
+    >
+      <li
         className={cn(
-          isSelf && "font-semibold",
-          member.role === "owner" && "text-teal-500",
-          member.role === "admin" && "text-purple-500",
+          "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50",
+          !isOnline && "opacity-70 hover:opacity-100",
         )}
       >
-        {member.expand?.user?.name || "Unknown User"}{" "}
+        <div
+          className={cn(
+            "size-6 rounded-full bg-teal-100",
+            !isOnline && "bg-zinc-100",
+          )}
+        />
+
+        <span
+          className={cn(
+            isSelf && "font-semibold",
+            member.role === "owner" && "text-teal-500",
+            member.role === "admin" && "text-purple-500",
+          )}
+        >
+          {member.expand?.user?.name || "Unknown User"}{" "}
+        </span>
+
+        {member.role === "owner" && <Crown className="size-4 text-teal-500" />}
+
         {isSelf && <span className="text-xs text-zinc-400">(You)</span>}
-      </span>
-
-      {member.role === "owner" && <Crown className="size-4 text-teal-500" />}
-
-      {isOwner && !isSelf && (
-        <div className="flex gap-2 text-xs">
-          {member.role === "member" && (
-            <button
-              disabled={isPending}
-              onClick={() =>
-                updateRoleMutation.mutate({
-                  membershipId: member.id,
-                  role: "admin",
-                })
-              }
-              className="text-blue-500 hover:underline disabled:opacity-50"
-            >
-              Promote
-            </button>
-          )}
-
-          {member.role === "admin" && (
-            <button
-              disabled={isPending}
-              onClick={() =>
-                updateRoleMutation.mutate({
-                  membershipId: member.id,
-                  role: "member",
-                })
-              }
-              className="text-yellow-600 hover:underline disabled:opacity-50"
-            >
-              Demote
-            </button>
-          )}
-
-          {member.role !== "owner" && (
-            <button
-              disabled={isPending}
-              onClick={() => banMemberMutation.mutate(member.id)}
-              className="text-red-500 hover:underline disabled:opacity-50"
-            >
-              Ban
-            </button>
-          )}
-        </div>
-      )}
-    </li>
+      </li>
+    </MemberContextMenu>
   );
 }

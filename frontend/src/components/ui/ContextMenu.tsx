@@ -5,13 +5,17 @@ import type { LucideIcon } from "lucide-react";
 export function BaseContextMenu({
   children,
   content,
+  disabled = false,
 }: {
   children: React.ReactNode;
   content: React.ReactNode;
+  disabled?: boolean;
 }) {
   return (
     <RadixContextMenu.Root>
-      <RadixContextMenu.Trigger asChild>{children}</RadixContextMenu.Trigger>
+      <RadixContextMenu.Trigger disabled={disabled} asChild>
+        {children}
+      </RadixContextMenu.Trigger>
 
       <RadixContextMenu.Portal>
         <RadixContextMenu.Content
