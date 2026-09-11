@@ -4,6 +4,7 @@ import "./index.css";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 const router = createRouter({ routeTree });
 const queryClient = new QueryClient();
@@ -16,8 +17,10 @@ declare module "@tanstack/react-router" {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <Tooltip.Provider delayDuration={300}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </Tooltip.Provider>
   </StrictMode>,
 );

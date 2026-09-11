@@ -3,6 +3,7 @@ import { ArrowUp, Plus, Upload, X } from "lucide-react";
 import { FilePreview } from "./FilePreview";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import type { Message } from "../../lib/types";
+import { Tooltip } from "../ui/Tooltip";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_FILES = 10;
@@ -107,6 +108,7 @@ export function MessageInput({
               {replyingTo.expand?.user?.name ?? "Unknown"}
             </span>
           </span>
+
           <button
             onClick={onCancelReply}
             className="text-zinc-400 hover:text-red-500"
@@ -126,13 +128,15 @@ export function MessageInput({
             multiple
           />
 
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:cursor-pointer hover:text-zinc-500"
-          >
-            <Plus className="size-5 shrink-0" />
-          </button>
+          <Tooltip content="Attach File">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:cursor-pointer hover:text-zinc-500"
+            >
+              <Plus className="size-5 shrink-0" />
+            </button>
+          </Tooltip>
 
           <input
             value={content}

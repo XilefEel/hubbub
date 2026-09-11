@@ -1,6 +1,7 @@
 import { Pencil, Reply, Trash } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { Tooltip } from "../ui/Tooltip";
 
 export function MessageActions({
   isPending,
@@ -18,31 +19,37 @@ export function MessageActions({
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
-    <div className="ml-auto hidden items-center gap-2 px-2 group-hover:flex">
-      <button
-        onClick={onReply}
-        className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
-      >
-        <Reply className="size-4 shrink-0" />
-      </button>
+    <div className="ml-auto flex items-center gap-2 px-2 opacity-0 group-hover:opacity-100">
+      <Tooltip content="Reply">
+        <button
+          onClick={onReply}
+          className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+        >
+          <Reply className="size-4 shrink-0" />
+        </button>
+      </Tooltip>
 
       {isOwner && (
         <>
-          <button
-            disabled={isPending}
-            onClick={onEdit}
-            className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
-          >
-            <Pencil className="size-4 shrink-0" />
-          </button>
+          <Tooltip content="Edit">
+            <button
+              disabled={isPending}
+              onClick={onEdit}
+              className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+            >
+              <Pencil className="size-4 shrink-0" />
+            </button>
+          </Tooltip>
 
-          <button
-            disabled={isPending}
-            onClick={() => setConfirmOpen(true)}
-            className="text-zinc-400 hover:text-red-500 disabled:opacity-50"
-          >
-            <Trash className="size-4 shrink-0" />
-          </button>
+          <Tooltip content="Delete">
+            <button
+              disabled={isPending}
+              onClick={() => setConfirmOpen(true)}
+              className="text-zinc-400 hover:text-red-500 disabled:opacity-50"
+            >
+              <Trash className="size-4 shrink-0" />
+            </button>
+          </Tooltip>
         </>
       )}
 

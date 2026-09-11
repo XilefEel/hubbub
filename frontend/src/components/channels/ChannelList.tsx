@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Dialog } from "../ui/Dialog";
 import { CreateChannelForm } from "./CreateChannelForm";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
+import { Tooltip } from "../ui/Tooltip";
 
 export function ChannelList({ serverId }: { serverId: string }) {
   const { data: channel, isLoading, error } = useChannels(serverId);
@@ -23,12 +24,14 @@ export function ChannelList({ serverId }: { serverId: string }) {
         <h2 className="text-sm">Channels</h2>
 
         {isOwner && (
-          <button
-            onClick={() => setConfirmOpen(true)}
-            className="text-sm hover:text-teal-500 hover:underline"
-          >
-            <Plus className="size-3 shrink-0" />
-          </button>
+          <Tooltip content="Create Channel">
+            <button
+              onClick={() => setConfirmOpen(true)}
+              className="text-sm hover:text-teal-500 hover:underline"
+            >
+              <Plus className="size-3 shrink-0" />
+            </button>
+          </Tooltip>
         )}
       </div>
 
