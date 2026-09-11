@@ -104,7 +104,7 @@ export function useMessages(channelId: string) {
         },
         {
           filter: `channel = "${channelId}"`,
-          expand: "user",
+          expand: "user,replyTo,replyTo.user",
         },
       )
       .then((fn) => {
