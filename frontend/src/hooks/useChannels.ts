@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import type { Channel } from "../lib/types";
 import { queryKeys } from "../lib/querykeys";
@@ -21,5 +21,28 @@ export function useChannelDetail(channelId: string) {
     queryKey: queryKeys.channels.detail(channelId),
     queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
     enabled: !!channelId,
+  });
+}
+
+export function useCreateChannel(serverId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      name,
+      type,
+    }: {
+      name: string;
+      type: "text" | "voice";
+    }) => {
+      return await pb
+        .collection("channels")
+        .create<Channel>({ name, server: serverId, type });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.list(serverId),
+      });
+    },
   });
 }

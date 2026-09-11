@@ -1,24 +1,25 @@
 import { useState } from "react";
-import { pb } from "../../lib/pocketbase";
 import { useNavigate } from "@tanstack/react-router";
+import { useLogin } from "../../hooks/useAuth";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const login = useLogin();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError("");
 
-    try {
-      await pb.collection("users").authWithPassword(email, password);
-      navigate({ to: "/" });
-    } catch {
-      setError("Invalid email or password");
-    }
+    login.mutate(
+      { email, password },
+      {
+        onSuccess: () => {
+          navigate({ to: "/" });
+        },
+      },
+    );
   };
 
   return (
@@ -39,7 +40,9 @@ export function LoginForm() {
         className="rounded border px-3 py-2"
       />
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {login.isError && (
+        <p className="text-sm text-red-500">{login.error.message}</p>
+      )}
 
       <button
         type="submit"

@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { pb } from "../../lib/pocketbase";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
-import { queryKeys } from "../../lib/querykeys";
+import { useCreateChannel } from "../../hooks/useChannels";
 
 export function CreateChannelForm({
   serverId,
@@ -15,26 +13,23 @@ export function CreateChannelForm({
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"text" | "voice">("text");
-  const [error, setError] = useState("");
-  const queryClient = useQueryClient();
 
-  async function handleSubmit(e: React.SubmitEvent) {
+  const createChannel = useCreateChannel(serverId);
+
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!isOwner) return;
-    setError("");
 
-    try {
-      await pb.collection("channels").create({ name, server: serverId, type });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.list(serverId),
-      });
-      setName("");
-      onSuccess?.();
-    } catch (err) {
-      console.error(err);
-      setError("Failed to create channel");
-    }
-  }
+    createChannel.mutate(
+      { name, type },
+      {
+        onSuccess: () => {
+          setName("");
+          onSuccess?.();
+        },
+      },
+    );
+  };
 
   if (!isOwner) return null;
 
@@ -56,7 +51,9 @@ export function CreateChannelForm({
         className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
       />
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {createChannel.isError && (
+        <p className="text-sm text-red-500">{createChannel.error.message}</p>
+      )}
 
       <div className="flex justify-end gap-2">
         <button

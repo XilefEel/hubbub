@@ -1,39 +1,23 @@
 import { useState } from "react";
-import { pb } from "../../lib/pocketbase";
 import { useNavigate } from "@tanstack/react-router";
+import { useSignup } from "../../hooks/useAuth";
 
 export function SignupForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const signup = useSignup();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError("");
 
-    if (password !== passwordConfirm) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    try {
-      await pb.collection("users").create({
-        name: username,
-        email,
-        password,
-        passwordConfirm,
-      });
-
-      await pb.collection("users").authWithPassword(email, password);
-      navigate({ to: "/" });
-    } catch (err) {
-      console.error(err);
-      setError("Signup failed");
-    }
+    signup.mutate(
+      { username, email, password, passwordConfirm },
+      { onSuccess: () => navigate({ to: "/" }) },
+    );
   };
 
   return (
@@ -69,7 +53,9 @@ export function SignupForm() {
         className="rounded border px-3 py-2"
       />
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {signup.isError && (
+        <p className="text-sm text-red-500">{signup.error.message}</p>
+      )}
 
       <button
         type="submit"

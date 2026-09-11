@@ -7,7 +7,6 @@ export const queryKeys = {
     list: (serverId: string) => ["server_members", serverId] as const,
   },
   channels: {
-    all: ["channels"] as const,
     list: (serverId: string) => ["channels", serverId] as const,
     detail: (channelId: string) => ["channels", "detail", channelId] as const,
   },

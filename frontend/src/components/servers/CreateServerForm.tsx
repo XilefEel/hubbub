@@ -1,33 +1,21 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { pb } from "../../lib/pocketbase";
-import { queryKeys } from "../../lib/querykeys";
-
-function generateInviteCode() {
-  return Math.random().toString(36).slice(2, 10);
-}
+import { useCreateServer } from "../../hooks/useServers";
 
 export function CreateServerForm() {
   const [name, setName] = useState("");
-  const [error, setError] = useState("");
-  const queryClient = useQueryClient();
+  const createServer = useCreateServer();
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError("");
 
-    try {
-      await pb.collection("servers").create({
-        name,
-        owner: pb.authStore.record?.id,
-        inviteCode: generateInviteCode(),
-      });
-      setName("");
-      queryClient.invalidateQueries({ queryKey: queryKeys.channels.all });
-    } catch (err) {
-      console.error(err);
-      setError("Failed to create server");
-    }
+    createServer.mutate(
+      { name },
+      {
+        onSuccess: () => {
+          setName("");
+        },
+      },
+    );
   };
 
   return (
@@ -39,7 +27,9 @@ export function CreateServerForm() {
         className="rounded border px-3 py-2"
       />
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {createServer.isError && (
+        <p className="text-sm text-red-500">{createServer.error.message}</p>
+      )}
 
       <button
         type="submit"

@@ -1,28 +1,21 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { pb } from "../../lib/pocketbase";
-import { queryKeys } from "../../lib/querykeys";
+import { useJoinServer } from "../../hooks/useServers";
 
 export function JoinServerForm() {
-  const queryClient = useQueryClient();
   const [inviteCode, setInviteCode] = useState("");
-  const [error, setError] = useState("");
+  const joinServer = useJoinServer();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError("");
 
-    try {
-      await pb.send("/api/servers/join", {
-        method: "POST",
-        body: { inviteCode },
-      });
-      setInviteCode("");
-      queryClient.invalidateQueries({ queryKey: queryKeys.channels.all });
-    } catch (err) {
-      console.error(err);
-      setError("Failed to join server");
-    }
+    joinServer.mutate(
+      { inviteCode },
+      {
+        onSuccess: () => {
+          setInviteCode("");
+        },
+      },
+    );
   };
 
   return (
@@ -33,8 +26,6 @@ export function JoinServerForm() {
         placeholder="Invite code"
         className="rounded border px-3 py-2"
       />
-
-      {error && <p className="text-sm text-red-500">{error}</p>}
 
       <button
         type="submit"
