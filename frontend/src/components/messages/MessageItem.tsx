@@ -74,19 +74,19 @@ export function MessageItem({
           ) : (
             <div className="flex items-baseline justify-between">
               <p className="text-sm text-zinc-800">{message.content}</p>
-
-              <MessageActions
-                isPending={isPending}
-                onEdit={startEditing}
-                onDelete={handleDelete}
-                isOwner={isOwner}
-                onReply={handleReply}
-              />
             </div>
           )}
 
           <AttachmentGrid message={message} />
         </div>
+
+        <MessageActions
+          isPending={isPending}
+          onEdit={startEditing}
+          onDelete={handleDelete}
+          isOwner={isOwner}
+          onReply={handleReply}
+        />
       </div>
     );
   }
@@ -112,16 +112,6 @@ export function MessageItem({
           {message.updated !== message.created && (
             <span className="text-[10px] text-zinc-400 italic">(edited)</span>
           )}
-
-          {!isEditing && (
-            <MessageActions
-              isPending={isPending}
-              onEdit={startEditing}
-              onDelete={handleDelete}
-              isOwner={isOwner}
-              onReply={handleReply}
-            />
-          )}
         </div>
 
         {isEditing ? (
@@ -138,6 +128,16 @@ export function MessageItem({
 
         <AttachmentGrid message={message} />
       </div>
+
+      {!isEditing && (
+        <MessageActions
+          isPending={isPending}
+          onEdit={startEditing}
+          onDelete={handleDelete}
+          isOwner={isOwner}
+          onReply={handleReply}
+        />
+      )}
     </div>
   );
 }
