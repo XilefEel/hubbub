@@ -25,10 +25,11 @@ export function BaseContextMenu({
             e.stopPropagation();
           }}
           className={cn(
-            "animate-in fade-in-0 zoom-in-95",
             "z-50 min-w-55 rounded-lg p-2 shadow-lg select-none",
             "bg-white",
             "border border-zinc-200",
+            "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+            "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           )}
         >
           {content}
@@ -59,7 +60,7 @@ export function ContextMenuItem({
       className={cn(
         "flex items-center gap-3 rounded px-2 py-1.5 text-sm transition-colors outline-none",
         "hover:bg-zinc-50",
-        isDelete && "text-red-600 hover:bg-red-300/30",
+        isDelete && "text-red-600 hover:bg-red-50",
         disabled && "pointer-events-none opacity-50",
       )}
       onSelect={() => action()}

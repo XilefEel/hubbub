@@ -1,4 +1,5 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { cn } from "cn";
 
 export function ConfirmDialog({
   open,
@@ -22,7 +23,16 @@ export function ConfirmDialog({
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/40" />
 
-        <AlertDialog.Content className="fixed top-1/2 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200 bg-white p-4 shadow-lg">
+        <AlertDialog.Content
+          className={cn(
+            "fixed w-full max-w-sm rounded-xl p-4 shadow-lg transition duration-200",
+            "top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
+            "border border-zinc-200",
+            "bg-white",
+            "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+            "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+          )}
+        >
           <AlertDialog.Title className="text-lg font-semibold">
             {title}
           </AlertDialog.Title>
