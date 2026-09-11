@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageActions } from "./MessageActions";
 import { MessageEditForm } from "./MessageEditForm";
 import { useEditMessage, useDeleteMessage } from "../../hooks/useMessages";
@@ -21,6 +21,7 @@ export function MessageItem({
 
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
+  const editContainerRef = useRef<HTMLDivElement>(null);
 
   const editMutation = useEditMessage(() => setIsEditing(false));
   const deleteMutation = useDeleteMessage();
@@ -53,6 +54,23 @@ export function MessageItem({
   const isOwner = message.user === currentUserId;
   const isPending = editMutation.isPending || deleteMutation.isPending;
 
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        editContainerRef.current &&
+        !editContainerRef.current.contains(e.target as Node)
+      ) {
+        setIsEditing(false);
+        setEditContent(message.content);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isEditing, message.content]);
+
   if (!showHeader) {
     return (
       <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
@@ -64,13 +82,15 @@ export function MessageItem({
           )}
 
           {isEditing ? (
-            <MessageEditForm
-              value={editContent}
-              onChange={setEditContent}
-              onSubmit={handleEditSubmit}
-              onKeyDown={handleKeyDown}
-              disabled={isPending}
-            />
+            <div ref={editContainerRef}>
+              <MessageEditForm
+                value={editContent}
+                onChange={setEditContent}
+                onSubmit={handleEditSubmit}
+                onKeyDown={handleKeyDown}
+                disabled={isPending}
+              />
+            </div>
           ) : (
             <div className="flex items-baseline justify-between">
               <p className="text-sm text-zinc-800">{message.content}</p>
@@ -115,13 +135,15 @@ export function MessageItem({
         </div>
 
         {isEditing ? (
-          <MessageEditForm
-            value={editContent}
-            onChange={setEditContent}
-            onSubmit={handleEditSubmit}
-            onKeyDown={handleKeyDown}
-            disabled={isPending}
-          />
+          <div ref={editContainerRef}>
+            <MessageEditForm
+              value={editContent}
+              onChange={setEditContent}
+              onSubmit={handleEditSubmit}
+              onKeyDown={handleKeyDown}
+              disabled={isPending}
+            />
+          </div>
         ) : (
           <p className="text-sm text-zinc-800">{message.content}</p>
         )}

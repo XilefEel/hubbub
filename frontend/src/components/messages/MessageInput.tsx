@@ -146,6 +146,7 @@ export function MessageInput({
             }}
             placeholder="Type a message..."
             className="w-full rounded-xl border border-zinc-200 px-12 py-2 outline-none focus:outline-none"
+            autoFocus
           />
 
           <button
