@@ -6,13 +6,16 @@ import { pb } from "../../lib/pocketbase";
 import type { Message } from "../../lib/types";
 import { formatMessageDate } from "../../lib/utils";
 import { AttachmentGrid } from "./AttachmentGrid";
+import { ReplyReference } from "./ReplyReference";
 
 export function MessageItem({
   message,
   showHeader = true,
+  onReply,
 }: {
   message: Message;
   showHeader?: boolean;
+  onReply: (message: Message) => void;
 }) {
   const currentUserId = pb.authStore.record?.id;
 
@@ -43,9 +46,9 @@ export function MessageItem({
     setEditContent(message.content);
   };
 
-  const handleDelete = () => {
-    deleteMutation.mutate(message.id);
-  };
+  const handleDelete = () => deleteMutation.mutate(message.id);
+
+  const handleReply = () => onReply(message);
 
   const isOwner = message.user === currentUserId;
   const isPending = editMutation.isPending || deleteMutation.isPending;
@@ -56,6 +59,10 @@ export function MessageItem({
         <div className="w-10 shrink-0" />
 
         <div className="flex flex-1 flex-col">
+          {message.expand?.replyTo && (
+            <ReplyReference replyTo={message.expand.replyTo} />
+          )}
+
           {isEditing ? (
             <MessageEditForm
               value={editContent}
@@ -68,13 +75,13 @@ export function MessageItem({
             <div className="flex items-baseline justify-between">
               <p className="text-sm text-zinc-800">{message.content}</p>
 
-              {isOwner && (
-                <MessageActions
-                  isPending={isPending}
-                  onEdit={startEditing}
-                  onDelete={handleDelete}
-                />
-              )}
+              <MessageActions
+                isPending={isPending}
+                onEdit={startEditing}
+                onDelete={handleDelete}
+                isOwner={isOwner}
+                onReply={handleReply}
+              />
             </div>
           )}
 
@@ -89,6 +96,10 @@ export function MessageItem({
       <div className="size-10 shrink-0 rounded-full bg-teal-100" />
 
       <div className="flex flex-1 flex-col">
+        {message.expand?.replyTo && (
+          <ReplyReference replyTo={message.expand.replyTo} />
+        )}
+
         <div className="flex items-baseline gap-2">
           <span className="text-sm font-semibold">
             {message.expand?.user?.name || "Unknown User"}
@@ -102,11 +113,13 @@ export function MessageItem({
             <span className="text-[10px] text-zinc-400 italic">(edited)</span>
           )}
 
-          {isOwner && !isEditing && (
+          {!isEditing && (
             <MessageActions
               isPending={isPending}
               onEdit={startEditing}
               onDelete={handleDelete}
+              isOwner={isOwner}
+              onReply={handleReply}
             />
           )}
         </div>

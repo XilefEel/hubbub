@@ -1,16 +1,21 @@
 import { useRef, useState, useCallback } from "react";
-import { ArrowUp, Plus, Upload } from "lucide-react";
+import { ArrowUp, Plus, Upload, X } from "lucide-react";
 import { FilePreview } from "./FilePreview";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import type { Message } from "../../lib/types";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_FILES = 10;
 
 export function MessageInput({
+  replyingTo,
+  onCancelReply,
   onSubmit,
   onTyping,
   isSending,
 }: {
+  replyingTo: Message | null;
+  onCancelReply: () => void;
   onSubmit: (content: string, files: File[]) => void;
   onTyping: () => void;
   isSending: boolean;
@@ -91,6 +96,23 @@ export function MessageInput({
               onRemove={() => handleRemoveFile(index)}
             />
           ))}
+        </div>
+      )}
+
+      {replyingTo && (
+        <div className="flex items-center justify-between rounded-t-xl bg-zinc-50 px-3 py-1.5 text-sm text-zinc-500">
+          <span>
+            Replying to{" "}
+            <span className="font-medium">
+              {replyingTo.expand?.user?.name ?? "Unknown"}
+            </span>
+          </span>
+          <button
+            onClick={onCancelReply}
+            className="text-zinc-400 hover:text-red-500"
+          >
+            <X className="size-4 shrink-0" />
+          </button>
         </div>
       )}
 

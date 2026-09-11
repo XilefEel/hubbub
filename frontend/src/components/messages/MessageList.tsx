@@ -20,9 +20,11 @@ function isSameGroup(
 export function MessageList({
   messages,
   channelId,
+  onReply,
 }: {
   messages: Message[] | undefined;
   channelId: string;
+  onReply: (message: Message) => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +53,7 @@ export function MessageList({
               key={message.id}
               message={message}
               showHeader={showHeader}
+              onReply={onReply}
             />
           );
         })

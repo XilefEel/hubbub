@@ -7,6 +7,8 @@ import { Volume2, Hash } from "lucide-react";
 import { useChannelDetail } from "../hooks/useChannels";
 import { MessageInput } from "../components/messages/MessageInput";
 import { MessageList } from "../components/messages/MessageList";
+import { useState } from "react";
+import type { Message } from "../lib/types";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -38,6 +40,8 @@ function ChannelPage() {
     )
     .filter(Boolean);
 
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+
   if (channelLoading) return <p className="p-8">Loading channel...</p>;
 
   if (channelError)
@@ -64,14 +68,23 @@ function ChannelPage() {
         </p>
       )}
 
-      <MessageList messages={messages} channelId={channelId} />
+      <MessageList
+        messages={messages}
+        channelId={channelId}
+        onReply={setReplyingTo}
+      />
 
       <TypingIndicator typingNames={typingNames} />
 
       <MessageInput
-        onSubmit={(content, files) =>
-          sendMessage.mutate({ content, channelId, files })
-        }
+        replyingTo={replyingTo}
+        onCancelReply={() => setReplyingTo(null)}
+        onSubmit={(content, files) => {
+          sendMessage.mutate(
+            { content, channelId, files, replyTo: replyingTo?.id },
+            { onSuccess: () => setReplyingTo(null) },
+          );
+        }}
         onTyping={sendTyping}
         isSending={sendMessage.isPending}
       />

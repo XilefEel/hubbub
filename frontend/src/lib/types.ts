@@ -40,8 +40,10 @@ export type Message = RecordModel & {
   content: string;
   channel: string; // channel id
   user: string; // user id
+  replyTo?: string; // message id
   attachments?: string[];
   expand?: {
     user?: User;
+    replyTo?: Message;
   };
 };
