@@ -1,7 +1,11 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { pb } from "../lib/pocketbase";
+import type { ServerMember } from "../lib/types";
 
-export function useTypingIndicator(channelId: string) {
+export function useTypingIndicator(
+  channelId: string,
+  members: ServerMember[] | undefined,
+) {
   const [typingUserIds, setTypingUserIds] = useState<string[]>([]);
 
   const timeoutsRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -64,5 +68,14 @@ export function useTypingIndicator(channelId: string) {
     );
   }, [channelId]);
 
-  return { typingUserIds, sendTyping };
+  const typingNames = useMemo(
+    () =>
+      typingUserIds.map(
+        (id) =>
+          members?.find((m) => m.user === id)?.expand?.user?.name || "Someone",
+      ),
+    [typingUserIds, members],
+  );
+
+  return { typingNames, sendTyping };
 }

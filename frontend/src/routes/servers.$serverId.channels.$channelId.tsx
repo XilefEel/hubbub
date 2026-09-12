@@ -42,15 +42,16 @@ function ChannelPage() {
     toggle(reactions, messageId, emoji);
   };
 
-  const { typingUserIds, sendTyping } = useTypingIndicator(channelId);
+  const { typingNames, sendTyping } = useTypingIndicator(channelId, members);
+
   const sendMessage = useSendMessage();
 
-  const typingNames = typingUserIds
-    .map(
-      (id) =>
-        members?.find((m) => m.user === id)?.expand?.user?.name || "Someone",
-    )
-    .filter(Boolean);
+  const handleSendMessage = (content: string, files: File[]) => {
+    sendMessage.mutate(
+      { content, channelId, files, replyTo: replyingTo?.id },
+      { onSuccess: () => setReplyingTo(null) },
+    );
+  };
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
@@ -95,12 +96,7 @@ function ChannelPage() {
       <MessageInput
         replyingTo={replyingTo}
         onCancelReply={() => setReplyingTo(null)}
-        onSubmit={(content, files) => {
-          sendMessage.mutate(
-            { content, channelId, files, replyTo: replyingTo?.id },
-            { onSuccess: () => setReplyingTo(null) },
-          );
-        }}
+        onSubmit={handleSendMessage}
         onTyping={sendTyping}
         isSending={sendMessage.isPending}
       />

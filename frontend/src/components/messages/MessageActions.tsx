@@ -44,7 +44,10 @@ export function MessageActions({
       </button>
 
       <Tooltip content="Reply">
-        <button onClick={onReply} className="hover:opacity-70">
+        <button
+          onClick={onReply}
+          className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+        >
           <Reply className="size-4 shrink-0" />
         </button>
       </Tooltip>
