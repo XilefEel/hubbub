@@ -2,10 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useServers } from "../../hooks/useServers";
 
 export function ServerList() {
-  const { data: servers, isLoading, error } = useServers();
+  const { data: servers, isLoading, isError, error } = useServers();
 
   if (isLoading) return <p>Loading servers...</p>;
-  if (error) return <p className="text-red-500">Failed to load servers</p>;
+
+  if (isError)
+    return (
+      <p className="text-red-500">Failed to load servers: {error.message}</p>
+    );
 
   return (
     <ul className="flex flex-col gap-2">

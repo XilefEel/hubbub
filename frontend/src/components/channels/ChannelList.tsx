@@ -8,18 +8,22 @@ import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { Tooltip } from "../ui/Tooltip";
 
 export function ChannelList({ serverId }: { serverId: string }) {
-  const { data: channel, isLoading, error } = useChannels(serverId);
+  const { data: channel, isLoading, isError, error } = useChannels(serverId);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { isOwner } = useCurrentMembership(serverId);
 
   if (isLoading)
     return <p className="text-sm text-zinc-500">Loading channels...</p>;
 
-  if (error)
-    return <p className="text-sm text-red-500">Failed to load channels</p>;
+  if (isError)
+    return (
+      <p className="text-sm text-red-500">
+        Failed to load channels: {error.message}
+      </p>
+    );
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between text-zinc-500">
         <h2 className="text-sm">Channels</h2>
 
@@ -65,6 +69,6 @@ export function ChannelList({ serverId }: { serverId: string }) {
           onSuccess={() => setConfirmOpen(false)}
         />
       </Dialog>
-    </>
+    </div>
   );
 }

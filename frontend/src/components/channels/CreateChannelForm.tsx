@@ -38,7 +38,7 @@ export function CreateChannelForm({
       <select
         value={type}
         onChange={(e) => setType(e.target.value as "text" | "voice")}
-        className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
+        className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
       >
         <option value="text">Text</option>
         <option value="voice">Voice</option>
@@ -48,7 +48,7 @@ export function CreateChannelForm({
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Channel name"
-        className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
+        className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
       />
 
       {createChannel.isError && (

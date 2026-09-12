@@ -20,13 +20,16 @@ function ChannelPage() {
   const {
     data: channel,
     isLoading: channelLoading,
+    isError: channelIsError,
     error: channelError,
   } = useChannelDetail(channelId);
 
   const { data: members } = useServerMembers(serverId);
+
   const {
     data: messages,
     isLoading: messagesLoading,
+    isError: messagesIsError,
     error: messagesError,
   } = useMessages(channelId);
 
@@ -44,9 +47,11 @@ function ChannelPage() {
 
   if (channelLoading) return <p className="p-8">Loading channel...</p>;
 
-  if (channelError)
+  if (channelIsError)
     return (
-      <p className="p-8 text-red-500">Channel not found or access denied</p>
+      <p className="p-8 text-red-500">
+        Channel not found or access denied: {channelError.message}
+      </p>
     );
 
   return (
@@ -62,7 +67,7 @@ function ChannelPage() {
 
       {messagesLoading && <p>Loading messages...</p>}
 
-      {messagesError && (
+      {messagesIsError && (
         <p className="text-red-500">
           Error loading messages: {messagesError.message}
         </p>

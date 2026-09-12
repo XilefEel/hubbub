@@ -13,7 +13,12 @@ import type { ServerMember } from "../../lib/types";
 import { MemberContextMenu } from "../ui/MemberContextMenu";
 
 export function MemberList({ serverId }: { serverId: string }) {
-  const { data: members, isLoading, error } = useServerMembers(serverId);
+  const {
+    data: members,
+    isLoading,
+    isError,
+    error,
+  } = useServerMembers(serverId);
   const { isOwner } = useCurrentMembership(serverId);
   const { onlineUserIds } = usePresence();
 
@@ -34,8 +39,12 @@ export function MemberList({ serverId }: { serverId: string }) {
   if (isLoading)
     return <p className="text-sm text-zinc-500">Loading members...</p>;
 
-  if (error)
-    return <p className="text-sm text-red-500">Failed to load members</p>;
+  if (isError)
+    return (
+      <p className="text-sm text-red-500">
+        Failed to load members: {error.message}
+      </p>
+    );
 
   return (
     <div className="flex flex-col gap-4">

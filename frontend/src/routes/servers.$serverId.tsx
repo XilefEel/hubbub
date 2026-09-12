@@ -16,7 +16,7 @@ export const Route = createFileRoute("/servers/$serverId")({
 
 function ServerPage() {
   const { serverId } = Route.useParams();
-  const { data: server, isLoading, error } = useServerDetail(serverId);
+  const { data: server, isLoading, isError, error } = useServerDetail(serverId);
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: "hubbub-layout",
@@ -24,7 +24,11 @@ function ServerPage() {
   });
 
   if (isLoading) return <p>Loading server...</p>;
-  if (error) return <p className="text-red-500">Failed to load server</p>;
+
+  if (isError)
+    return (
+      <p className="text-red-500">Failed to load server: {error.message}</p>
+    );
 
   return (
     <div className="flex h-screen">
