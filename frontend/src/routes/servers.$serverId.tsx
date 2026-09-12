@@ -31,7 +31,7 @@ function ServerPage() {
     );
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-full">
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel id="channels-sidebar" minSize="15%">
           <aside className="flex h-full flex-col gap-4 p-4">

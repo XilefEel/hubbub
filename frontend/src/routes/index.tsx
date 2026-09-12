@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
 import { CreateServerForm } from "../components/servers/CreateServerForm";
 import { JoinServerForm } from "../components/servers/JoinServerForm";
-import { ServerList } from "../components/servers/ServerList";
 import { useAuth } from "../hooks/useAuth";
 
 export const Route = createFileRoute("/")({
@@ -14,7 +13,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex h-full flex-col gap-6 overflow-y-auto p-8">
       <div>
         <p>Welcome back {user?.name}</p>
         <p>Email: {user?.email}</p>
@@ -32,7 +31,6 @@ function HomePage() {
 
       <CreateServerForm />
       <JoinServerForm />
-      <ServerList />
     </div>
   );
 }
