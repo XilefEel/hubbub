@@ -47,3 +47,12 @@ export type Message = RecordModel & {
     replyTo?: Message;
   };
 };
+
+export type Reaction = RecordModel & {
+  message: string; // message id
+  user: string; // user id
+  emoji: string;
+  expand?: {
+    user?: User;
+  };
+};

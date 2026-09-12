@@ -13,4 +13,7 @@ export const queryKeys = {
   messages: {
     list: (channelId: string) => ["messages", channelId] as const,
   },
+  reactions: {
+    list: (channelId: string) => ["reactions", channelId] as const,
+  },
 };
