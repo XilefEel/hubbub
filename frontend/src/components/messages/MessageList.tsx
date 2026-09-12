@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { MessageItem } from "./MessageItem";
-import type { Message } from "../../lib/types";
+import type { Message, Reaction } from "../../lib/types";
 
 function isSameGroup(
   prev: Message | undefined,
@@ -21,16 +21,31 @@ export function MessageList({
   messages,
   channelId,
   onReply,
+  onToggleReaction,
+  reactions,
 }: {
   messages: Message[] | undefined;
   channelId: string;
   onReply: (message: Message) => void;
+  onToggleReaction: (messageId: string, emoji: string) => void;
+  reactions: Reaction[] | undefined;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
+
+  const reactionsByMessage = useMemo(() => {
+    const map = new Map<string, Reaction[]>();
+
+    for (const r of reactions ?? []) {
+      const existing = map.get(r.message) ?? [];
+      existing.push(r);
+      map.set(r.message, existing);
+    }
+    return map;
+  }, [reactions]);
 
   useEffect(() => {
     if (!messages || messages.length === 0) return;
@@ -54,6 +69,8 @@ export function MessageList({
               message={message}
               showHeader={showHeader}
               onReply={onReply}
+              onToggleReaction={onToggleReaction}
+              reactions={reactionsByMessage.get(message.id) ?? []}
             />
           );
         })

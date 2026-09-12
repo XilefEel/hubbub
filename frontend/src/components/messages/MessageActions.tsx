@@ -9,17 +9,40 @@ export function MessageActions({
   onDelete,
   isOwner,
   onReply,
+  onToggleReaction,
 }: {
   isPending: boolean;
   onEdit: () => void;
   onDelete: () => void;
   isOwner: boolean;
   onReply: () => void;
+  onToggleReaction: (emoji: string) => void;
 }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
     <div className="ml-auto flex items-center gap-2 px-2 opacity-0 group-hover:opacity-100">
+      <button
+        onClick={() => onToggleReaction("👍")}
+        className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+      >
+        👍
+      </button>
+
+      <button
+        onClick={() => onToggleReaction("❤️")}
+        className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+      >
+        ❤️
+      </button>
+
+      <button
+        onClick={() => onToggleReaction("😂")}
+        className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+      >
+        😂
+      </button>
+
       <Tooltip content="Reply">
         <button
           onClick={onReply}

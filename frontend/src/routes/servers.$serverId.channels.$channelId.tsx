@@ -9,6 +9,7 @@ import { MessageInput } from "../components/messages/MessageInput";
 import { MessageList } from "../components/messages/MessageList";
 import { useState } from "react";
 import type { Message } from "../lib/types";
+import { useReactions, useToggleReaction } from "../hooks/useReactions";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -32,6 +33,15 @@ function ChannelPage() {
     isError: messagesIsError,
     error: messagesError,
   } = useMessages(channelId);
+
+  const { data: reactions } = useReactions(channelId);
+
+  const { toggle } = useToggleReaction();
+
+  const handleToggleReaction = (messageId: string, emoji: string) => {
+    if (!reactions) return;
+    toggle(reactions, messageId, emoji);
+  };
 
   const { typingUserIds, sendTyping } = useTypingIndicator(channelId);
   const sendMessage = useSendMessage();
@@ -77,6 +87,8 @@ function ChannelPage() {
         messages={messages}
         channelId={channelId}
         onReply={setReplyingTo}
+        onToggleReaction={handleToggleReaction}
+        reactions={reactions}
       />
 
       <TypingIndicator typingNames={typingNames} />

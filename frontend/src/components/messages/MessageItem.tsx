@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MessageActions } from "./MessageActions";
 import { MessageEditForm } from "./MessageEditForm";
 import { useEditMessage, useDeleteMessage } from "../../hooks/useMessages";
 import { pb } from "../../lib/pocketbase";
-import type { Message } from "../../lib/types";
+import type { Message, Reaction } from "../../lib/types";
 import { formatMessageDate } from "../../lib/utils";
 import { AttachmentGrid } from "./AttachmentGrid";
 import { ReplyReference } from "./ReplyReference";
@@ -13,10 +13,14 @@ export function MessageItem({
   message,
   showHeader = true,
   onReply,
+  onToggleReaction,
+  reactions,
 }: {
   message: Message;
   showHeader?: boolean;
   onReply: (message: Message) => void;
+  onToggleReaction: (messageId: string, emoji: string) => void;
+  reactions: Reaction[];
 }) {
   const currentUserId = pb.authStore.record?.id;
 
@@ -52,8 +56,22 @@ export function MessageItem({
 
   const handleReply = () => onReply(message);
 
+  const handleToggleReaction = (emoji: string) => {
+    onToggleReaction(message.id, emoji);
+  };
+
   const isOwner = message.user === currentUserId;
   const isPending = editMutation.isPending || deleteMutation.isPending;
+
+  const groupedReactions = useMemo(() => {
+    const map = new Map<string, Reaction[]>();
+    for (const r of reactions) {
+      const list = map.get(r.emoji) ?? [];
+      list.push(r);
+      map.set(r.emoji, list);
+    }
+    return [...map.entries()];
+  }, [reactions]);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -106,6 +124,22 @@ export function MessageItem({
             )}
 
             <AttachmentGrid message={message} />
+
+            <div className="flex items-center justify-between">
+              {groupedReactions.length > 0 && (
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {groupedReactions.map(([emoji, list]) => (
+                    <button
+                      key={emoji}
+                      onClick={() => handleToggleReaction(emoji)}
+                      className="rounded-full bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100"
+                    >
+                      {emoji} {list.length}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <MessageActions
@@ -114,6 +148,7 @@ export function MessageItem({
             onDelete={handleDelete}
             isOwner={isOwner}
             onReply={handleReply}
+            onToggleReaction={handleToggleReaction}
           />
         </div>
       </MessageContextMenu>
@@ -165,6 +200,22 @@ export function MessageItem({
           )}
 
           <AttachmentGrid message={message} />
+
+          <div className="flex items-center justify-between">
+            {groupedReactions.length > 0 && (
+              <div className="mt-1 flex flex-wrap gap-1">
+                {groupedReactions.map(([emoji, list]) => (
+                  <button
+                    key={emoji}
+                    onClick={() => handleToggleReaction(emoji)}
+                    className="rounded-full bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100"
+                  >
+                    {emoji} {list.length}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {!isEditing && (
@@ -174,6 +225,7 @@ export function MessageItem({
             onDelete={handleDelete}
             isOwner={isOwner}
             onReply={handleReply}
+            onToggleReaction={handleToggleReaction}
           />
         )}
       </div>
