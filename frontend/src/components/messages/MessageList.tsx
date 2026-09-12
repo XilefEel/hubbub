@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { MessageItem } from "./MessageItem";
 import type { Message, Reaction } from "../../lib/types";
+import { groupReactionsByMessage } from "../../lib/utils";
 
 function isSameGroup(
   prev: Message | undefined,
@@ -36,16 +37,10 @@ export function MessageList({
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
-  const reactionsByMessage = useMemo(() => {
-    const map = new Map<string, Reaction[]>();
-
-    for (const r of reactions ?? []) {
-      const existing = map.get(r.message) ?? [];
-      existing.push(r);
-      map.set(r.message, existing);
-    }
-    return map;
-  }, [reactions]);
+  const reactionsByMessage = useMemo(
+    () => groupReactionsByMessage(reactions),
+    [reactions],
+  );
 
   useEffect(() => {
     if (!messages || messages.length === 0) return;

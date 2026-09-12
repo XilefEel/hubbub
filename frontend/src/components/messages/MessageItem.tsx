@@ -4,10 +4,11 @@ import { MessageEditForm } from "./MessageEditForm";
 import { useEditMessage, useDeleteMessage } from "../../hooks/useMessages";
 import { pb } from "../../lib/pocketbase";
 import type { Message, Reaction } from "../../lib/types";
-import { formatMessageDate } from "../../lib/utils";
+import { formatMessageDate, groupReactionsByEmoji } from "../../lib/utils";
 import { AttachmentGrid } from "./AttachmentGrid";
 import { ReplyReference } from "./ReplyReference";
 import { MessageContextMenu } from "../ui/MessageContextMenu";
+import { cn } from "cn";
 
 export function MessageItem({
   message,
@@ -63,15 +64,10 @@ export function MessageItem({
   const isOwner = message.user === currentUserId;
   const isPending = editMutation.isPending || deleteMutation.isPending;
 
-  const groupedReactions = useMemo(() => {
-    const map = new Map<string, Reaction[]>();
-    for (const r of reactions) {
-      const list = map.get(r.emoji) ?? [];
-      list.push(r);
-      map.set(r.emoji, list);
-    }
-    return [...map.entries()];
-  }, [reactions]);
+  const groupedReactions = useMemo(
+    () => groupReactionsByEmoji(reactions, currentUserId),
+    [reactions, currentUserId],
+  );
 
   useEffect(() => {
     if (!isEditing) return;
@@ -128,13 +124,17 @@ export function MessageItem({
             <div className="flex items-center justify-between">
               {groupedReactions.length > 0 && (
                 <div className="mt-1 flex flex-wrap gap-1">
-                  {groupedReactions.map(([emoji, list]) => (
+                  {groupedReactions.map(({ emoji, count, reactedByMe }) => (
                     <button
                       key={emoji}
                       onClick={() => handleToggleReaction(emoji)}
-                      className="rounded-full bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100"
+                      className={cn(
+                        "rounded-full border border-transparent bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100",
+                        reactedByMe &&
+                          "border-teal-200 bg-teal-50 hover:bg-teal-100/50",
+                      )}
                     >
-                      {emoji} {list.length}
+                      {emoji} {count}
                     </button>
                   ))}
                 </div>
@@ -204,13 +204,17 @@ export function MessageItem({
           <div className="flex items-center justify-between">
             {groupedReactions.length > 0 && (
               <div className="mt-1 flex flex-wrap gap-1">
-                {groupedReactions.map(([emoji, list]) => (
+                {groupedReactions.map(({ emoji, count, reactedByMe }) => (
                   <button
                     key={emoji}
                     onClick={() => handleToggleReaction(emoji)}
-                    className="rounded-full bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100"
+                    className={cn(
+                      "rounded-full border border-transparent bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100",
+                      reactedByMe &&
+                        "border-teal-200 bg-teal-50 hover:bg-teal-100/50",
+                    )}
                   >
-                    {emoji} {list.length}
+                    {emoji} {count}
                   </button>
                 ))}
               </div>

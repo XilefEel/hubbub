@@ -24,30 +24,27 @@ export function MessageActions({
     <div className="ml-auto flex items-center gap-2 px-2 opacity-0 group-hover:opacity-100">
       <button
         onClick={() => onToggleReaction("👍")}
-        className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+        className="hover:opacity-70"
       >
         👍
       </button>
 
       <button
         onClick={() => onToggleReaction("❤️")}
-        className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+        className="hover:opacity-70"
       >
         ❤️
       </button>
 
       <button
         onClick={() => onToggleReaction("😂")}
-        className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
+        className="hover:opacity-70"
       >
         😂
       </button>
 
       <Tooltip content="Reply">
-        <button
-          onClick={onReply}
-          className="text-zinc-400 hover:text-zinc-600 disabled:opacity-50"
-        >
+        <button onClick={onReply} className="hover:opacity-70">
           <Reply className="size-4 shrink-0" />
         </button>
       </Tooltip>

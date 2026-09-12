@@ -35,7 +35,6 @@ function ChannelPage() {
   } = useMessages(channelId);
 
   const { data: reactions } = useReactions(channelId);
-
   const { toggle } = useToggleReaction();
 
   const handleToggleReaction = (messageId: string, emoji: string) => {
