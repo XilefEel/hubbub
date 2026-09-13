@@ -12,6 +12,12 @@ type ModalStore = {
   openDeleteMessageModal: (messageId: string) => void;
   closeDeleteMessageModal: () => void;
 
+  isDeleteChannelOpen: boolean;
+  deleteChannelId: string | null;
+  deleteChannelServerId: string | null;
+  openDeleteChannelModal: (serverId: string, channelId: string) => void;
+  closeDeleteChannelModal: () => void;
+
   isDeleteServerOpen: boolean;
   deleteServerId: string | null;
   openDeleteServerModal: (serverId: string) => void;
@@ -32,6 +38,23 @@ export const useModalStore = create<ModalStore>((set) => ({
     set({ isDeleteMessageOpen: true, deleteMessageId: messageId }),
   closeDeleteMessageModal: () =>
     set({ isDeleteMessageOpen: false, deleteMessageId: null }),
+
+  isDeleteChannelOpen: false,
+  deleteChannelId: null,
+  deleteChannelServerId: null,
+  openDeleteChannelModal: (serverId, channelId) => {
+    set({
+      isDeleteChannelOpen: true,
+      deleteChannelServerId: serverId,
+      deleteChannelId: channelId,
+    });
+  },
+  closeDeleteChannelModal: () =>
+    set({
+      isDeleteChannelOpen: false,
+      deleteChannelServerId: null,
+      deleteChannelId: null,
+    }),
 
   isDeleteServerOpen: false,
   deleteServerId: null,
@@ -58,6 +81,17 @@ export const useDeleteMessageModal = () =>
       messageId: s.deleteMessageId,
       openModal: s.openDeleteMessageModal,
       closeModal: s.closeDeleteMessageModal,
+    })),
+  );
+
+export const useDeleteChannelModal = () =>
+  useModalStore(
+    useShallow((s) => ({
+      isOpen: s.isDeleteChannelOpen,
+      channelId: s.deleteChannelId,
+      serverId: s.deleteChannelServerId,
+      openModal: s.openDeleteChannelModal,
+      closeModal: s.closeDeleteChannelModal,
     })),
   );
 

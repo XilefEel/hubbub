@@ -46,3 +46,23 @@ export function useCreateChannel(serverId: string) {
     },
   });
 }
+
+export function useDeleteChannel() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      channelId,
+    }: {
+      serverId: string;
+      channelId: string;
+    }) => {
+      return await pb.collection("channels").delete(channelId);
+    },
+    onSuccess: (_data, { serverId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.list(serverId),
+      });
+    },
+  });
+}
