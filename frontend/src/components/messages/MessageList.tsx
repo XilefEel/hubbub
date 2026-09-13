@@ -1,19 +1,20 @@
 import { useEffect, useMemo, useRef } from "react";
 import { MessageItem } from "./MessageItem";
-import type { Message } from "../../lib/types";
+import type { Channel, Message } from "../../lib/types";
 import { groupReactionsByMessage, isSameGroup } from "../../lib/utils";
 import { useReactions } from "../../hooks/useReactions";
+import { Hash } from "lucide-react";
 
 export function MessageList({
   messages,
-  channelId,
+  channel,
   onReply,
 }: {
   messages: Message[] | undefined;
-  channelId: string;
+  channel: Channel;
   onReply: (message: Message) => void;
 }) {
-  const { data: reactions } = useReactions(channelId);
+  const { data: reactions } = useReactions(channel.id);
 
   const reactionsByMessage = useMemo(
     () => groupReactionsByMessage(reactions),
@@ -22,9 +23,8 @@ export function MessageList({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = () =>
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
-  };
 
   useEffect(() => {
     if (!messages || messages.length === 0) return;
@@ -33,7 +33,7 @@ export function MessageList({
 
   useEffect(() => {
     scrollToBottom();
-  }, [channelId]);
+  }, [channel.id]);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
@@ -53,7 +53,16 @@ export function MessageList({
           );
         })
       ) : (
-        <p>No messages yet. Start the conversation!</p>
+        <div className="flex flex-1 flex-col justify-end gap-2 pb-8">
+          <div className="flex size-16 items-center justify-center rounded-full bg-zinc-100">
+            <Hash className="size-10 text-zinc-700" />
+          </div>
+
+          <h1 className="text-3xl font-bold">Welcome to #{channel.name}!</h1>
+          <p className="text-sm text-zinc-500">
+            This is the start of the #{channel.name} channel.
+          </p>
+        </div>
       )}
 
       <div ref={messagesEndRef} />

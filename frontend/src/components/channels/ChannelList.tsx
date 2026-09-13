@@ -51,14 +51,16 @@ export function ChannelList({ serverId }: { serverId: string }) {
                 to="/servers/$serverId/channels/$channelId"
                 params={{ serverId, channelId: c.id }}
                 className="flex w-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-50"
-                activeProps={{ className: "bg-zinc-100 font-medium" }}
+                activeProps={{
+                  className: "bg-zinc-100 hover:bg-zinc-100 font-medium",
+                }}
               >
                 {c.type === "voice" ? (
                   <Volume2 className="size-4 shrink-0" />
                 ) : (
                   <Hash className="size-4 shrink-0" />
                 )}
-                {c.name}
+                <span>{c.name}</span>
               </Link>
             </li>
           </ChannelContextMenu>

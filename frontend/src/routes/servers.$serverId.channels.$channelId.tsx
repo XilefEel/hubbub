@@ -48,7 +48,7 @@ function ChannelPage() {
 
   return (
     <div className="flex h-full flex-col p-4">
-      <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+      <h2 className="flex items-center gap-2 border-b border-zinc-200 pb-4 text-xl font-bold">
         {channel?.type === "voice" ? (
           <Volume2 className="size-5 shrink-0" />
         ) : (
@@ -67,7 +67,7 @@ function ChannelPage() {
 
       <MessageList
         messages={messages}
-        channelId={channelId}
+        channel={channel!}
         onReply={setReplyingTo}
       />
 
