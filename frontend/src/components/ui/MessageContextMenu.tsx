@@ -4,22 +4,25 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ui/ContextMenu";
+import { useDeleteMessageModal } from "../../stores/useModalStore";
 
 export function MessageContextMenu({
+  messageId,
   isOwner,
   isPending,
   onReply,
   onEdit,
-  onDelete,
   children,
 }: {
+  messageId: string;
   isOwner: boolean;
   isPending?: boolean;
   onReply: () => void;
   onEdit: () => void;
-  onDelete: () => void;
   children: React.ReactNode;
 }) {
+  const { openModal } = useDeleteMessageModal();
+
   return (
     <BaseContextMenu
       content={
@@ -37,7 +40,7 @@ export function MessageContextMenu({
               <ContextMenuSeparator />
 
               <ContextMenuItem
-                action={onDelete}
+                action={() => openModal(messageId)}
                 Icon={Trash2}
                 label="Delete"
                 isDelete

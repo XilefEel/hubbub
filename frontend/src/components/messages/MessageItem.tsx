@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MessageActions } from "./MessageActions";
 import { MessageEditForm } from "./MessageEditForm";
-import { useEditMessage, useDeleteMessage } from "../../hooks/useMessages";
+import { useEditMessage } from "../../hooks/useMessages";
 import { pb } from "../../lib/pocketbase";
 import type { Message, Reaction } from "../../lib/types";
 import { formatMessageDate, groupReactionsByEmoji } from "../../lib/utils";
@@ -30,7 +30,6 @@ export function MessageItem({
   const editContainerRef = useRef<HTMLDivElement>(null);
 
   const editMutation = useEditMessage(() => setIsEditing(false));
-  const deleteMutation = useDeleteMessage();
 
   const handleEditSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -53,8 +52,6 @@ export function MessageItem({
     setEditContent(message.content);
   };
 
-  const handleDelete = () => deleteMutation.mutate(message.id);
-
   const handleReply = () => onReply(message);
 
   const handleToggleReaction = (emoji: string) => {
@@ -62,7 +59,7 @@ export function MessageItem({
   };
 
   const isOwner = message.user === currentUserId;
-  const isPending = editMutation.isPending || deleteMutation.isPending;
+  const isPending = editMutation.isPending;
 
   const groupedReactions = useMemo(
     () => groupReactionsByEmoji(reactions, currentUserId),
@@ -89,11 +86,11 @@ export function MessageItem({
   if (!showHeader) {
     return (
       <MessageContextMenu
+        messageId={message.id}
         isOwner={isOwner}
         isPending={isPending}
         onReply={handleReply}
         onEdit={startEditing}
-        onDelete={handleDelete}
       >
         <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
           <div className="w-10 shrink-0" />
@@ -143,9 +140,9 @@ export function MessageItem({
           </div>
 
           <MessageActions
+            messageId={message.id}
             isPending={isPending}
             onEdit={startEditing}
-            onDelete={handleDelete}
             isOwner={isOwner}
             onReply={handleReply}
             onToggleReaction={handleToggleReaction}
@@ -157,11 +154,11 @@ export function MessageItem({
 
   return (
     <MessageContextMenu
+      messageId={message.id}
       isOwner={isOwner}
       isPending={isPending}
       onReply={handleReply}
       onEdit={startEditing}
-      onDelete={handleDelete}
     >
       <div className="group mt-2 flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
         <div className="size-10 shrink-0 rounded-full bg-teal-100" />
@@ -224,9 +221,9 @@ export function MessageItem({
 
         {!isEditing && (
           <MessageActions
+            messageId={message.id}
             isPending={isPending}
             onEdit={startEditing}
-            onDelete={handleDelete}
             isOwner={isOwner}
             onReply={handleReply}
             onToggleReaction={handleToggleReaction}

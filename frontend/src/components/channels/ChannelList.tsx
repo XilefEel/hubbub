@@ -1,16 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useChannels } from "../../hooks/useChannels";
 import { Volume2, Hash, Plus } from "lucide-react";
-import { useState } from "react";
-import { Dialog } from "../ui/Dialog";
-import { CreateChannelForm } from "./CreateChannelForm";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { Tooltip } from "../ui/Tooltip";
+import { useCreateChannelModal } from "../../stores/useModalStore";
 
 export function ChannelList({ serverId }: { serverId: string }) {
   const { data: channel, isLoading, isError, error } = useChannels(serverId);
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const { isOwner } = useCurrentMembership(serverId);
+  const { openModal } = useCreateChannelModal();
 
   if (isLoading)
     return <p className="text-sm text-zinc-500">Loading channels...</p>;
@@ -30,7 +28,7 @@ export function ChannelList({ serverId }: { serverId: string }) {
         {isOwner && (
           <Tooltip content="Create Channel">
             <button
-              onClick={() => setConfirmOpen(true)}
+              onClick={() => openModal(serverId)}
               className="text-sm hover:text-teal-500 hover:underline"
             >
               <Plus className="size-3 shrink-0" />
@@ -58,17 +56,6 @@ export function ChannelList({ serverId }: { serverId: string }) {
           </li>
         ))}
       </ul>
-
-      <Dialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        title="Create channel"
-      >
-        <CreateChannelForm
-          serverId={serverId}
-          onSuccess={() => setConfirmOpen(false)}
-        />
-      </Dialog>
     </div>
   );
 }

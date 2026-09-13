@@ -1,24 +1,23 @@
 import { Pencil, Reply, Trash } from "lucide-react";
-import { useState } from "react";
-import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { Tooltip } from "../ui/Tooltip";
+import { useDeleteMessageModal } from "../../stores/useModalStore";
 
 export function MessageActions({
+  messageId,
   isPending,
   onEdit,
-  onDelete,
   isOwner,
   onReply,
   onToggleReaction,
 }: {
+  messageId: string;
   isPending: boolean;
   onEdit: () => void;
-  onDelete: () => void;
   isOwner: boolean;
   onReply: () => void;
   onToggleReaction: (emoji: string) => void;
 }) {
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const { openModal } = useDeleteMessageModal();
 
   return (
     <div className="ml-auto flex items-center gap-2 px-2 opacity-0 group-hover:opacity-100">
@@ -67,7 +66,7 @@ export function MessageActions({
           <Tooltip content="Delete">
             <button
               disabled={isPending}
-              onClick={() => setConfirmOpen(true)}
+              onClick={() => openModal(messageId)}
               className="text-zinc-400 hover:text-red-500 disabled:opacity-50"
             >
               <Trash className="size-4 shrink-0" />
@@ -75,18 +74,6 @@ export function MessageActions({
           </Tooltip>
         </>
       )}
-
-      <ConfirmDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        title="Delete message?"
-        description="This action cannot be undone."
-        isPending={isPending}
-        onConfirm={() => {
-          onDelete();
-          setConfirmOpen(false);
-        }}
-      />
     </div>
   );
 }

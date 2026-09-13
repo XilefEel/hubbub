@@ -5,6 +5,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { GlobalModals } from "./components/modals/GlobalModals";
 
 const router = createRouter({ routeTree });
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")!).render(
     <Tooltip.Provider delayDuration={300}>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+        <GlobalModals />
       </QueryClientProvider>
     </Tooltip.Provider>
   </StrictMode>,
