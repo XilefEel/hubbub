@@ -2,6 +2,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import { useServers } from "../../hooks/useServers";
 import { Home } from "lucide-react";
 import { cn } from "cn";
+import { ServerContextMenu } from "../ui/ServerContextMenu";
 
 export function ServerRail() {
   const { serverId } = useParams({ strict: false });
@@ -31,19 +32,24 @@ export function ServerRail() {
       <div className="w-12 border-t border-zinc-200" />
 
       {servers?.map((server) => (
-        <Link
+        <ServerContextMenu
           key={server.id}
-          to="/servers/$serverId"
-          params={{ serverId: server.id }}
-          className={cn(
-            "flex size-10 items-center justify-center rounded-xl",
-            serverId === server.id
-              ? "bg-teal-500 text-white"
-              : "bg-gray-100 hover:bg-teal-100",
-          )}
+          serverId={server.id}
+          inviteCode={server.inviteCode}
         >
-          {server.name.slice(0, 2).toUpperCase()}
-        </Link>
+          <Link
+            to="/servers/$serverId"
+            params={{ serverId: server.id }}
+            className={cn(
+              "flex size-10 items-center justify-center rounded-xl",
+              serverId === server.id
+                ? "bg-teal-500 text-white"
+                : "bg-gray-100 hover:bg-teal-100",
+            )}
+          >
+            {server.name.slice(0, 2).toUpperCase()}
+          </Link>
+        </ServerContextMenu>
       ))}
     </nav>
   );

@@ -66,3 +66,39 @@ export function useJoinServer() {
     },
   });
 }
+
+export function useLeaveServer() {
+  const queryClient = useQueryClient();
+  const userId = pb.authStore.record?.id;
+
+  return useMutation({
+    mutationFn: async (serverId: string) => {
+      const membership = await pb
+        .collection("server_members")
+        .getFirstListItem(`user="${userId}" && server="${serverId}"`);
+
+      return await pb.collection("server_members").delete(membership.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.servers.list(userId || ""),
+      });
+    },
+  });
+}
+
+export function useDeleteServer() {
+  const queryClient = useQueryClient();
+  const userId = pb.authStore.record?.id;
+
+  return useMutation({
+    mutationFn: async (serverId: string) => {
+      return await pb.collection("servers").delete(serverId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.servers.list(userId || ""),
+      });
+    },
+  });
+}
