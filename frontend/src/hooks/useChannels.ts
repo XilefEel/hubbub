@@ -47,6 +47,30 @@ export function useCreateChannel(serverId: string) {
   });
 }
 
+export function useUpdateChannel() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      channelId,
+      name,
+    }: {
+      channelId: string;
+      name: string;
+    }) => {
+      return await pb.collection("channels").update(channelId, { name });
+    },
+    onSuccess: (_data, { channelId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.detail(channelId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.list(_data.server),
+      });
+    },
+  });
+}
+
 export function useDeleteChannel() {
   const queryClient = useQueryClient();
 

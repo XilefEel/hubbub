@@ -4,27 +4,36 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ui/ContextMenu";
-import { useDeleteChannelModal } from "../../stores/useModalStore";
+import {
+  useDeleteChannelModal,
+  useEditChannelModal,
+} from "../../stores/useModalStore";
+import type { Channel } from "../../lib/types";
 
 export function ChannelContextMenu({
+  channel,
   serverId,
-  channelId,
   isOwner,
   children,
 }: {
+  channel: Channel;
   serverId: string;
-  channelId: string;
   isOwner: boolean;
   children: React.ReactNode;
 }) {
-  const { openModal } = useDeleteChannelModal();
+  const { openModal: openEdit } = useEditChannelModal();
+  const { openModal: openDelete } = useDeleteChannelModal();
 
   return (
     <BaseContextMenu
       disabled={!isOwner}
       content={
         <>
-          <ContextMenuItem action={() => {}} Icon={Edit} label="Edit Channel" />
+          <ContextMenuItem
+            action={() => openEdit(channel.id, channel.name)}
+            Icon={Edit}
+            label="Edit Channel"
+          />
 
           <ContextMenuItem
             action={() => {}}
@@ -35,7 +44,7 @@ export function ChannelContextMenu({
           <ContextMenuSeparator />
 
           <ContextMenuItem
-            action={() => openModal(serverId, channelId)}
+            action={() => openDelete(serverId, channel.id)}
             Icon={Trash}
             label="Delete Channel"
             isDelete

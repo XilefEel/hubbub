@@ -7,6 +7,12 @@ type ModalStore = {
   openCreateChannelModal: (serverId: string) => void;
   closeCreateChannelModal: () => void;
 
+  isEditChannelOpen: boolean;
+  editChannelId: string | null;
+  editChannelName: string | null;
+  openEditChannelModal: (channelId: string, currentName: string) => void;
+  closeEditChannelModal: () => void;
+
   isDeleteMessageOpen: boolean;
   deleteMessageId: string | null;
   openDeleteMessageModal: (messageId: string) => void;
@@ -31,6 +37,22 @@ export const useModalStore = create<ModalStore>((set) => ({
     set({ isCreateChannelOpen: true, createChannelServerId: serverId }),
   closeCreateChannelModal: () =>
     set({ isCreateChannelOpen: false, createChannelServerId: null }),
+
+  isEditChannelOpen: false,
+  editChannelId: null,
+  editChannelName: null,
+  openEditChannelModal: (channelId, currentName) =>
+    set({
+      isEditChannelOpen: true,
+      editChannelId: channelId,
+      editChannelName: currentName,
+    }),
+  closeEditChannelModal: () =>
+    set({
+      isEditChannelOpen: false,
+      editChannelId: null,
+      editChannelName: null,
+    }),
 
   isDeleteMessageOpen: false,
   deleteMessageId: null,
@@ -71,6 +93,17 @@ export const useCreateChannelModal = () =>
       serverId: s.createChannelServerId,
       openModal: s.openCreateChannelModal,
       closeModal: s.closeCreateChannelModal,
+    })),
+  );
+
+export const useEditChannelModal = () =>
+  useModalStore(
+    useShallow((s) => ({
+      isOpen: s.isEditChannelOpen,
+      channelId: s.editChannelId,
+      channelName: s.editChannelName,
+      openModal: s.openEditChannelModal,
+      closeModal: s.closeEditChannelModal,
     })),
   );
 

@@ -42,8 +42,8 @@ export function ChannelList({ serverId }: { serverId: string }) {
         {channel?.map((c) => (
           <ChannelContextMenu
             key={c.id}
+            channel={c}
             serverId={serverId}
-            channelId={c.id}
             isOwner={isOwner}
           >
             <li className="flex items-center justify-between text-sm">
