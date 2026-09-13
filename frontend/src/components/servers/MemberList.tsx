@@ -1,16 +1,9 @@
-import { cn } from "cn";
 import { useState } from "react";
-import { Crown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { usePresence } from "../../hooks/usePresence";
-import {
-  useServerMembers,
-  useUpdateMemberRole,
-  useBanMember,
-} from "../../hooks/useServerMembers";
-import { pb } from "../../lib/pocketbase";
-import type { ServerMember } from "../../lib/types";
-import { MemberContextMenu } from "../ui/MemberContextMenu";
+import { useServerMembers } from "../../hooks/useServerMembers";
+import MemberListItem from "./MemberListItem";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const {
@@ -102,73 +95,5 @@ export function MemberList({ serverId }: { serverId: string }) {
         </div>
       )}
     </div>
-  );
-}
-
-function MemberListItem({
-  member,
-  isOwner,
-  serverId,
-  isOnline,
-}: {
-  member: ServerMember;
-  isOwner: boolean;
-  serverId: string;
-  isOnline: boolean;
-}) {
-  const currentUserId = pb.authStore.record?.id;
-  const isSelf = member.user === currentUserId;
-
-  const updateRoleMutation = useUpdateMemberRole(serverId);
-  const banMemberMutation = useBanMember(serverId);
-
-  const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
-
-  const handlePromote = () =>
-    updateRoleMutation.mutate({ membershipId: member.id, role: "admin" });
-
-  const handleDemote = () =>
-    updateRoleMutation.mutate({ membershipId: member.id, role: "member" });
-
-  const handleBan = () => banMemberMutation.mutate(member.id);
-
-  return (
-    <MemberContextMenu
-      member={member}
-      isOwner={isOwner}
-      isSelf={isSelf}
-      isPending={isPending}
-      onPromote={handlePromote}
-      onDemote={handleDemote}
-      onBan={handleBan}
-    >
-      <li
-        className={cn(
-          "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50",
-          !isOnline && "opacity-70 hover:opacity-100",
-        )}
-      >
-        <div
-          className={cn(
-            "size-6 rounded-full bg-teal-100",
-            !isOnline && "bg-zinc-100",
-          )}
-        />
-
-        <span
-          className={cn(
-            isSelf && "font-semibold",
-            member.role === "owner" && "text-teal-500",
-            member.role === "admin" && "text-purple-500",
-          )}
-        >
-          {member.expand?.user?.name || "Unknown User"}{" "}
-        </span>
-
-        {member.role === "owner" && <Crown className="size-4 text-teal-500" />}
-
-        {isSelf && <span className="text-xs text-zinc-400">(You)</span>}
-      </li>
-    </MemberContextMenu>
   );
 }

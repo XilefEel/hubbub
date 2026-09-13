@@ -2,7 +2,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import { useServers } from "../../hooks/useServers";
 import { Home } from "lucide-react";
 import { cn } from "cn";
-import { ServerContextMenu } from "../ui/ServerContextMenu";
+import { ServerContextMenu } from "../context-menus/ServerContextMenu";
 
 export function ServerRail() {
   const { serverId } = useParams({ strict: false });

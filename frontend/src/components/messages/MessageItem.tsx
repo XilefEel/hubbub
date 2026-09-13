@@ -7,7 +7,7 @@ import type { Message, Reaction } from "../../lib/types";
 import { formatMessageDate, groupReactionsByEmoji } from "../../lib/utils";
 import { AttachmentGrid } from "./AttachmentGrid";
 import { ReplyReference } from "./ReplyReference";
-import { MessageContextMenu } from "../ui/MessageContextMenu";
+import { MessageContextMenu } from "../context-menus/MessageContextMenu";
 import { useToggleReaction } from "../../hooks/useReactions";
 import { ReactionRow } from "./ReactionRow";
 

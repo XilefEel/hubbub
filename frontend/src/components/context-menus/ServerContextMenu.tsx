@@ -4,7 +4,7 @@ import {
   BaseContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
-} from "./ContextMenu";
+} from "../ui/ContextMenu";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 
 export function ServerContextMenu({
@@ -23,9 +23,7 @@ export function ServerContextMenu({
 
   const isPending = leaveServer.isPending || deleteServer.isPending;
 
-  const handleCopyInvite = () => {
-    navigator.clipboard.writeText(inviteCode);
-  };
+  const handleCopyInvite = () => navigator.clipboard.writeText(inviteCode);
 
   return (
     <BaseContextMenu

@@ -5,26 +5,37 @@ import {
   ContextMenuSeparator,
 } from "../ui/ContextMenu";
 import type { ServerMember } from "../../lib/types";
+import {
+  useUpdateMemberRole,
+  useBanMember,
+} from "../../hooks/useServerMembers";
 
 export function MemberContextMenu({
   member,
+  serverId,
   isOwner,
   isSelf,
-  isPending,
-  onPromote,
-  onDemote,
-  onBan,
   children,
 }: {
   member: ServerMember;
+  serverId: string;
   isOwner: boolean;
   isSelf: boolean;
-  isPending?: boolean;
-  onPromote: () => void;
-  onDemote: () => void;
-  onBan: () => void;
   children: React.ReactNode;
 }) {
+  const updateRoleMutation = useUpdateMemberRole(serverId);
+  const banMemberMutation = useBanMember(serverId);
+
+  const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
+
+  const handlePromote = () =>
+    updateRoleMutation.mutate({ membershipId: member.id, role: "admin" });
+
+  const handleDemote = () =>
+    updateRoleMutation.mutate({ membershipId: member.id, role: "member" });
+
+  const handleBan = () => banMemberMutation.mutate(member.id);
+
   return (
     <BaseContextMenu
       disabled={isSelf || !isOwner}
@@ -32,7 +43,7 @@ export function MemberContextMenu({
         <>
           {member.role === "member" && (
             <ContextMenuItem
-              action={onPromote}
+              action={handlePromote}
               Icon={ArrowUpCircle}
               label="Promote to Admin"
               disabled={isPending}
@@ -41,7 +52,7 @@ export function MemberContextMenu({
 
           {member.role === "admin" && (
             <ContextMenuItem
-              action={onDemote}
+              action={handleDemote}
               Icon={ArrowDownCircle}
               label="Demote to Member"
               disabled={isPending}
@@ -52,7 +63,7 @@ export function MemberContextMenu({
             <>
               <ContextMenuSeparator />
               <ContextMenuItem
-                action={onBan}
+                action={handleBan}
                 Icon={ShieldBan}
                 label="Ban"
                 isDelete
