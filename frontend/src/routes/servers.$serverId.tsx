@@ -1,5 +1,4 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useServerDetail } from "../hooks/useServers";
 import {
   Group,
@@ -36,13 +35,6 @@ function ServerPage() {
         <Panel id="channels-sidebar" minSize="15%">
           <aside className="flex h-full flex-col gap-4 p-4">
             <div className="flex flex-col gap-0.5">
-              <Link
-                to="/"
-                className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-700"
-              >
-                <ArrowLeft className="size-3 shrink-0" /> Back to servers
-              </Link>
-
               <h1 className="text-xl font-bold">{server?.name}</h1>
 
               <p className="text-sm text-zinc-500">

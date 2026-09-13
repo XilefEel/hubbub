@@ -16,6 +16,32 @@ export function formatMessageDate(dateString: string) {
   return `${day}/${month}/${year}, ${time}`;
 }
 
+export function isSameGroup(
+  prev: Message | undefined,
+  curr: Message,
+  minutesWindow = 5,
+) {
+  if (!prev) return false;
+  if (prev.user !== curr.user) return false;
+
+  const diffInMinutes =
+    (new Date(curr.created).getTime() - new Date(prev.created).getTime()) /
+    (1000 * 60);
+
+  return diffInMinutes <= minutesWindow;
+}
+
+export function renderTypingText(typingNames: string[]) {
+  if (typingNames.length === 0) return "";
+  if (typingNames.length === 1) return `${typingNames[0]} is typing...`;
+  if (typingNames.length === 2)
+    return `${typingNames[0]} and ${typingNames[1]} are typing...`;
+
+  return `${typingNames[0]}, ${typingNames[1]}, and ${
+    typingNames.length - 2
+  } others are typing...`;
+}
+
 export function getMessageImageUrl(message: Message) {
   if (!message.attachment) return null;
   return pb.files.getURL(message, message.attachment);

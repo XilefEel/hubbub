@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMessages, useSendMessage } from "../hooks/useMessages";
+import { useMessages } from "../hooks/useMessages";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
 import { TypingIndicator } from "../components/messages/TypingIndicator";
@@ -9,7 +9,6 @@ import { MessageInput } from "../components/messages/MessageInput";
 import { MessageList } from "../components/messages/MessageList";
 import { useState } from "react";
 import type { Message } from "../lib/types";
-import { useReactions, useToggleReaction } from "../hooks/useReactions";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -34,24 +33,7 @@ function ChannelPage() {
     error: messagesError,
   } = useMessages(channelId);
 
-  const { data: reactions } = useReactions(channelId);
-  const { toggle } = useToggleReaction();
-
-  const handleToggleReaction = (messageId: string, emoji: string) => {
-    if (!reactions) return;
-    toggle(reactions, messageId, emoji);
-  };
-
   const { typingNames, sendTyping } = useTypingIndicator(channelId, members);
-
-  const sendMessage = useSendMessage();
-
-  const handleSendMessage = (content: string, files: File[]) => {
-    sendMessage.mutate(
-      { content, channelId, files, replyTo: replyingTo?.id },
-      { onSuccess: () => setReplyingTo(null) },
-    );
-  };
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
@@ -87,18 +69,15 @@ function ChannelPage() {
         messages={messages}
         channelId={channelId}
         onReply={setReplyingTo}
-        onToggleReaction={handleToggleReaction}
-        reactions={reactions}
       />
 
       <TypingIndicator typingNames={typingNames} />
 
       <MessageInput
         replyingTo={replyingTo}
-        onCancelReply={() => setReplyingTo(null)}
-        onSubmit={handleSendMessage}
+        channelId={channelId}
         onTyping={sendTyping}
-        isSending={sendMessage.isPending}
+        onCancelReply={() => setReplyingTo(null)}
       />
     </div>
   );

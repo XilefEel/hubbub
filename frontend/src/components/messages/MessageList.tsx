@@ -1,46 +1,30 @@
 import { useEffect, useMemo, useRef } from "react";
 import { MessageItem } from "./MessageItem";
-import type { Message, Reaction } from "../../lib/types";
-import { groupReactionsByMessage } from "../../lib/utils";
-
-function isSameGroup(
-  prev: Message | undefined,
-  curr: Message,
-  minutesWindow = 5,
-) {
-  if (!prev) return false;
-  if (prev.user !== curr.user) return false;
-
-  const diffInMinutes =
-    (new Date(curr.created).getTime() - new Date(prev.created).getTime()) /
-    (1000 * 60);
-
-  return diffInMinutes <= minutesWindow;
-}
+import type { Message } from "../../lib/types";
+import { groupReactionsByMessage, isSameGroup } from "../../lib/utils";
+import { useReactions } from "../../hooks/useReactions";
 
 export function MessageList({
   messages,
   channelId,
   onReply,
-  onToggleReaction,
-  reactions,
 }: {
   messages: Message[] | undefined;
   channelId: string;
   onReply: (message: Message) => void;
-  onToggleReaction: (messageId: string, emoji: string) => void;
-  reactions: Reaction[] | undefined;
 }) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
-  };
+  const { data: reactions } = useReactions(channelId);
 
   const reactionsByMessage = useMemo(
     () => groupReactionsByMessage(reactions),
     [reactions],
   );
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+  };
 
   useEffect(() => {
     if (!messages || messages.length === 0) return;
@@ -62,10 +46,9 @@ export function MessageList({
             <MessageItem
               key={message.id}
               message={message}
+              reactions={reactionsByMessage.get(message.id) ?? []}
               showHeader={showHeader}
               onReply={onReply}
-              onToggleReaction={onToggleReaction}
-              reactions={reactionsByMessage.get(message.id) ?? []}
             />
           );
         })

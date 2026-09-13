@@ -4,22 +4,21 @@ import { FilePreview } from "./FilePreview";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import type { Message } from "../../lib/types";
 import { Tooltip } from "../ui/Tooltip";
+import { useSendMessage } from "../../hooks/useMessages";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_FILES = 10;
 
 export function MessageInput({
   replyingTo,
-  onCancelReply,
-  onSubmit,
+  channelId,
   onTyping,
-  isSending,
+  onCancelReply,
 }: {
   replyingTo: Message | null;
-  onCancelReply: () => void;
-  onSubmit: (content: string, files: File[]) => void;
+  channelId: string;
   onTyping: () => void;
-  isSending: boolean;
+  onCancelReply: () => void;
 }) {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -69,11 +68,17 @@ export function MessageInput({
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const sendMessage = useSendMessage();
+
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!content.trim() && files.length === 0) return;
 
-    onSubmit(content, files);
+    sendMessage.mutate(
+      { content, channelId, files, replyTo: replyingTo?.id },
+      { onSuccess: onCancelReply },
+    );
+
     setContent("");
     setFiles([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -151,7 +156,7 @@ export function MessageInput({
 
           <button
             type="submit"
-            disabled={isSending || content.trim() === ""}
+            disabled={sendMessage.isPending || content.trim() === ""}
             className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed"
           >
             <ArrowUp className="size-5 shrink-0" />

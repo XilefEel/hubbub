@@ -9,19 +9,18 @@ import { AttachmentGrid } from "./AttachmentGrid";
 import { ReplyReference } from "./ReplyReference";
 import { MessageContextMenu } from "../ui/MessageContextMenu";
 import { cn } from "cn";
+import { useToggleReaction } from "../../hooks/useReactions";
 
 export function MessageItem({
   message,
+  reactions,
   showHeader = true,
   onReply,
-  onToggleReaction,
-  reactions,
 }: {
   message: Message;
+  reactions: Reaction[];
   showHeader?: boolean;
   onReply: (message: Message) => void;
-  onToggleReaction: (messageId: string, emoji: string) => void;
-  reactions: Reaction[];
 }) {
   const currentUserId = pb.authStore.record?.id;
 
@@ -54,17 +53,20 @@ export function MessageItem({
 
   const handleReply = () => onReply(message);
 
-  const handleToggleReaction = (emoji: string) => {
-    onToggleReaction(message.id, emoji);
-  };
+  const { toggle } = useToggleReaction();
 
-  const isOwner = message.user === currentUserId;
-  const isPending = editMutation.isPending;
+  const handleToggleReaction = (emoji: string) => {
+    if (!reactions) return;
+    toggle(reactions, message.id, emoji);
+  };
 
   const groupedReactions = useMemo(
     () => groupReactionsByEmoji(reactions, currentUserId),
     [reactions, currentUserId],
   );
+
+  const isOwner = message.user === currentUserId;
+  const isPending = editMutation.isPending;
 
   useEffect(() => {
     if (!isEditing) return;

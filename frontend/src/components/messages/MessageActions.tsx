@@ -5,15 +5,15 @@ import { useDeleteMessageModal } from "../../stores/useModalStore";
 export function MessageActions({
   messageId,
   isPending,
-  onEdit,
   isOwner,
+  onEdit,
   onReply,
   onToggleReaction,
 }: {
   messageId: string;
   isPending: boolean;
-  onEdit: () => void;
   isOwner: boolean;
+  onEdit: () => void;
   onReply: () => void;
   onToggleReaction: (emoji: string) => void;
 }) {
