@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useJoinServer } from "../../hooks/useServers";
 
-export function JoinServerForm() {
+export function JoinServerForm({ onClose }: { onClose: () => void }) {
   const [inviteCode, setInviteCode] = useState("");
   const joinServer = useJoinServer();
 
@@ -13,32 +13,35 @@ export function JoinServerForm() {
       {
         onSuccess: () => {
           setInviteCode("");
+          onClose();
         },
       },
     );
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
       <input
+        autoFocus
         value={inviteCode}
         onChange={(e) => setInviteCode(e.target.value)}
         placeholder="Invite code"
-        className="rounded border px-3 py-2"
+        className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
       />
 
       {joinServer.isError && (
-        <p className="text-sm text-red-500">
-          Failed to join server: {joinServer.error.message}
-        </p>
+        <p className="text-sm text-red-500">{joinServer.error.message}</p>
       )}
 
-      <button
-        type="submit"
-        className="rounded bg-teal-500 px-4 py-2 text-white"
-      >
-        Join server
-      </button>
+      <div className="flex justify-end gap-2">
+        <button
+          type="submit"
+          disabled={joinServer.isPending || inviteCode.trim() === ""}
+          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
+        >
+          Join channel
+        </button>
+      </div>
     </form>
   );
 }

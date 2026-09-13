@@ -1,15 +1,19 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useServers } from "../../hooks/useServers";
-import { Home, Plus } from "lucide-react";
+import { Compass, Home, Plus } from "lucide-react";
 import { cn } from "cn";
 import { ServerContextMenu } from "../context-menus/ServerContextMenu";
 import { Tooltip } from "../ui/Tooltip";
-import { useCreateServerModal } from "../../stores/useModalStore";
+import {
+  useCreateServerModal,
+  useJoinServerModal,
+} from "../../stores/useModalStore";
 
 export function ServerRail() {
   const { serverId } = useParams({ strict: false });
   const { data: servers, isLoading, isError, error } = useServers();
-  const { openModal } = useCreateServerModal();
+  const { openModal: openCreate } = useCreateServerModal();
+  const { openModal: openJoin } = useJoinServerModal();
 
   if (isLoading) return <p>Loading servers...</p>;
 
@@ -59,10 +63,19 @@ export function ServerRail() {
 
       <Tooltip content="Create server" side="right">
         <button
-          onClick={openModal}
-          className="flex size-10 items-center justify-center rounded-xl bg-teal-500 text-white"
+          onClick={openCreate}
+          className="flex size-10 items-center justify-center rounded-xl bg-teal-500 text-white hover:bg-teal-600"
         >
           <Plus className="size-5 shrink-0" />
+        </button>
+      </Tooltip>
+
+      <Tooltip content="Join server" side="right">
+        <button
+          onClick={openJoin}
+          className="flex size-10 items-center justify-center rounded-xl bg-teal-500 text-white hover:bg-teal-600"
+        >
+          <Compass className="size-5 shrink-0" />
         </button>
       </Tooltip>
     </nav>

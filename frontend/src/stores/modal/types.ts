@@ -6,6 +6,12 @@ export type CreateServerSlice = {
   closeCreateServerModal: () => void;
 };
 
+export type JoinServerSlice = {
+  isJoinServerOpen: boolean;
+  openJoinServerModal: () => void;
+  closeJoinServerModal: () => void;
+};
+
 export type CreateChannelSlice = {
   isCreateChannelOpen: boolean;
   createChannelServerId: string | null;
@@ -44,6 +50,7 @@ export type DeleteServerSlice = {
 };
 
 export type ModalStore = CreateServerSlice &
+  JoinServerSlice &
   CreateChannelSlice &
   EditChannelSlice &
   DeleteMessageSlice &

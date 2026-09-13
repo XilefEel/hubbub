@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
-import { JoinServerForm } from "../components/servers/JoinServerForm";
 import { useAuth } from "../hooks/useAuth";
 
 export const Route = createFileRoute("/")({
@@ -27,8 +26,6 @@ function HomePage() {
           Log out
         </button>
       </div>
-
-      <JoinServerForm />
     </div>
   );
 }
