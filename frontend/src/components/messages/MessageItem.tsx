@@ -8,8 +8,8 @@ import { formatMessageDate, groupReactionsByEmoji } from "../../lib/utils";
 import { AttachmentGrid } from "./AttachmentGrid";
 import { ReplyReference } from "./ReplyReference";
 import { MessageContextMenu } from "../ui/MessageContextMenu";
-import { cn } from "cn";
 import { useToggleReaction } from "../../hooks/useReactions";
+import { ReactionRow } from "./ReactionRow";
 
 export function MessageItem({
   message,
@@ -85,75 +85,6 @@ export function MessageItem({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isEditing, message.content]);
 
-  if (!showHeader) {
-    return (
-      <MessageContextMenu
-        messageId={message.id}
-        isOwner={isOwner}
-        isPending={isPending}
-        onReply={handleReply}
-        onEdit={startEditing}
-      >
-        <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
-          <div className="w-10 shrink-0" />
-
-          <div className="flex flex-1 flex-col">
-            {message.expand?.replyTo && (
-              <ReplyReference replyTo={message.expand.replyTo} />
-            )}
-
-            {isEditing ? (
-              <div ref={editContainerRef}>
-                <MessageEditForm
-                  value={editContent}
-                  onChange={setEditContent}
-                  onSubmit={handleEditSubmit}
-                  onKeyDown={handleKeyDown}
-                  disabled={isPending}
-                />
-              </div>
-            ) : (
-              <div className="flex items-baseline justify-between">
-                <p className="text-sm text-zinc-800">{message.content}</p>
-              </div>
-            )}
-
-            <AttachmentGrid message={message} />
-
-            <div className="flex items-center justify-between">
-              {groupedReactions.length > 0 && (
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {groupedReactions.map(({ emoji, count, reactedByMe }) => (
-                    <button
-                      key={emoji}
-                      onClick={() => handleToggleReaction(emoji)}
-                      className={cn(
-                        "rounded-full border border-transparent bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100",
-                        reactedByMe &&
-                          "border-teal-200 bg-teal-50 hover:bg-teal-100/50",
-                      )}
-                    >
-                      {emoji} {count}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <MessageActions
-            messageId={message.id}
-            isPending={isPending}
-            onEdit={startEditing}
-            isOwner={isOwner}
-            onReply={handleReply}
-            onToggleReaction={handleToggleReaction}
-          />
-        </div>
-      </MessageContextMenu>
-    );
-  }
-
   return (
     <MessageContextMenu
       messageId={message.id}
@@ -162,27 +93,35 @@ export function MessageItem({
       onReply={handleReply}
       onEdit={startEditing}
     >
-      <div className="group mt-2 flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
-        <div className="size-10 shrink-0 rounded-full bg-teal-100" />
+      <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
+        {showHeader ? (
+          <div className="size-10 shrink-0 rounded-full bg-teal-100" />
+        ) : (
+          <div className="w-10 shrink-0" />
+        )}
 
         <div className="flex flex-1 flex-col">
           {message.expand?.replyTo && (
             <ReplyReference replyTo={message.expand.replyTo} />
           )}
 
-          <div className="flex items-baseline gap-2">
-            <span className="text-sm font-semibold">
-              {message.expand?.user?.name || "Unknown User"}
-            </span>
+          {showHeader && (
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm font-semibold">
+                {message.expand?.user?.name || "Unknown User"}
+              </span>
 
-            <span className="text-xs text-zinc-400">
-              {formatMessageDate(message.created)}
-            </span>
+              <span className="text-xs text-zinc-400">
+                {formatMessageDate(message.created)}
+              </span>
 
-            {message.updated !== message.created && (
-              <span className="text-[10px] text-zinc-400 italic">(edited)</span>
-            )}
-          </div>
+              {message.updated !== message.created && (
+                <span className="text-[10px] text-zinc-400 italic">
+                  (edited)
+                </span>
+              )}
+            </div>
+          )}
 
           {isEditing ? (
             <div ref={editContainerRef}>
@@ -200,25 +139,10 @@ export function MessageItem({
 
           <AttachmentGrid message={message} />
 
-          <div className="flex items-center justify-between">
-            {groupedReactions.length > 0 && (
-              <div className="mt-1 flex flex-wrap gap-1">
-                {groupedReactions.map(({ emoji, count, reactedByMe }) => (
-                  <button
-                    key={emoji}
-                    onClick={() => handleToggleReaction(emoji)}
-                    className={cn(
-                      "rounded-full border border-transparent bg-zinc-50 px-2 py-1 text-sm hover:bg-zinc-100",
-                      reactedByMe &&
-                        "border-teal-200 bg-teal-50 hover:bg-teal-100/50",
-                    )}
-                  >
-                    {emoji} {count}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <ReactionRow
+            reactions={groupedReactions}
+            onToggle={handleToggleReaction}
+          />
         </div>
 
         {!isEditing && (
