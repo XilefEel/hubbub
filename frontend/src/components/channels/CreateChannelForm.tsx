@@ -45,6 +45,7 @@ export function CreateChannelForm({
       </select>
 
       <input
+        autoFocus
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Channel name"
@@ -58,7 +59,8 @@ export function CreateChannelForm({
       <div className="flex justify-end gap-2">
         <button
           type="submit"
-          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white"
+          disabled={createChannel.isPending || name.trim() === ""}
+          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
         >
           Create channel
         </button>

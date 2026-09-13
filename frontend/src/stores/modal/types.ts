@@ -1,5 +1,11 @@
 import type { StateCreator } from "zustand";
 
+export type CreateServerSlice = {
+  isCreateServerOpen: boolean;
+  openCreateServerModal: () => void;
+  closeCreateServerModal: () => void;
+};
+
 export type CreateChannelSlice = {
   isCreateChannelOpen: boolean;
   createChannelServerId: string | null;
@@ -37,7 +43,8 @@ export type DeleteServerSlice = {
   closeDeleteServerModal: () => void;
 };
 
-export type ModalStore = CreateChannelSlice &
+export type ModalStore = CreateServerSlice &
+  CreateChannelSlice &
   EditChannelSlice &
   DeleteMessageSlice &
   DeleteChannelSlice &

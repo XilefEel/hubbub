@@ -33,14 +33,12 @@ function ServerPage() {
     <div className="flex h-full">
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel id="channels-sidebar" minSize="15%">
-          <aside className="flex h-full flex-col gap-4 p-4">
-            <div className="flex flex-col gap-0.5">
-              <h1 className="text-xl font-bold">{server?.name}</h1>
+          <aside className="flex h-full flex-col gap-1 p-4">
+            <h1 className="text-xl font-bold">{server?.name}</h1>
 
-              <p className="text-sm text-zinc-500">
-                Invite code: {server?.inviteCode}
-              </p>
-            </div>
+            <p className="mb-4 text-sm text-zinc-500">
+              Invite code: {server?.inviteCode}
+            </p>
 
             <ChannelList serverId={serverId} />
           </aside>
@@ -48,7 +46,7 @@ function ServerPage() {
 
         <Separator className="w-px cursor-col-resize border-l border-zinc-200 hover:border-teal-400" />
 
-        <Panel id="main-content" minSize="15%">
+        <Panel id="main-content" minSize="50%">
           <main className="h-full">
             <Outlet />
           </main>

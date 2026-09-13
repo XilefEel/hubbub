@@ -1,12 +1,15 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useServers } from "../../hooks/useServers";
-import { Home } from "lucide-react";
+import { Home, Plus } from "lucide-react";
 import { cn } from "cn";
 import { ServerContextMenu } from "../context-menus/ServerContextMenu";
+import { Tooltip } from "../ui/Tooltip";
+import { useCreateServerModal } from "../../stores/useModalStore";
 
 export function ServerRail() {
   const { serverId } = useParams({ strict: false });
   const { data: servers, isLoading, isError, error } = useServers();
+  const { openModal } = useCreateServerModal();
 
   if (isLoading) return <p>Loading servers...</p>;
 
@@ -51,6 +54,17 @@ export function ServerRail() {
           </Link>
         </ServerContextMenu>
       ))}
+
+      <div className="mt-auto w-12 border-t border-zinc-200" />
+
+      <Tooltip content="Create server" side="right">
+        <button
+          onClick={openModal}
+          className="flex size-10 items-center justify-center rounded-xl bg-teal-500 text-white"
+        >
+          <Plus className="size-5 shrink-0" />
+        </button>
+      </Tooltip>
     </nav>
   );
 }

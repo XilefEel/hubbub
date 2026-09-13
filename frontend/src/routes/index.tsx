@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { pb } from "../lib/pocketbase";
-import { CreateServerForm } from "../components/servers/CreateServerForm";
 import { JoinServerForm } from "../components/servers/JoinServerForm";
 import { useAuth } from "../hooks/useAuth";
 
@@ -29,7 +28,6 @@ function HomePage() {
         </button>
       </div>
 
-      <CreateServerForm />
       <JoinServerForm />
     </div>
   );

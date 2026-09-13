@@ -1,19 +1,30 @@
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
+import type { ModalStore } from "./modal/types";
 import { createChannelSlice } from "./modal/createChannelSlice";
 import { editChannelSlice } from "./modal/editChannelSlice";
 import { deleteMessageSlice } from "./modal/deleteMessageSlice";
 import { deleteChannelSlice } from "./modal/deleteChannelSlice";
 import { deleteServerSlice } from "./modal/deleteServerSlice";
-import type { ModalStore } from "./modal/types";
+import { createServerSlice } from "./modal/createServerSlice";
 
 export const useModalStore = create<ModalStore>((...a) => ({
+  ...createServerSlice(...a),
   ...createChannelSlice(...a),
   ...editChannelSlice(...a),
   ...deleteMessageSlice(...a),
   ...deleteChannelSlice(...a),
   ...deleteServerSlice(...a),
 }));
+
+export const useCreateServerModal = () =>
+  useModalStore(
+    useShallow((s) => ({
+      isOpen: s.isCreateServerOpen,
+      openModal: s.openCreateServerModal,
+      closeModal: s.closeCreateServerModal,
+    })),
+  );
 
 export const useCreateChannelModal = () =>
   useModalStore(

@@ -30,10 +30,10 @@ export function EditChannelForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
       <input
+        autoFocus
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Channel name"
-        autoFocus
         disabled={editChannel.isPending}
         className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
       />
@@ -45,7 +45,9 @@ export function EditChannelForm({
       <div className="flex justify-end gap-2">
         <button
           type="submit"
-          disabled={editChannel.isPending}
+          disabled={
+            editChannel.isPending || name.trim() === "" || name === channelName
+          }
           className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
         >
           {editChannel.isPending ? "Saving..." : "Save"}
