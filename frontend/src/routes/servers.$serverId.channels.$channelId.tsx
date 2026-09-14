@@ -3,12 +3,12 @@ import { useMessages } from "../hooks/useMessages";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useServerMembers } from "../hooks/useServerMembers";
 import { TypingIndicator } from "../components/messages/TypingIndicator";
-import { Volume2, Hash } from "lucide-react";
 import { useChannelDetail } from "../hooks/useChannels";
 import { MessageInput } from "../components/messages/MessageInput";
 import { MessageList } from "../components/messages/MessageList";
 import { useState } from "react";
 import type { Message } from "../lib/types";
+import ChannelHeader from "../components/channels/ChannelHeader";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -48,14 +48,7 @@ function ChannelPage() {
 
   return (
     <div className="flex h-full flex-col p-4">
-      <h2 className="flex items-center gap-2 border-b border-zinc-200 pb-4 text-xl font-bold">
-        {channel?.type === "voice" ? (
-          <Volume2 className="size-5 shrink-0" />
-        ) : (
-          <Hash className="size-5 shrink-0" />
-        )}
-        {channel?.name}
-      </h2>
+      <ChannelHeader channel={channel} />
 
       {messagesLoading && <p>Loading messages...</p>}
 

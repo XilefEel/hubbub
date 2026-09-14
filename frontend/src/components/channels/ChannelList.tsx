@@ -30,7 +30,7 @@ export function ChannelList({ serverId }: { serverId: string }) {
           <Tooltip content="Create Channel">
             <button
               onClick={() => openModal(serverId)}
-              className="text-sm hover:text-teal-500 hover:underline"
+              className="text-sm hover:text-teal-500"
             >
               <Plus className="size-3 shrink-0" />
             </button>

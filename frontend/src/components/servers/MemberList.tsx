@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { PanelRight, Search } from "lucide-react";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { usePresence } from "../../hooks/usePresence";
 import { useServerMembers } from "../../hooks/useServerMembers";
 import MemberListItem from "./MemberListItem";
+import { Tooltip } from "../ui/Tooltip";
+import { useUIActions } from "../../stores/useUIStore";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const {
@@ -14,6 +16,7 @@ export function MemberList({ serverId }: { serverId: string }) {
   } = useServerMembers(serverId);
   const { isOwner } = useCurrentMembership(serverId);
   const { onlineUserIds } = usePresence();
+  const { toggleRightbar } = useUIActions();
 
   const [query, setQuery] = useState("");
 
@@ -41,15 +44,24 @@ export function MemberList({ serverId }: { serverId: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative">
-        <Search className="absolute top-1/2 left-2 size-4 shrink-0 -translate-y-1/2 text-zinc-400" />
+      <div className="relative flex items-center gap-4">
+        <Tooltip content="Toggle Rightbar">
+          <button
+            onClick={toggleRightbar}
+            className="text-sm hover:text-teal-500"
+          >
+            <PanelRight className="size-4 shrink-0" />
+          </button>
+        </Tooltip>
+
+        <Search className="absolute top-1/2 left-10 size-4 shrink-0 -translate-y-1/2 text-zinc-400" />
 
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search members..."
-          className="w-full rounded border border-zinc-200 py-1 pr-2 pl-8 text-sm outline-none focus:outline-none"
+          className="w-full rounded-lg border border-zinc-200 py-1 pr-2 pl-8 text-sm outline-none focus:outline-none"
         />
       </div>
 
