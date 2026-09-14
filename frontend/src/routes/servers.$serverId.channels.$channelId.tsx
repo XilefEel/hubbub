@@ -47,7 +47,7 @@ function ChannelPage() {
     );
 
   return (
-    <div className="flex h-full flex-col p-4">
+    <div className="mx-auto flex h-full max-w-3xl flex-col p-4">
       <ChannelHeader channel={channel} />
 
       {messagesLoading && <p>Loading messages...</p>}

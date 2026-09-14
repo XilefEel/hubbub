@@ -2,39 +2,39 @@ import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
 type UIStore = {
-  isLeftbarOpen: boolean | null;
-  isRightbarOpen: boolean | null;
+  isChannelsOpen: boolean | null;
+  isMembersOpen: boolean | null;
 
-  setIsLeftbarOpen: (isOpen: boolean | null) => void;
-  setIsRightbarOpen: (isOpen: boolean | null) => void;
+  setIsChannelsOpen: (isOpen: boolean | null) => void;
+  setIsMembersOpen: (isOpen: boolean | null) => void;
 
-  toggleLeftbar: () => void;
-  toggleRightbar: () => void;
+  toggleChannels: () => void;
+  toggleMembers: () => void;
 };
 
 const useUIStore = create<UIStore>((set) => ({
-  isLeftbarOpen: null,
-  isRightbarOpen: null,
+  isChannelsOpen: null,
+  isMembersOpen: null,
 
-  setIsLeftbarOpen: (isOpen) => set({ isLeftbarOpen: isOpen }),
-  setIsRightbarOpen: (isOpen) => set({ isRightbarOpen: isOpen }),
+  setIsChannelsOpen: (isOpen) => set({ isChannelsOpen: isOpen }),
+  setIsMembersOpen: (isOpen) => set({ isMembersOpen: isOpen }),
 
-  toggleLeftbar: () =>
-    set((state) => ({ isLeftbarOpen: !state.isLeftbarOpen })),
-  toggleRightbar: () =>
-    set((state) => ({ isRightbarOpen: !state.isRightbarOpen })),
+  toggleChannels: () =>
+    set((state) => ({ isChannelsOpen: !state.isChannelsOpen })),
+  toggleMembers: () =>
+    set((state) => ({ isMembersOpen: !state.isMembersOpen })),
 }));
 
-export const useIsLeftbarOpen = () => useUIStore((s) => s.isLeftbarOpen);
+export const useIsChannelsOpen = () => useUIStore((s) => s.isChannelsOpen);
 
-export const useIsRightbarOpen = () => useUIStore((s) => s.isRightbarOpen);
+export const useIsMembersOpen = () => useUIStore((s) => s.isMembersOpen);
 
 export const useUIActions = () =>
   useUIStore(
     useShallow((s) => ({
-      setIsLeftbarOpen: s.setIsLeftbarOpen,
-      setIsRightbarOpen: s.setIsRightbarOpen,
-      toggleLeftbar: s.toggleLeftbar,
-      toggleRightbar: s.toggleRightbar,
+      setIsChannelsOpen: s.setIsChannelsOpen,
+      setIsMembersOpen: s.setIsMembersOpen,
+      toggleChannels: s.toggleChannels,
+      toggleMembers: s.toggleMembers,
     })),
   );

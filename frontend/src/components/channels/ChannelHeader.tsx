@@ -2,8 +2,8 @@ import { Volume2, Hash, PanelLeft, PanelRight } from "lucide-react";
 import type { Channel } from "../../lib/types";
 import { Tooltip } from "../ui/Tooltip";
 import {
-  useIsLeftbarOpen,
-  useIsRightbarOpen,
+  useIsChannelsOpen,
+  useIsMembersOpen,
   useUIActions,
 } from "../../stores/useUIStore";
 
@@ -12,16 +12,16 @@ export default function ChannelHeader({
 }: {
   channel: Channel | undefined;
 }) {
-  const { toggleLeftbar, toggleRightbar } = useUIActions();
-  const isLeftbarOpen = useIsLeftbarOpen();
-  const isRightbarOpen = useIsRightbarOpen();
+  const { toggleChannels, toggleMembers } = useUIActions();
+  const isChannelsOpen = useIsChannelsOpen();
+  const isMembersOpen = useIsMembersOpen();
 
   return (
     <div className="flex items-center gap-4 border-b border-zinc-200 pb-4">
-      {!isLeftbarOpen && (
-        <Tooltip content="Toggle Leftbar">
+      {!isChannelsOpen && (
+        <Tooltip content="Show Channels">
           <button
-            onClick={toggleLeftbar}
+            onClick={toggleChannels}
             className="text-sm hover:text-teal-500"
           >
             <PanelLeft className="size-4 shrink-0" />
@@ -38,10 +38,10 @@ export default function ChannelHeader({
         {channel?.name}
       </h2>
 
-      {!isRightbarOpen && (
-        <Tooltip content="Toggle Rightbar">
+      {!isMembersOpen && (
+        <Tooltip content="Show Members">
           <button
-            onClick={toggleRightbar}
+            onClick={toggleMembers}
             className="ml-auto text-sm hover:text-teal-500"
           >
             <PanelRight className="size-4 shrink-0" />

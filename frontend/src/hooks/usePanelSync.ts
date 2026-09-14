@@ -1,8 +1,8 @@
 import { useEffect, type RefObject } from "react";
 import type { PanelImperativeHandle, PanelSize } from "react-resizable-panels";
 import {
-  useIsLeftbarOpen,
-  useIsRightbarOpen,
+  useIsChannelsOpen,
+  useIsMembersOpen,
   useUIActions,
 } from "../stores/useUIStore";
 
@@ -13,31 +13,31 @@ export function usePanelSync({
   channelsRef: RefObject<PanelImperativeHandle | null>;
   membersRef: RefObject<PanelImperativeHandle | null>;
 }) {
-  const isLeftbarOpen = useIsLeftbarOpen();
-  const isRightbarOpen = useIsRightbarOpen();
-  const { setIsLeftbarOpen, setIsRightbarOpen } = useUIActions();
+  const isChannelsOpen = useIsChannelsOpen();
+  const isMembersOpen = useIsMembersOpen();
+  const { setIsChannelsOpen, setIsMembersOpen } = useUIActions();
 
-  const handleLeftbarResize = (size: PanelSize) => {
+  const handleChannelsResize = (size: PanelSize) => {
     const isOpen = size.asPercentage !== 0;
-    setIsLeftbarOpen(isOpen);
+    setIsChannelsOpen(isOpen);
   };
 
-  const handleRightbarResize = (size: PanelSize) => {
+  const handleMembersResize = (size: PanelSize) => {
     const isOpen = size.asPercentage !== 0;
-    setIsRightbarOpen(isOpen);
+    setIsMembersOpen(isOpen);
   };
 
   useEffect(() => {
-    if (isLeftbarOpen === null) return;
-    if (isLeftbarOpen) channelsRef.current?.expand();
+    if (isChannelsOpen === null) return;
+    if (isChannelsOpen) channelsRef.current?.expand();
     else channelsRef.current?.collapse();
-  }, [isLeftbarOpen, channelsRef]);
+  }, [isChannelsOpen, channelsRef]);
 
   useEffect(() => {
-    if (isRightbarOpen === null) return;
-    if (isRightbarOpen) membersRef.current?.expand();
+    if (isMembersOpen === null) return;
+    if (isMembersOpen) membersRef.current?.expand();
     else membersRef.current?.collapse();
-  }, [isRightbarOpen, membersRef]);
+  }, [isMembersOpen, membersRef]);
 
-  return { handleLeftbarResize, handleRightbarResize };
+  return { handleChannelsResize, handleMembersResize };
 }

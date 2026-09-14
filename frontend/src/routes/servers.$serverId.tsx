@@ -31,12 +31,12 @@ function ServerPage() {
     storage: localStorage,
   });
 
-  const { handleLeftbarResize, handleRightbarResize } = usePanelSync({
+  const { handleChannelsResize, handleMembersResize } = usePanelSync({
     channelsRef,
     membersRef,
   });
 
-  const { toggleLeftbar } = useUIActions();
+  const { toggleChannels } = useUIActions();
 
   if (isLoading) return <p>Loading server...</p>;
 
@@ -52,16 +52,16 @@ function ServerPage() {
           id="channels-sidebar"
           minSize="15%"
           panelRef={channelsRef}
-          onResize={handleLeftbarResize}
+          onResize={handleChannelsResize}
           collapsible
         >
           <aside className="flex h-full flex-col p-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-bold">{server?.name}</h1>
 
-              <Tooltip content="Toggle Leftbar">
+              <Tooltip content="Hide Channels">
                 <button
-                  onClick={toggleLeftbar}
+                  onClick={toggleChannels}
                   className="text-sm hover:text-teal-500"
                 >
                   <PanelLeft className="size-4 shrink-0" />
@@ -91,7 +91,7 @@ function ServerPage() {
           id="members-sidebar"
           minSize="15%"
           panelRef={membersRef}
-          onResize={handleRightbarResize}
+          onResize={handleMembersResize}
           collapsible
         >
           <aside className="flex h-full flex-col gap-2 p-4">

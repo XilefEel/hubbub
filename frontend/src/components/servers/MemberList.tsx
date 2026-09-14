@@ -16,7 +16,7 @@ export function MemberList({ serverId }: { serverId: string }) {
   } = useServerMembers(serverId);
   const { isOwner } = useCurrentMembership(serverId);
   const { onlineUserIds } = usePresence();
-  const { toggleRightbar } = useUIActions();
+  const { toggleMembers } = useUIActions();
 
   const [query, setQuery] = useState("");
 
@@ -45,9 +45,9 @@ export function MemberList({ serverId }: { serverId: string }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="relative flex items-center gap-4">
-        <Tooltip content="Toggle Rightbar">
+        <Tooltip content="Hide Members">
           <button
-            onClick={toggleRightbar}
+            onClick={toggleMembers}
             className="text-sm hover:text-teal-500"
           >
             <PanelRight className="size-4 shrink-0" />
