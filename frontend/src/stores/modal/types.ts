@@ -49,12 +49,19 @@ export type DeleteServerSlice = {
   closeDeleteServerModal: () => void;
 };
 
+export type SettingsSlice = {
+  isSettingsOpen: boolean;
+  openSettingsModal: () => void;
+  closeSettingsModal: () => void;
+};
+
 export type ModalStore = CreateServerSlice &
   JoinServerSlice &
   CreateChannelSlice &
   EditChannelSlice &
   DeleteMessageSlice &
   DeleteChannelSlice &
-  DeleteServerSlice;
+  DeleteServerSlice &
+  SettingsSlice;
 
 export type Slice<T> = StateCreator<ModalStore, [], [], T>;

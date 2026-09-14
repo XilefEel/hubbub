@@ -1,12 +1,13 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { useServers } from "../../hooks/useServers";
-import { Compass, Home, Plus } from "lucide-react";
+import { Compass, Home, Plus, Settings } from "lucide-react";
 import { cn } from "cn";
 import { ServerContextMenu } from "../context-menus/ServerContextMenu";
 import { Tooltip } from "../ui/Tooltip";
 import {
   useCreateServerModal,
   useJoinServerModal,
+  useSettingsModal,
 } from "../../stores/useModalStore";
 
 export function ServerRail() {
@@ -14,6 +15,7 @@ export function ServerRail() {
   const { data: servers, isLoading, isError, error } = useServers();
   const { openModal: openCreate } = useCreateServerModal();
   const { openModal: openJoin } = useJoinServerModal();
+  const { openModal: openSettings } = useSettingsModal();
 
   if (isLoading) return <p>Loading servers...</p>;
 
@@ -27,10 +29,10 @@ export function ServerRail() {
       <Link
         to="/"
         className={cn(
-          "flex size-10 items-center justify-center rounded-xl",
+          "flex size-10 shrink-0 items-center justify-center rounded-xl",
           serverId === undefined
             ? "bg-teal-500 text-white"
-            : "bg-gray-100 hover:bg-teal-100",
+            : "bg-zinc-100 hover:bg-zinc-200",
         )}
       >
         <Home className="size-5 shrink-0" />
@@ -38,33 +40,35 @@ export function ServerRail() {
 
       <div className="w-12 border-t border-zinc-200" />
 
-      {servers?.map((server) => (
-        <ServerContextMenu
-          key={server.id}
-          serverId={server.id}
-          inviteCode={server.inviteCode}
-        >
-          <Link
-            to="/servers/$serverId"
-            params={{ serverId: server.id }}
-            className={cn(
-              "flex size-10 items-center justify-center rounded-xl",
-              serverId === server.id
-                ? "bg-teal-500 text-white"
-                : "bg-gray-100 hover:bg-teal-100",
-            )}
+      <div className="flex flex-col items-center gap-2 overflow-y-auto">
+        {servers?.map((server) => (
+          <ServerContextMenu
+            key={server.id}
+            serverId={server.id}
+            inviteCode={server.inviteCode}
           >
-            {server.name.slice(0, 2).toUpperCase()}
-          </Link>
-        </ServerContextMenu>
-      ))}
+            <Link
+              to="/servers/$serverId"
+              params={{ serverId: server.id }}
+              className={cn(
+                "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                serverId === server.id
+                  ? "bg-teal-500 text-white"
+                  : "bg-zinc-100 hover:bg-zinc-200",
+              )}
+            >
+              {server.name.slice(0, 2).toUpperCase()}
+            </Link>
+          </ServerContextMenu>
+        ))}
+      </div>
 
       <div className="mt-auto w-12 border-t border-zinc-200" />
 
       <Tooltip content="Create server" side="right">
         <button
           onClick={openCreate}
-          className="flex size-10 items-center justify-center rounded-xl bg-teal-500 text-white hover:bg-teal-600"
+          className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 hover:bg-zinc-200"
         >
           <Plus className="size-5 shrink-0" />
         </button>
@@ -73,9 +77,18 @@ export function ServerRail() {
       <Tooltip content="Join server" side="right">
         <button
           onClick={openJoin}
-          className="flex size-10 items-center justify-center rounded-xl bg-teal-500 text-white hover:bg-teal-600"
+          className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 hover:bg-zinc-200"
         >
           <Compass className="size-5 shrink-0" />
+        </button>
+      </Tooltip>
+
+      <Tooltip content="Settings" side="right">
+        <button
+          onClick={openSettings}
+          className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 hover:bg-zinc-200"
+        >
+          <Settings className="size-5 shrink-0" />
         </button>
       </Tooltip>
     </nav>

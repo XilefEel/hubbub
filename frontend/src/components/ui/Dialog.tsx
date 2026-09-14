@@ -6,11 +6,13 @@ export function Dialog({
   open,
   onOpenChange,
   title,
+  width = "max-w-md",
   children,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
+  width?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -20,12 +22,13 @@ export function Dialog({
 
         <RadixDialog.Content
           className={cn(
-            "fixed w-full max-w-md rounded-xl p-4 shadow-lg",
+            "fixed w-full rounded-xl p-4 shadow-lg",
             "top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
             "border border-zinc-200",
             "bg-white",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+            width,
           )}
         >
           <div className="mb-4 flex items-center justify-between">

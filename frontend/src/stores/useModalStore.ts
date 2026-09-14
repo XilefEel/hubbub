@@ -8,6 +8,7 @@ import { deleteChannelSlice } from "./modal/deleteChannelSlice";
 import { deleteServerSlice } from "./modal/deleteServerSlice";
 import { createServerSlice } from "./modal/createServerSlice";
 import { joinServerSlice } from "./modal/joinServerSlice";
+import { settingsSlice } from "./modal/settingsSlice";
 
 export const useModalStore = create<ModalStore>((...a) => ({
   ...createServerSlice(...a),
@@ -17,6 +18,7 @@ export const useModalStore = create<ModalStore>((...a) => ({
   ...deleteMessageSlice(...a),
   ...deleteChannelSlice(...a),
   ...deleteServerSlice(...a),
+  ...settingsSlice(...a),
 }));
 
 export const useCreateServerModal = () =>
@@ -86,5 +88,14 @@ export const useDeleteServerModal = () =>
       serverId: s.deleteServerId,
       openModal: s.openDeleteServerModal,
       closeModal: s.closeDeleteServerModal,
+    })),
+  );
+
+export const useSettingsModal = () =>
+  useModalStore(
+    useShallow((s) => ({
+      isOpen: s.isSettingsOpen,
+      openModal: s.openSettingsModal,
+      closeModal: s.closeSettingsModal,
     })),
   );

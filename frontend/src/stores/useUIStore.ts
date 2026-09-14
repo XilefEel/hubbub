@@ -19,10 +19,8 @@ const useUIStore = create<UIStore>((set) => ({
   setIsChannelsOpen: (isOpen) => set({ isChannelsOpen: isOpen }),
   setIsMembersOpen: (isOpen) => set({ isMembersOpen: isOpen }),
 
-  toggleChannels: () =>
-    set((state) => ({ isChannelsOpen: !state.isChannelsOpen })),
-  toggleMembers: () =>
-    set((state) => ({ isMembersOpen: !state.isMembersOpen })),
+  toggleChannels: () => set((s) => ({ isChannelsOpen: !s.isChannelsOpen })),
+  toggleMembers: () => set((s) => ({ isMembersOpen: !s.isMembersOpen })),
 }));
 
 export const useIsChannelsOpen = () => useUIStore((s) => s.isChannelsOpen);

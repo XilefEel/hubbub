@@ -5,6 +5,7 @@ import DeleteMessageModal from "./DeleteMessageModal";
 import DeleteServerModal from "./DeleteServerModal";
 import EditChannelModal from "./EditChannelModal";
 import JoinServerModal from "./JoinServerModal.tsx";
+import SettingsModal from "./SettingsModal.tsx";
 
 export function GlobalModals() {
   return (
@@ -16,6 +17,7 @@ export function GlobalModals() {
       <DeleteMessageModal />
       <DeleteChannelModal />
       <DeleteServerModal />
+      <SettingsModal />
     </>
   );
 }
