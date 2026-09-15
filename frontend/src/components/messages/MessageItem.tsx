@@ -10,6 +10,7 @@ import { ReplyReference } from "./ReplyReference";
 import { MessageContextMenu } from "../context-menus/MessageContextMenu";
 import { useToggleReaction } from "../../hooks/useReactions";
 import { ReactionRow } from "./ReactionRow";
+import UserAvatar from "../ui/UserAvatar";
 
 export function MessageItem({
   message,
@@ -95,7 +96,7 @@ export function MessageItem({
     >
       <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
         {showHeader ? (
-          <div className="size-10 shrink-0 rounded-full bg-teal-100" />
+          <UserAvatar user={message.expand?.user} />
         ) : (
           <div className="w-10 shrink-0" />
         )}

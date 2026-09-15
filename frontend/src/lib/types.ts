@@ -2,6 +2,7 @@ import type { RecordModel } from "pocketbase";
 
 export type User = RecordModel & {
   name: string;
+  avatar?: string;
 };
 
 export type Server = RecordModel & {

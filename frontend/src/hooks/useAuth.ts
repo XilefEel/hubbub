@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { pb } from "../lib/pocketbase";
 import type { User } from "../lib/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useAuth() {
   const [isValid, setIsValid] = useState(pb.authStore.isValid);
@@ -58,6 +58,27 @@ export function useSignup() {
       });
 
       await pb.collection("users").authWithPassword(email, password);
+    },
+  });
+}
+
+export function useUpdateAvatar() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Must be logged in to update avatar");
+
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      return await pb.collection("users").update(userId, formData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["server_members"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      queryClient.invalidateQueries({ queryKey: ["reactions"] });
     },
   });
 }

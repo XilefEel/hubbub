@@ -3,6 +3,7 @@ import { pb } from "../../lib/pocketbase";
 import type { ServerMember } from "../../lib/types";
 import { MemberContextMenu } from "../context-menus/MemberContextMenu";
 import { cn } from "cn";
+import UserAvatar from "../ui/UserAvatar";
 
 export default function MemberListItem({
   member,
@@ -31,12 +32,7 @@ export default function MemberListItem({
           !isOnline && "opacity-70 hover:opacity-100",
         )}
       >
-        <div
-          className={cn(
-            "size-6 rounded-full bg-teal-100",
-            !isOnline && "bg-zinc-100",
-          )}
-        />
+        <UserAvatar user={member.expand?.user} size="size-8" />
 
         <span
           className={cn(
