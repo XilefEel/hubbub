@@ -12,7 +12,7 @@ export default function UserAvatar({
   if (user?.avatar) {
     return (
       <img
-        src={pb.files.getURL(user, user.avatar)}
+        src={pb.files.getURL(user, user.avatar, { thumb: "100x100" })}
         alt={user.name}
         className={cn("shrink-0 rounded-full object-cover", size)}
       />
