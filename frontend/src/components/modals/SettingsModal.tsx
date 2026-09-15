@@ -4,6 +4,7 @@ import { Dialog } from "../ui/Dialog";
 import { User, Palette } from "lucide-react";
 import { cn } from "cn";
 import AccountSettings from "../settings/AccountSettings";
+import { AppearanceSettings } from "../settings/AppearanceSettings";
 
 type TabId = "account" | "appearance";
 
@@ -46,7 +47,7 @@ export default function SettingsModal() {
 
         <div className="flex-1 overflow-y-auto px-6">
           {activeTab === "account" && <AccountSettings />}
-          {activeTab === "appearance" && <h3>Appearance</h3>}
+          {activeTab === "appearance" && <AppearanceSettings />}
         </div>
       </div>
     </Dialog>

@@ -9,7 +9,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex h-full flex-col gap-6 overflow-y-auto p-8">
+    <div className="flex h-full flex-col gap-6 overflow-y-auto bg-white p-8 dark:bg-zinc-800">
       <button
         onClick={() => {
           pb.authStore.clear();
