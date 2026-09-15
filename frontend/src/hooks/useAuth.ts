@@ -82,3 +82,21 @@ export function useUpdateAvatar() {
     },
   });
 }
+
+export function useRemoveAvatar() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Must be logged in to remove avatar");
+
+      return await pb.collection("users").update(userId, { avatar: "" });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["server_members"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      queryClient.invalidateQueries({ queryKey: ["reactions"] });
+    },
+  });
+}

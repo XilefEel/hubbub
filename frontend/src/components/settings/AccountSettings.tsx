@@ -1,10 +1,12 @@
 import { useRef } from "react";
-import { useAuth, useUpdateAvatar } from "../../hooks/useAuth";
+import { useAuth, useRemoveAvatar, useUpdateAvatar } from "../../hooks/useAuth";
 import { pb } from "../../lib/pocketbase";
+import UserAvatar from "../ui/UserAvatar";
 
 export default function AccountSettings() {
   const { user } = useAuth();
   const updateAvatar = useUpdateAvatar();
+  const removeAvatar = useRemoveAvatar();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const avatarUrl = user?.avatar ? pb.files.getURL(user, user.avatar) : null;
@@ -16,20 +18,14 @@ export default function AccountSettings() {
     }
   };
 
+  const isPending = updateAvatar.isPending || removeAvatar.isPending;
+
   return (
     <div className="flex flex-col gap-6">
       <h3 className="font-semibold text-zinc-900">Account</h3>
 
       <div className="flex items-center gap-4">
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="Avatar"
-            className="size-16 shrink-0 rounded-full object-cover"
-          />
-        ) : (
-          <div className="size-16 shrink-0 rounded-full bg-gray-200" />
-        )}
+        <UserAvatar user={user!} size="size-16" />
 
         <div>
           <input
@@ -40,12 +36,25 @@ export default function AccountSettings() {
             multiple
           />
 
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50"
-          >
-            Change avatar
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isPending}
+              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50"
+            >
+              {updateAvatar.isPending ? "Uploading..." : "Change avatar"}
+            </button>
+
+            {avatarUrl && (
+              <button
+                onClick={() => removeAvatar.mutate()}
+                disabled={isPending}
+                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50"
+              >
+                {removeAvatar.isPending ? "Removing..." : "Remove"}
+              </button>
+            )}
+          </div>
 
           <p className="mt-1 text-xs text-zinc-500">
             JPG, PNG or GIF. Max 5MB.
