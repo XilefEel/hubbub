@@ -55,6 +55,12 @@ export type SettingsSlice = {
   closeSettingsModal: () => void;
 };
 
+export type UpdateUsernameSlice = {
+  isUpdateUsernameOpen: boolean;
+  openUpdateUsernameModal: () => void;
+  closeUpdateUsernameModal: () => void;
+};
+
 export type ModalStore = CreateServerSlice &
   JoinServerSlice &
   CreateChannelSlice &
@@ -62,6 +68,7 @@ export type ModalStore = CreateServerSlice &
   DeleteMessageSlice &
   DeleteChannelSlice &
   DeleteServerSlice &
-  SettingsSlice;
+  SettingsSlice &
+  UpdateUsernameSlice;
 
 export type Slice<T> = StateCreator<ModalStore, [], [], T>;

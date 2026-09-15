@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
 import { pb } from "../lib/pocketbase";
 import type { User } from "../lib/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+function invalidateUserDependents(queryClient: QueryClient) {
+  queryClient.invalidateQueries({ queryKey: ["server_members"] });
+  queryClient.invalidateQueries({ queryKey: ["messages"] });
+  queryClient.invalidateQueries({ queryKey: ["reactions"] });
+}
 
 export function useAuth() {
   const [isValid, setIsValid] = useState(pb.authStore.isValid);
@@ -75,11 +85,7 @@ export function useUpdateAvatar() {
 
       return await pb.collection("users").update(userId, formData);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["server_members"] });
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
-      queryClient.invalidateQueries({ queryKey: ["reactions"] });
-    },
+    onSuccess: () => invalidateUserDependents(queryClient),
   });
 }
 
@@ -93,10 +99,20 @@ export function useRemoveAvatar() {
 
       return await pb.collection("users").update(userId, { avatar: "" });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["server_members"] });
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
-      queryClient.invalidateQueries({ queryKey: ["reactions"] });
+    onSuccess: () => invalidateUserDependents(queryClient),
+  });
+}
+
+export function useUpdateUsername() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ name }: { name: string }) => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Must be logged in to update username");
+
+      return await pb.collection("users").update(userId, { name });
     },
+    onSuccess: () => invalidateUserDependents(queryClient),
   });
 }

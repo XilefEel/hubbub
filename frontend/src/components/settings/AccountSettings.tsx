@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useAuth, useRemoveAvatar, useUpdateAvatar } from "../../hooks/useAuth";
-import { pb } from "../../lib/pocketbase";
 import UserAvatar from "../ui/UserAvatar";
+import { useUpdateUsernameModal } from "../../stores/useModalStore";
 
 export default function AccountSettings() {
   const { user } = useAuth();
@@ -9,7 +9,7 @@ export default function AccountSettings() {
   const removeAvatar = useRemoveAvatar();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const avatarUrl = user?.avatar ? pb.files.getURL(user, user.avatar) : null;
+  const { openModal } = useUpdateUsernameModal();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,7 +45,7 @@ export default function AccountSettings() {
               {updateAvatar.isPending ? "Uploading..." : "Change avatar"}
             </button>
 
-            {avatarUrl && (
+            {user?.avatar && (
               <button
                 onClick={() => removeAvatar.mutate()}
                 disabled={isPending}
@@ -67,7 +67,10 @@ export default function AccountSettings() {
         <div className="ml-auto rounded-md text-sm text-zinc-600">
           {user?.name}
         </div>
-        <button className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50">
+        <button
+          onClick={openModal}
+          className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50"
+        >
           Edit
         </button>
       </div>
