@@ -10,6 +10,7 @@ import { createServerSlice } from "./modal/createServerSlice";
 import { joinServerSlice } from "./modal/joinServerSlice";
 import { settingsSlice } from "./modal/settingsSlice";
 import { updateUsernameSlice } from "./modal/updateUsernameSlice";
+import { changePasswordSlice } from "./modal/changePasswordSlice";
 
 export const useModalStore = create<ModalStore>((...a) => ({
   ...createServerSlice(...a),
@@ -21,6 +22,7 @@ export const useModalStore = create<ModalStore>((...a) => ({
   ...deleteServerSlice(...a),
   ...settingsSlice(...a),
   ...updateUsernameSlice(...a),
+  ...changePasswordSlice(...a),
 }));
 
 export const useCreateServerModal = () =>
@@ -108,5 +110,14 @@ export const useUpdateUsernameModal = () =>
       isOpen: s.isUpdateUsernameOpen,
       openModal: s.openUpdateUsernameModal,
       closeModal: s.closeUpdateUsernameModal,
+    })),
+  );
+
+export const useChangePasswordModal = () =>
+  useModalStore(
+    useShallow((s) => ({
+      isOpen: s.isChangePasswordOpen,
+      openModal: s.openChangePasswordModal,
+      closeModal: s.closeChangePasswordModal,
     })),
   );

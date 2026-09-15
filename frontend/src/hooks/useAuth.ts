@@ -116,3 +116,30 @@ export function useUpdateUsername() {
     onSuccess: () => invalidateUserDependents(queryClient),
   });
 }
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: async ({
+      oldPassword,
+      password,
+      passwordConfirm,
+    }: {
+      oldPassword: string;
+      password: string;
+      passwordConfirm: string;
+    }) => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Must be logged in to update username");
+
+      if (password !== passwordConfirm) {
+        throw new Error("Passwords do not match");
+      }
+
+      return await pb.collection("users").update(userId, {
+        oldPassword,
+        password,
+        passwordConfirm,
+      });
+    },
+  });
+}

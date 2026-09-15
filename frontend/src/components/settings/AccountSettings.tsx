@@ -1,7 +1,10 @@
 import { useRef } from "react";
 import { useAuth, useRemoveAvatar, useUpdateAvatar } from "../../hooks/useAuth";
 import UserAvatar from "../ui/UserAvatar";
-import { useUpdateUsernameModal } from "../../stores/useModalStore";
+import {
+  useChangePasswordModal,
+  useUpdateUsernameModal,
+} from "../../stores/useModalStore";
 
 export default function AccountSettings() {
   const { user } = useAuth();
@@ -9,7 +12,8 @@ export default function AccountSettings() {
   const removeAvatar = useRemoveAvatar();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { openModal } = useUpdateUsernameModal();
+  const { openModal: openUpdateUsername } = useUpdateUsernameModal();
+  const { openModal: openChangePassword } = useChangePasswordModal();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,7 +72,7 @@ export default function AccountSettings() {
           {user?.name}
         </div>
         <button
-          onClick={openModal}
+          onClick={openUpdateUsername}
           className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50"
         >
           Edit
@@ -87,7 +91,10 @@ export default function AccountSettings() {
 
       <div className="flex items-center gap-4">
         <span className="mb-1 block text-sm text-zinc-900">Password</span>
-        <button className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50">
+        <button
+          onClick={openChangePassword}
+          className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50"
+        >
           Edit
         </button>
       </div>

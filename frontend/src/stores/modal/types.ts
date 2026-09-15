@@ -61,6 +61,12 @@ export type UpdateUsernameSlice = {
   closeUpdateUsernameModal: () => void;
 };
 
+export type ChangePasswordSlice = {
+  isChangePasswordOpen: boolean;
+  openChangePasswordModal: () => void;
+  closeChangePasswordModal: () => void;
+};
+
 export type ModalStore = CreateServerSlice &
   JoinServerSlice &
   CreateChannelSlice &
@@ -69,6 +75,7 @@ export type ModalStore = CreateServerSlice &
   DeleteChannelSlice &
   DeleteServerSlice &
   SettingsSlice &
-  UpdateUsernameSlice;
+  UpdateUsernameSlice &
+  ChangePasswordSlice;
 
 export type Slice<T> = StateCreator<ModalStore, [], [], T>;

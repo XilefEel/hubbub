@@ -1,3 +1,4 @@
+import ChangePasswordModal from "./ChangePasswordModal.tsx";
 import CreateChannelModal from "./CreateChannelModal";
 import CreateServerModal from "./CreateServerModal.tsx";
 import DeleteChannelModal from "./DeleteChannelModal";
@@ -20,6 +21,7 @@ export function GlobalModals() {
       <DeleteServerModal />
       <SettingsModal />
       <UpdateUsernameModal />
+      <ChangePasswordModal />
     </>
   );
 }
