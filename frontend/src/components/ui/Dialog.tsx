@@ -24,19 +24,19 @@ export function Dialog({
           className={cn(
             "fixed w-full rounded-xl p-4 shadow-lg",
             "top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-            "border border-zinc-200",
-            "bg-white",
+            "border border-zinc-200 dark:border-zinc-700",
+            "bg-white dark:bg-zinc-800",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
             width,
           )}
         >
           <div className="mb-4 flex items-center justify-between">
-            <RadixDialog.Title className="text-lg font-semibold">
+            <RadixDialog.Title className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
               {title}
             </RadixDialog.Title>
 
-            <RadixDialog.Close className="text-zinc-400 hover:text-zinc-600">
+            <RadixDialog.Close className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
               <X className="size-4 shrink-0" />
             </RadixDialog.Close>
           </div>

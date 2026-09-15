@@ -46,7 +46,7 @@ function ServerPage() {
     );
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full bg-white dark:bg-zinc-800">
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel
           id="channels-sidebar"
@@ -55,21 +55,21 @@ function ServerPage() {
           onResize={handleChannelsResize}
           collapsible
         >
-          <aside className="flex h-full flex-col p-4">
+          <aside className="flex h-full flex-col p-4 text-zinc-900 dark:text-zinc-100">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-bold">{server?.name}</h1>
 
               <Tooltip content="Hide Channels">
                 <button
                   onClick={toggleChannels}
-                  className="text-sm hover:text-teal-500"
+                  className="text-sm hover:text-teal-500 dark:hover:text-teal-400"
                 >
                   <PanelLeft className="size-4 shrink-0" />
                 </button>
               </Tooltip>
             </div>
 
-            <p className="mb-4 text-sm text-zinc-500">
+            <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
               Invite code: {server?.inviteCode}
             </p>
 
@@ -77,7 +77,7 @@ function ServerPage() {
           </aside>
         </Panel>
 
-        <Separator className="w-px cursor-col-resize border-l border-zinc-200 hover:border-teal-400" />
+        <Separator className="w-px cursor-col-resize border-l border-zinc-200 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
 
         <Panel id="main-content" minSize="50%">
           <main className="h-full">
@@ -85,7 +85,7 @@ function ServerPage() {
           </main>
         </Panel>
 
-        <Separator className="w-px cursor-col-resize border-l border-zinc-200 hover:border-teal-400" />
+        <Separator className="w-px cursor-col-resize border-l border-zinc-200 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
 
         <Panel
           id="members-sidebar"

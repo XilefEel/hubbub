@@ -28,7 +28,7 @@ export default function MemberListItem({
     >
       <li
         className={cn(
-          "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50",
+          "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700/50",
           !isOnline && "opacity-70 hover:opacity-100",
         )}
       >
@@ -44,9 +44,15 @@ export default function MemberListItem({
           {member.expand?.user?.name || "Unknown User"}{" "}
         </span>
 
-        {member.role === "owner" && <Crown className="size-4 text-teal-500" />}
+        {member.role === "owner" && (
+          <Crown className="size-4 text-teal-500 dark:text-teal-400" />
+        )}
 
-        {isSelf && <span className="text-xs text-zinc-400">(You)</span>}
+        {isSelf && (
+          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+            (You)
+          </span>
+        )}
       </li>
     </MemberContextMenu>
   );

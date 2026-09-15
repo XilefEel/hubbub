@@ -5,6 +5,7 @@ import { useFileDrop } from "../../hooks/useFileDrop";
 import type { Message } from "../../lib/types";
 import { Tooltip } from "../ui/Tooltip";
 import { useSendMessage } from "../../hooks/useMessages";
+import { cn } from "cn";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_FILES = 10;
@@ -87,7 +88,13 @@ export function MessageInput({
   return (
     <>
       {isDragging && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-teal-400 bg-teal-50/90 text-teal-500">
+        <div
+          className={cn(
+            "fixed inset-0 z-50 flex flex-col items-center justify-center gap-2 rounded-2xl text-teal-500",
+            "border-2 border-dashed border-teal-400 dark:border-teal-500",
+            "bg-teal-50/90 dark:bg-teal-900",
+          )}
+        >
           <Upload className="size-8 shrink-0" />
           <span className="text-lg font-medium">Drop file to attach</span>
         </div>
@@ -106,7 +113,7 @@ export function MessageInput({
       )}
 
       {replyingTo && (
-        <div className="flex items-center justify-between rounded-t-xl bg-zinc-50 px-3 py-1.5 text-sm text-zinc-500">
+        <div className="flex items-center justify-between rounded-t-xl bg-zinc-50 px-3 py-1.5 text-sm text-zinc-500 dark:bg-zinc-700/50 dark:text-zinc-400">
           <span>
             Replying to{" "}
             <span className="font-medium">
@@ -116,7 +123,7 @@ export function MessageInput({
 
           <button
             onClick={onCancelReply}
-            className="text-zinc-400 hover:text-red-500"
+            className="text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400"
           >
             <X className="size-4 shrink-0" />
           </button>
@@ -137,7 +144,7 @@ export function MessageInput({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:cursor-pointer hover:text-zinc-500"
+              className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
             >
               <Plus className="size-5 shrink-0" />
             </button>
@@ -150,14 +157,14 @@ export function MessageInput({
               onTyping();
             }}
             placeholder="Type a message..."
-            className="w-full rounded-xl border border-zinc-200 px-12 py-2 outline-none focus:outline-none"
+            className="w-full rounded-xl border border-zinc-200 px-12 py-2 outline-none focus:outline-none dark:border-zinc-700"
             autoFocus
           />
 
           <button
             type="submit"
             disabled={sendMessage.isPending || content.trim() === ""}
-            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed"
+            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
           >
             <ArrowUp className="size-5 shrink-0" />
           </button>

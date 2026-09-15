@@ -43,7 +43,7 @@ export function MemberList({ serverId }: { serverId: string }) {
     );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 text-zinc-900 dark:text-zinc-100">
       <div className="relative flex items-center gap-4">
         <Tooltip content="Hide Members">
           <button

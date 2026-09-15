@@ -23,7 +23,7 @@ export function ChannelList({ serverId }: { serverId: string }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between text-zinc-500">
+      <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
         <h2 className="text-sm">Channels</h2>
 
         {isOwner && (
@@ -50,9 +50,10 @@ export function ChannelList({ serverId }: { serverId: string }) {
               <Link
                 to="/servers/$serverId/channels/$channelId"
                 params={{ serverId, channelId: c.id }}
-                className="flex w-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-50"
+                className="flex w-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
                 activeProps={{
-                  className: "bg-zinc-100 hover:bg-zinc-100 font-medium",
+                  className:
+                    "bg-zinc-100 hover:bg-zinc-100 font-medium dark:bg-zinc-700 dark:hover:bg-zinc-700",
                 }}
               >
                 {c.type === "voice" ? (

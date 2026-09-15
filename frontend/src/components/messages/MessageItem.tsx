@@ -94,7 +94,7 @@ export function MessageItem({
       onReply={handleReply}
       onEdit={startEditing}
     >
-      <div className="group flex items-start gap-4 rounded-lg px-2 py-1.5 hover:bg-zinc-50">
+      <div className="group flex items-start gap-4 rounded-lg bg-white px-2 py-1.5 hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700/50">
         {showHeader ? (
           <UserAvatar user={message.expand?.user} />
         ) : (
@@ -112,12 +112,12 @@ export function MessageItem({
                 {message.expand?.user?.name || "Unknown User"}
               </span>
 
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-zinc-400 dark:text-zinc-500">
                 {formatMessageDate(message.created)}
               </span>
 
               {message.updated !== message.created && (
-                <span className="text-[10px] text-zinc-400 italic">
+                <span className="text-[10px] text-zinc-400 italic dark:text-zinc-500">
                   (edited)
                 </span>
               )}
@@ -135,7 +135,9 @@ export function MessageItem({
               />
             </div>
           ) : (
-            <p className="text-sm text-zinc-800">{message.content}</p>
+            <p className="text-sm text-zinc-800 dark:text-zinc-200">
+              {message.content}
+            </p>
           )}
 
           <AttachmentGrid message={message} />

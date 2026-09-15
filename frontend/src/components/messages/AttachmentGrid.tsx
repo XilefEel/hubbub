@@ -12,7 +12,7 @@ export function AttachmentGrid({ message }: { message: Message }) {
           href={pb.files.getURL(message, filename)}
           target="_blank"
           rel="noopener noreferrer"
-          className="block max-w-sm overflow-hidden rounded-xl border border-zinc-200"
+          className="block max-w-sm overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700"
         >
           <img
             src={pb.files.getURL(message, filename)}

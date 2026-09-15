@@ -20,7 +20,7 @@ export function MessageEditForm({
         onKeyDown={onKeyDown}
         autoFocus
         disabled={disabled}
-        className="flex-1 rounded border border-zinc-300 px-2 py-0.5 text-sm outline-none focus:border-zinc-500"
+        className="flex-1 rounded border border-zinc-300 px-2 py-0.5 text-sm outline-none focus:border-zinc-500 dark:border-zinc-600 dark:focus:border-zinc-400"
       />
     </form>
   );
