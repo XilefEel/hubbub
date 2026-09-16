@@ -8,14 +8,16 @@ import Input from "../ui/Input";
 import SubmitButton from "../ui/SubmitButton";
 
 export default function EditServerModal() {
-  const { isOpen, server, closeModal } = useEditServerModal();
+  const { isOpen, server, closeModal, setIsOpen } = useEditServerModal();
 
-  if (!isOpen || !server) return null;
+  if (!server) return null;
 
   return (
     <EditServerModalContent
       key={server.id}
       server={server}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
       closeModal={closeModal}
     />
   );
@@ -23,9 +25,13 @@ export default function EditServerModal() {
 
 function EditServerModalContent({
   server,
+  isOpen,
+  setIsOpen,
   closeModal,
 }: {
   server: Server;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
   closeModal: () => void;
 }) {
   const [name, setName] = useState(server.name);
@@ -77,8 +83,8 @@ function EditServerModalContent({
   return (
     <Dialog
       title="Edit Server"
-      open={true}
-      onOpenChange={closeModal}
+      open={isOpen}
+      onOpenChange={setIsOpen}
       width="max-w-xl"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">

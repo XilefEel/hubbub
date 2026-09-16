@@ -14,15 +14,13 @@ const TABS: { id: TabId; label: string; Icon: React.ElementType }[] = [
 ];
 
 export default function SettingsModal() {
-  const { isOpen, closeModal } = useSettingsModal();
+  const { isOpen, setIsOpen } = useSettingsModal();
   const [activeTab, setActiveTab] = useState<TabId>("account");
-
-  if (!isOpen) return null;
 
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={closeModal}
+      onOpenChange={setIsOpen}
       title="Settings"
       width="max-w-3xl"
     >

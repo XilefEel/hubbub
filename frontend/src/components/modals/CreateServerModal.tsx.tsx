@@ -3,12 +3,10 @@ import { CreateServerForm } from "../servers/CreateServerForm";
 import Dialog from "../ui/Dialog";
 
 export default function CreateServerModal() {
-  const { isOpen, closeModal } = useCreateServerModal();
-
-  if (!isOpen) return null;
+  const { isOpen, closeModal, setIsOpen } = useCreateServerModal();
 
   return (
-    <Dialog open={isOpen} onOpenChange={closeModal} title="Create server">
+    <Dialog open={isOpen} onOpenChange={setIsOpen} title="Create server">
       <CreateServerForm onClose={closeModal} />
     </Dialog>
   );

@@ -3,15 +3,15 @@ import ConfirmDialog from "../ui/ConfirmDialog";
 import { useDeleteMessage } from "../../hooks/useMessages";
 
 export default function DeleteMessageModal() {
-  const { isOpen, messageId, closeModal } = useDeleteMessageModal();
+  const { isOpen, messageId, closeModal, setIsOpen } = useDeleteMessageModal();
   const deleteMessage = useDeleteMessage();
 
-  if (!isOpen || !messageId) return null;
+  if (!messageId) return null;
 
   return (
     <ConfirmDialog
-      open
-      onOpenChange={(open) => !open && closeModal()}
+      open={isOpen}
+      onOpenChange={setIsOpen}
       title="Delete message?"
       description="This action cannot be undone."
       isPending={deleteMessage.isPending}

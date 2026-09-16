@@ -3,15 +3,16 @@ import { useDeleteChannel } from "../../hooks/useChannels";
 import { useDeleteChannelModal } from "../../stores/useModalStore";
 
 export default function DeleteChannelModal() {
-  const { isOpen, serverId, channelId, closeModal } = useDeleteChannelModal();
+  const { isOpen, serverId, channelId, closeModal, setIsOpen } =
+    useDeleteChannelModal();
   const deleteChannel = useDeleteChannel();
 
-  if (!isOpen || !serverId || !channelId) return null;
+  if (!serverId || !channelId) return null;
 
   return (
     <ConfirmDialog
       open={isOpen}
-      onOpenChange={(open) => !open && closeModal()}
+      onOpenChange={setIsOpen}
       title="Delete channel?"
       description="This will permanently delete the channel and all its messages."
       isPending={deleteChannel.isPending}

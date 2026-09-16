@@ -4,6 +4,7 @@ export const editServerSlice: Slice<EditServerSlice> = (set) => ({
   isEditServerOpen: false,
   editServer: null,
 
+  setEditServerOpen: (isOpen) => set({ isEditServerOpen: isOpen }),
   openEditServerModal: (server) =>
     set({
       isEditServerOpen: true,

@@ -5,6 +5,7 @@ export const editChannelSlice: Slice<EditChannelSlice> = (set) => ({
   editChannelId: null,
   editChannelName: null,
 
+  setEditChannelOpen: (isOpen) => set({ isEditChannelOpen: isOpen }),
   openEditChannelModal: (channelId, currentName) =>
     set({
       isEditChannelOpen: true,

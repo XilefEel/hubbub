@@ -7,7 +7,7 @@ import Input from "../ui/Input";
 
 export default function UpdateUsernameModal() {
   const { user } = useAuth();
-  const { isOpen, closeModal } = useUpdateUsernameModal();
+  const { isOpen, closeModal, setIsOpen } = useUpdateUsernameModal();
   const [name, setName] = useState(user?.name || "");
   const updateUsername = useUpdateUsername();
 
@@ -25,10 +25,8 @@ export default function UpdateUsernameModal() {
     );
   };
 
-  if (!isOpen) return null;
-
   return (
-    <Dialog open={isOpen} onOpenChange={closeModal} title="Update Username">
+    <Dialog open={isOpen} onOpenChange={setIsOpen} title="Update Username">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
         <Input
           autoFocus

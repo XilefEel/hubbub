@@ -3,12 +3,13 @@ import Dialog from "../ui/Dialog";
 import { EditChannelForm } from "../channels/EditChannelForm";
 
 export default function EditChannelModal() {
-  const { isOpen, channelId, channelName, closeModal } = useEditChannelModal();
+  const { isOpen, channelId, channelName, closeModal, setIsOpen } =
+    useEditChannelModal();
 
-  if (!isOpen || !channelId || channelName === null) return null;
+  if (!channelId || channelName === null) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={closeModal} title="Edit channel">
+    <Dialog open={isOpen} onOpenChange={setIsOpen} title="Edit channel">
       <EditChannelForm
         channelId={channelId}
         channelName={channelName}

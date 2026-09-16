@@ -5,6 +5,7 @@ export const deleteChannelSlice: Slice<DeleteChannelSlice> = (set) => ({
   deleteChannelId: null,
   deleteChannelServerId: null,
 
+  setDeleteChannelOpen: (isOpen) => set({ isDeleteChannelOpen: isOpen }),
   openDeleteChannelModal: (serverId, channelId) =>
     set({
       isDeleteChannelOpen: true,

@@ -31,6 +31,7 @@ export const useCreateServerModal = () =>
   useModalStore(
     useShallow((s) => ({
       isOpen: s.isCreateServerOpen,
+      setIsOpen: s.setCreateServerOpen,
       openModal: s.openCreateServerModal,
       closeModal: s.closeCreateServerModal,
     })),
@@ -40,6 +41,7 @@ export const useJoinServerModal = () =>
   useModalStore(
     useShallow((s) => ({
       isOpen: s.isJoinServerOpen,
+      setIsOpen: s.setJoinServerOpen,
       openModal: s.openJoinServerModal,
       closeModal: s.closeJoinServerModal,
     })),
@@ -50,6 +52,7 @@ export const useEditServerModal = () =>
     useShallow((s) => ({
       isOpen: s.isEditServerOpen,
       server: s.editServer,
+      setIsOpen: s.setEditServerOpen,
       openModal: s.openEditServerModal,
       closeModal: s.closeEditServerModal,
     })),
@@ -60,6 +63,7 @@ export const useCreateChannelModal = () =>
     useShallow((s) => ({
       isOpen: s.isCreateChannelOpen,
       serverId: s.createChannelServerId,
+      setIsOpen: s.setCreateChannelOpen,
       openModal: s.openCreateChannelModal,
       closeModal: s.closeCreateChannelModal,
     })),
@@ -70,6 +74,7 @@ export const useEditChannelModal = () =>
     useShallow((s) => ({
       isOpen: s.isEditChannelOpen,
       channelId: s.editChannelId,
+      setIsOpen: s.setEditChannelOpen,
       channelName: s.editChannelName,
       openModal: s.openEditChannelModal,
       closeModal: s.closeEditChannelModal,
@@ -81,6 +86,7 @@ export const useDeleteMessageModal = () =>
     useShallow((s) => ({
       isOpen: s.isDeleteMessageOpen,
       messageId: s.deleteMessageId,
+      setIsOpen: s.setDeleteMessageOpen,
       openModal: s.openDeleteMessageModal,
       closeModal: s.closeDeleteMessageModal,
     })),
@@ -92,6 +98,7 @@ export const useDeleteChannelModal = () =>
       isOpen: s.isDeleteChannelOpen,
       channelId: s.deleteChannelId,
       serverId: s.deleteChannelServerId,
+      setIsOpen: s.setDeleteChannelOpen,
       openModal: s.openDeleteChannelModal,
       closeModal: s.closeDeleteChannelModal,
     })),
@@ -102,6 +109,7 @@ export const useDeleteServerModal = () =>
     useShallow((s) => ({
       isOpen: s.isDeleteServerOpen,
       serverId: s.deleteServerId,
+      setIsOpen: s.setDeleteServerOpen,
       openModal: s.openDeleteServerModal,
       closeModal: s.closeDeleteServerModal,
     })),
@@ -111,6 +119,7 @@ export const useSettingsModal = () =>
   useModalStore(
     useShallow((s) => ({
       isOpen: s.isSettingsOpen,
+      setIsOpen: s.setSettingsOpen,
       openModal: s.openSettingsModal,
       closeModal: s.closeSettingsModal,
     })),
@@ -120,6 +129,7 @@ export const useUpdateUsernameModal = () =>
   useModalStore(
     useShallow((s) => ({
       isOpen: s.isUpdateUsernameOpen,
+      setIsOpen: s.setUpdateUsernameOpen,
       openModal: s.openUpdateUsernameModal,
       closeModal: s.closeUpdateUsernameModal,
     })),
@@ -129,6 +139,7 @@ export const useChangePasswordModal = () =>
   useModalStore(
     useShallow((s) => ({
       isOpen: s.isChangePasswordOpen,
+      setIsOpen: s.setChangePasswordOpen,
       openModal: s.openChangePasswordModal,
       closeModal: s.closeChangePasswordModal,
     })),
