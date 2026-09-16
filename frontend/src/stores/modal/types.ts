@@ -1,4 +1,5 @@
 import type { StateCreator } from "zustand";
+import type { Server } from "../../lib/types";
 
 export type CreateServerSlice = {
   isCreateServerOpen: boolean;
@@ -10,6 +11,13 @@ export type JoinServerSlice = {
   isJoinServerOpen: boolean;
   openJoinServerModal: () => void;
   closeJoinServerModal: () => void;
+};
+
+export type EditServerSlice = {
+  isEditServerOpen: boolean;
+  editServer: Server | null;
+  openEditServerModal: (server: Server) => void;
+  closeEditServerModal: () => void;
 };
 
 export type CreateChannelSlice = {
@@ -70,6 +78,7 @@ export type ChangePasswordSlice = {
 export type ModalStore = CreateServerSlice &
   JoinServerSlice &
   CreateChannelSlice &
+  EditServerSlice &
   EditChannelSlice &
   DeleteMessageSlice &
   DeleteChannelSlice &

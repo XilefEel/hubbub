@@ -9,6 +9,7 @@ export type Server = RecordModel & {
   name: string;
   owner: string; // owner id
   inviteCode: string;
+  icon?: string;
   expand?: {
     owner?: User;
   };

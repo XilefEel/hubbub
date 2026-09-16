@@ -6,24 +6,27 @@ import {
   ContextMenuSeparator,
 } from "../ui/ContextMenu";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
+import { useEditServerModal } from "../../stores/useModalStore";
+import type { Server } from "../../lib/types";
 
 export function ServerContextMenu({
-  serverId,
-  inviteCode,
+  server,
   children,
 }: {
-  serverId: string;
-  inviteCode: string;
+  server: Server;
   children: React.ReactNode;
 }) {
+  const { openModal } = useEditServerModal();
+
   const leaveServer = useLeaveServer();
   const deleteServer = useDeleteServer();
 
-  const { isOwner } = useCurrentMembership(serverId);
+  const { isOwner } = useCurrentMembership(server.id);
 
   const isPending = leaveServer.isPending || deleteServer.isPending;
 
-  const handleCopyInvite = () => navigator.clipboard.writeText(inviteCode);
+  const handleCopyInvite = () =>
+    navigator.clipboard.writeText(server.inviteCode);
 
   return (
     <BaseContextMenu
@@ -37,7 +40,7 @@ export function ServerContextMenu({
 
           {isOwner && (
             <ContextMenuItem
-              action={() => {}}
+              action={() => openModal(server)}
               Icon={Settings}
               label="Server settings"
             />
@@ -47,7 +50,7 @@ export function ServerContextMenu({
 
           {isOwner ? (
             <ContextMenuItem
-              action={() => deleteServer.mutate(serverId)}
+              action={() => deleteServer.mutate(server.id)}
               Icon={Trash2}
               label="Delete server"
               isDelete
@@ -55,7 +58,7 @@ export function ServerContextMenu({
             />
           ) : (
             <ContextMenuItem
-              action={() => leaveServer.mutate(serverId)}
+              action={() => leaveServer.mutate(server.id)}
               Icon={LogOut}
               label="Leave server"
               isDelete

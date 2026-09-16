@@ -44,7 +44,7 @@ export default function AccountSettings() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isPending}
-              className="hovzincg-zinc-50 rounded-md border border-zinc-200 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
             >
               {updateAvatar.isPending ? "Uploading..." : "Change avatar"}
             </button>
@@ -53,7 +53,7 @@ export default function AccountSettings() {
               <button
                 onClick={() => removeAvatar.mutate()}
                 disabled={isPending}
-                className="hovzincg-zinc-50 rounded-md border border-zinc-200 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
               >
                 {removeAvatar.isPending ? "Removing..." : "Remove"}
               </button>

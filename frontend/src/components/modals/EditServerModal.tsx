@@ -1,13 +1,32 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEditServerModal } from "../../stores/useModalStore";
 import { Dialog } from "../ui/Dialog";
 import { useUpdateServer } from "../../hooks/useServers";
 import { pb } from "../../lib/pocketbase";
+import type { Server } from "../../lib/types";
 
 export default function EditServerModal() {
   const { isOpen, server, closeModal } = useEditServerModal();
 
-  const [name, setName] = useState(server?.name || "");
+  if (!isOpen || !server) return null;
+
+  return (
+    <EditServerModalContent
+      key={server.id}
+      server={server}
+      closeModal={closeModal}
+    />
+  );
+}
+
+function EditServerModalContent({
+  server,
+  closeModal,
+}: {
+  server: Server;
+  closeModal: () => void;
+}) {
+  const [name, setName] = useState(server.name);
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [removeIcon, setRemoveIcon] = useState(false);
 
@@ -15,19 +34,22 @@ export default function EditServerModal() {
 
   const updateServer = useUpdateServer();
 
+  const objectUrl = useMemo(
+    () => (iconFile ? URL.createObjectURL(iconFile) : null),
+    [iconFile],
+  );
+
   useEffect(() => {
-    if (!iconFile) return;
-    const url = URL.createObjectURL(iconFile);
-    return () => URL.revokeObjectURL(url);
-  }, [iconFile]);
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [objectUrl]);
 
-  if (!isOpen || !server) return null;
-
-  const previewUrl = iconFile
-    ? URL.createObjectURL(iconFile)
-    : !removeIcon && server.icon
+  const previewUrl =
+    objectUrl ??
+    (!removeIcon && server.icon
       ? pb.files.getURL(server, server.icon, { thumb: "100x100" })
-      : null;
+      : null);
 
   const hasChanges = name !== server.name || iconFile !== null || removeIcon;
 
@@ -36,7 +58,7 @@ export default function EditServerModal() {
 
     updateServer.mutate(
       {
-        server,
+        serverId: server.id,
         name: name !== server.name ? name : undefined,
         icon: iconFile ?? (removeIcon ? "" : undefined),
       },
@@ -53,9 +75,9 @@ export default function EditServerModal() {
   return (
     <Dialog
       title="Edit Server"
-      open={isOpen}
+      open={true}
       onOpenChange={closeModal}
-      width="max-w-2xl"
+      width="max-w-xl"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
         <div className="flex items-center gap-4">
@@ -66,9 +88,12 @@ export default function EditServerModal() {
               className="size-16 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="size-16 shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+            <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-xl dark:bg-zinc-700">
+              {name.slice(0, 2).toUpperCase()}
+            </div>
           )}
-          <div className="flex gap-2">
+
+          <div>
             <input
               ref={fileInputRef}
               type="file"
@@ -82,25 +107,34 @@ export default function EditServerModal() {
                 }
               }}
             />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-lg border border-zinc-200 px-3 py-1.5 dark:border-zinc-700"
-            >
-              Change icon
-            </button>
-            {previewUrl && (
+
+            <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  setIconFile(null);
-                  setRemoveIcon(true);
-                }}
-                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-zinc-500 dark:border-zinc-700"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={updateServer.isPending}
+                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
               >
-                Remove
+                Change icon
               </button>
-            )}
+
+              {previewUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIconFile(null);
+                    setRemoveIcon(true);
+                  }}
+                  className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              JPG, PNG or GIF. Max 5MB.
+            </p>
           </div>
         </div>
 

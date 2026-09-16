@@ -9,6 +9,7 @@ import {
   useJoinServerModal,
   useSettingsModal,
 } from "../../stores/useModalStore";
+import { pb } from "../../lib/pocketbase";
 
 export function ServerRail() {
   const { serverId } = useParams({ strict: false });
@@ -55,22 +56,28 @@ export function ServerRail() {
 
       <div className="flex flex-col items-center gap-2 overflow-y-auto">
         {servers?.map((server) => (
-          <ServerContextMenu
-            key={server.id}
-            serverId={server.id}
-            inviteCode={server.inviteCode}
-          >
-            <Link
-              to="/servers/$serverId"
-              params={{ serverId: server.id }}
-              className={cn(
-                "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                serverId === server.id
-                  ? "bg-teal-500 text-white"
-                  : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
+          <ServerContextMenu key={server.id} server={server}>
+            <Link to="/servers/$serverId" params={{ serverId: server.id }}>
+              {server.icon ? (
+                <img
+                  src={pb.files.getURL(server, server.icon, {
+                    thumb: "100x100",
+                  })}
+                  alt={server.name}
+                  className="size-10 shrink-0 rounded-xl object-cover"
+                />
+              ) : (
+                <span
+                  className={cn(
+                    "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                    serverId === server.id
+                      ? "bg-teal-500 text-white"
+                      : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
+                  )}
+                >
+                  {server.name.slice(0, 2).toUpperCase()}
+                </span>
               )}
-            >
-              {server.name.slice(0, 2).toUpperCase()}
             </Link>
           </ServerContextMenu>
         ))}

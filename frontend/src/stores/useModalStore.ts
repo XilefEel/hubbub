@@ -11,10 +11,12 @@ import { joinServerSlice } from "./modal/joinServerSlice";
 import { settingsSlice } from "./modal/settingsSlice";
 import { updateUsernameSlice } from "./modal/updateUsernameSlice";
 import { changePasswordSlice } from "./modal/changePasswordSlice";
+import { editServerSlice } from "./modal/editServerSlice";
 
 export const useModalStore = create<ModalStore>((...a) => ({
   ...createServerSlice(...a),
   ...joinServerSlice(...a),
+  ...editServerSlice(...a),
   ...createChannelSlice(...a),
   ...editChannelSlice(...a),
   ...deleteMessageSlice(...a),
@@ -40,6 +42,16 @@ export const useJoinServerModal = () =>
       isOpen: s.isJoinServerOpen,
       openModal: s.openJoinServerModal,
       closeModal: s.closeJoinServerModal,
+    })),
+  );
+
+export const useEditServerModal = () =>
+  useModalStore(
+    useShallow((s) => ({
+      isOpen: s.isEditServerOpen,
+      server: s.editServer,
+      openModal: s.openEditServerModal,
+      closeModal: s.closeEditServerModal,
     })),
   );
 

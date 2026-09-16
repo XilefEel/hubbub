@@ -67,6 +67,35 @@ export function useJoinServer() {
   });
 }
 
+export function useUpdateServer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      serverId,
+      name,
+      icon,
+    }: {
+      serverId: string;
+      name?: string;
+      icon?: File | "";
+    }) => {
+      const formData = new FormData();
+      if (name !== undefined) formData.append("name", name);
+      if (icon !== undefined) formData.append("icon", icon);
+
+      return await pb.collection("servers").update(serverId, formData);
+    },
+    onSuccess: (_, { serverId }) => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.servers.detail(serverId),
+      });
+      queryClient.invalidateQueries({ queryKey: ["server_members"] });
+    },
+  });
+}
+
 export function useLeaveServer() {
   const queryClient = useQueryClient();
   const userId = pb.authStore.record?.id;
