@@ -6,7 +6,7 @@ export const Route = createFileRoute("/servers/$serverId/")({
 
 function RouteComponent() {
   return (
-    <div className="p-8 text-zinc-400 dark:text-zinc-500">
+    <div className="h-full bg-white p-8 text-zinc-400 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 dark:text-zinc-500">
       Select a channel to get started
     </div>
   );

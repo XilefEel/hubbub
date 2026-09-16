@@ -2,3 +2,29 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(from var(--color-zinc-300) r g b / 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(from var(--color-zinc-400) r g b / 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgb(from var(--color-zinc-700) r g b / 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(from var(--color-zinc-600) r g b / 0.5);
+}

@@ -37,11 +37,12 @@ function ChannelPage() {
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
-  if (channelLoading) return <p className="p-8">Loading channel...</p>;
+  if (channelLoading)
+    return <div className="h-full bg-white dark:bg-zinc-800">Loading...</div>;
 
   if (channelIsError)
     return (
-      <p className="p-8 text-red-500">
+      <p className="h-full bg-white p-8 text-red-500 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
         Channel not found or access denied: {channelError.message}
       </p>
     );

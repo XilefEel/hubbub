@@ -38,11 +38,18 @@ function ServerPage() {
 
   const { toggleChannels } = useUIActions();
 
-  if (isLoading) return <p>Loading server...</p>;
+  if (isLoading)
+    return (
+      <div className="h-full bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
+        Loading...
+      </div>
+    );
 
   if (isError)
     return (
-      <p className="text-red-500">Failed to load server: {error.message}</p>
+      <p className="h-full bg-white text-red-500 dark:bg-zinc-800">
+        Failed to load server: {error.message}
+      </p>
     );
 
   return (

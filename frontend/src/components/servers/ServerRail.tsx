@@ -17,11 +17,18 @@ export function ServerRail() {
   const { openModal: openJoin } = useJoinServerModal();
   const { openModal: openSettings } = useSettingsModal();
 
-  if (isLoading) return <p>Loading servers...</p>;
+  if (isLoading)
+    return (
+      <div className="h-full w-16 bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
+        Loading...
+      </div>
+    );
 
   if (isError)
     return (
-      <p className="text-red-500">Failed to load servers: {error.message}</p>
+      <p className="h-full w-16 bg-white text-red-500 dark:bg-zinc-800">
+        Failed to load servers: {error.message}
+      </p>
     );
 
   return (
