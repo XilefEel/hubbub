@@ -11,6 +11,7 @@ export function useServerMembers(serverId: string) {
         filter: `server = "${serverId}"`,
         expand: "user",
         sort: "role",
+        requestKey: null,
       });
     },
     enabled: !!serverId,

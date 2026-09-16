@@ -26,7 +26,7 @@ export function CreateServerForm({ onClose }: { onClose: () => void }) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Channel name"
-        className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
+        className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none dark:border-zinc-700"
       />
 
       {createServer.isError && (

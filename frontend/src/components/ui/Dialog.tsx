@@ -24,6 +24,7 @@ export function Dialog({
           className={cn(
             "fixed w-full rounded-xl p-4 shadow-lg",
             "top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
+            "text-zinc-900 dark:text-zinc-100",
             "border border-zinc-200 dark:border-zinc-700",
             "bg-white dark:bg-zinc-800",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",

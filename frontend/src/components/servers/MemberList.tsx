@@ -54,14 +54,14 @@ export function MemberList({ serverId }: { serverId: string }) {
           </button>
         </Tooltip>
 
-        <Search className="absolute top-1/2 left-10 size-4 shrink-0 -translate-y-1/2 text-zinc-400" />
+        <Search className="absolute top-1/2 left-10 size-4 shrink-0 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" />
 
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search members..."
-          className="w-full rounded-lg border border-zinc-200 py-1 pr-2 pl-8 text-sm outline-none focus:outline-none"
+          className="w-full rounded-lg border border-zinc-200 py-1 pr-2 pl-8 text-sm outline-none focus:outline-none dark:border-zinc-700"
         />
       </div>
 

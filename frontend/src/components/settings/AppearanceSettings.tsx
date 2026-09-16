@@ -8,7 +8,7 @@ export function AppearanceSettings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h3 className="font-semibold text-zinc-900">Appearance</h3>
+      <h3 className="font-semibold">Appearance</h3>
 
       <div className="flex items-center justify-between">
         <span className="text-sm">Toggle Theme</span>

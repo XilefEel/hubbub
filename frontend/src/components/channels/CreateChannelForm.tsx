@@ -50,7 +50,7 @@ export function CreateChannelForm({
             value="text"
             className={cn(
               "group flex items-center justify-between rounded-lg p-3",
-              "hover:bg-gray-50 data-[state=checked]:bg-zinc-100",
+              "hover:bg-zinc-50 data-[state=checked]:bg-zinc-100 dark:hover:bg-zinc-700/50 dark:data-[state=checked]:bg-zinc-700",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500",
             )}
           >
@@ -59,13 +59,13 @@ export function CreateChannelForm({
 
               <div className="flex flex-col text-left">
                 <span className="font-semibold">Text</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-zinc-500">
                   Post images, stickers, opinions, and puns
                 </span>
               </div>
             </div>
 
-            <div className="flex size-5 items-center justify-center rounded-full border-2 border-gray-400 group-data-[state=checked]:border-teal-500">
+            <div className="flex size-5 items-center justify-center rounded-full border-2 border-zinc-400 group-data-[state=checked]:border-teal-500">
               <RadioGroup.Indicator className="size-3 rounded-full bg-teal-500" />
             </div>
           </RadioGroup.Item>
@@ -74,7 +74,7 @@ export function CreateChannelForm({
             value="voice"
             className={cn(
               "group flex items-center justify-between rounded-lg p-3",
-              "hover:bg-gray-50 data-[state=checked]:bg-zinc-100",
+              "hover:bg-zinc-50 data-[state=checked]:bg-zinc-100 dark:hover:bg-zinc-700/50 dark:data-[state=checked]:bg-zinc-700",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500",
             )}
           >
@@ -83,13 +83,13 @@ export function CreateChannelForm({
 
               <div className="flex flex-col text-left">
                 <span className="font-semibold">Voice</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-zinc-500">
                   Hang out together with voice, video, and screen share
                 </span>
               </div>
             </div>
 
-            <div className="flex size-5 items-center justify-center rounded-full border-2 border-gray-400 group-data-[state=checked]:border-teal-500">
+            <div className="flex size-5 items-center justify-center rounded-full border-2 border-zinc-400 group-data-[state=checked]:border-teal-500">
               <RadioGroup.Indicator className="size-3 rounded-full bg-teal-500" />
             </div>
           </RadioGroup.Item>
@@ -100,7 +100,7 @@ export function CreateChannelForm({
         <label>Channel Name</label>
 
         <div className="relative flex items-center">
-          <span className="absolute left-3 text-lg font-bold text-gray-400">
+          <span className="absolute left-3 text-lg font-bold text-zinc-400 dark:text-zinc-500">
             {type === "text" ? (
               <Hash className="size-4 shrink-0" />
             ) : (
@@ -113,7 +113,7 @@ export function CreateChannelForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="New Channel"
-            className="w-full rounded-lg border border-gray-200 py-1.5 pr-3 pl-9 text-sm outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+            className="w-full rounded-lg border border-zinc-200 py-1.5 pr-3 pl-9 text-sm outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-zinc-700"
           />
         </div>
       </div>

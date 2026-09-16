@@ -41,7 +41,7 @@ export default function ChangePasswordModal() {
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
           placeholder="Current password"
-          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
+          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none dark:border-zinc-700"
         />
 
         <input
@@ -49,7 +49,7 @@ export default function ChangePasswordModal() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="New password"
-          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
+          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none dark:border-zinc-700"
         />
 
         <input
@@ -57,7 +57,7 @@ export default function ChangePasswordModal() {
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
           placeholder="Confirm new password"
-          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
+          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none dark:border-zinc-700"
         />
 
         {changePassword.isError && (

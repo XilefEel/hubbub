@@ -35,7 +35,7 @@ export function EditChannelForm({
         onChange={(e) => setName(e.target.value)}
         placeholder="Channel name"
         disabled={editChannel.isPending}
-        className="rounded-lg border border-gray-200 px-2 py-1 text-sm outline-none focus:outline-none"
+        className="rounded-lg border border-zinc-200 px-2 py-1 text-sm outline-none focus:outline-none dark:border-zinc-700"
       />
 
       {editChannel.isError && (

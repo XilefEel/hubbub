@@ -21,14 +21,15 @@ export function ConfirmDialog({
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/40" />
+        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
 
         <AlertDialog.Content
           className={cn(
             "fixed w-full max-w-sm rounded-xl p-4 shadow-lg",
             "top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-            "border border-zinc-200",
-            "bg-white",
+            "text-zinc-900 dark:text-zinc-100",
+            "border border-zinc-200 dark:border-zinc-700",
+            "bg-white dark:bg-zinc-800",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           )}
@@ -44,7 +45,7 @@ export function ConfirmDialog({
           <div className="mt-5 flex justify-end gap-2">
             <AlertDialog.Cancel
               disabled={isPending}
-              className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50"
+              className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
             >
               Cancel
             </AlertDialog.Cancel>

@@ -26,8 +26,8 @@ export function BaseContextMenu({
           }}
           className={cn(
             "z-50 min-w-55 rounded-lg p-2 shadow-lg select-none",
-            "bg-white",
-            "border border-zinc-200",
+            "border border-zinc-200 dark:border-zinc-700",
+            "bg-white dark:bg-zinc-800",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           )}
@@ -59,8 +59,10 @@ export function ContextMenuItem({
       disabled={disabled}
       className={cn(
         "flex items-center gap-3 rounded px-2 py-1.5 text-sm transition-colors outline-none",
-        "hover:bg-zinc-50",
-        isDelete && "text-red-600 hover:bg-red-50",
+        "text-zinc-900 dark:text-zinc-100",
+        "hover:bg-zinc-50 dark:hover:bg-zinc-700/50",
+        isDelete &&
+          "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30",
         disabled && "pointer-events-none opacity-50",
       )}
       onSelect={() => action()}
@@ -74,6 +76,6 @@ export function ContextMenuItem({
 
 export function ContextMenuSeparator() {
   return (
-    <RadixContextMenu.Separator className="my-1 shrink-0 border-t border-zinc-200" />
+    <RadixContextMenu.Separator className="my-1 shrink-0 border-t border-zinc-200 dark:border-zinc-700" />
   );
 }

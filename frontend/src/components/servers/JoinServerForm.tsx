@@ -26,7 +26,7 @@ export function JoinServerForm({ onClose }: { onClose: () => void }) {
         value={inviteCode}
         onChange={(e) => setInviteCode(e.target.value)}
         placeholder="Invite code"
-        className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
+        className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none dark:border-zinc-700"
       />
 
       {joinServer.isError && (

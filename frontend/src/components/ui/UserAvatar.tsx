@@ -19,5 +19,12 @@ export default function UserAvatar({
     );
   }
 
-  return <div className={cn("shrink-0 rounded-full bg-teal-100", size)} />;
+  return (
+    <div
+      className={cn(
+        "shrink-0 rounded-full bg-teal-100 dark:bg-teal-800/50",
+        size,
+      )}
+    />
+  );
 }

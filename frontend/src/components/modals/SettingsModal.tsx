@@ -27,7 +27,7 @@ export default function SettingsModal() {
       width="max-w-3xl"
     >
       <div className="flex h-120">
-        <nav className="w-48 shrink-0 border-r border-zinc-200 pr-2">
+        <nav className="w-48 shrink-0 border-r border-zinc-200 pr-2 dark:border-zinc-700">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -35,8 +35,8 @@ export default function SettingsModal() {
               className={cn(
                 "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm",
                 tab.id === activeTab
-                  ? "bg-zinc-100 font-medium"
-                  : "text-zinc-600 hover:bg-zinc-50",
+                  ? "bg-zinc-100 font-medium dark:bg-zinc-700"
+                  : "text-zinc-600 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-700/50",
               )}
             >
               <tab.Icon className="size-4 shrink-0" />

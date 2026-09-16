@@ -26,7 +26,7 @@ export default function AccountSettings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h3 className="font-semibold text-zinc-900">Account</h3>
+      <h3 className="font-semibold">Account</h3>
 
       <div className="flex items-center gap-4">
         <UserAvatar user={user!} size="size-16" />
@@ -44,7 +44,7 @@ export default function AccountSettings() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isPending}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50"
+              className="hovzincg-zinc-50 rounded-md border border-zinc-200 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
             >
               {updateAvatar.isPending ? "Uploading..." : "Change avatar"}
             </button>
@@ -53,56 +53,56 @@ export default function AccountSettings() {
               <button
                 onClick={() => removeAvatar.mutate()}
                 disabled={isPending}
-                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50"
+                className="hovzincg-zinc-50 rounded-md border border-zinc-200 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
               >
                 {removeAvatar.isPending ? "Removing..." : "Remove"}
               </button>
             )}
           </div>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             JPG, PNG or GIF. Max 5MB.
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        <label className="mb-1 block text-sm text-zinc-900">Username</label>
-        <div className="ml-auto rounded-md text-sm text-zinc-600">
+        <label className="mb-1 block text-sm">Username</label>
+        <div className="ml-auto rounded-md text-sm text-zinc-600 dark:text-zinc-300">
           {user?.name}
         </div>
         <button
           onClick={openUpdateUsername}
-          className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50"
+          className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
         >
           Edit
         </button>
       </div>
 
       <div className="flex items-center gap-4">
-        <label className="mb-1 block text-sm text-zinc-900">Email</label>
-        <div className="ml-auto rounded-md text-sm text-zinc-600">
+        <label className="mb-1 block text-sm">Email</label>
+        <div className="ml-auto rounded-md text-sm text-zinc-600 dark:text-zinc-300">
           {user?.email}
         </div>
-        <button className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50">
+        <button className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50">
           Edit
         </button>
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="mb-1 block text-sm text-zinc-900">Password</span>
+        <span className="mb-1 block text-sm">Password</span>
         <button
           onClick={openChangePassword}
-          className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50"
+          className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
         >
           Edit
         </button>
       </div>
 
-      <div className="w-full border-t border-zinc-200" />
+      <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
 
       <div className="flex items-center gap-4">
-        <span className="mb-1 block text-sm text-zinc-900">Delete Account</span>
+        <span className="mb-1 block text-sm">Delete Account</span>
         <button className="ml-auto w-18 rounded-md bg-red-500 py-1.5 text-sm text-white hover:bg-red-600">
           Delete
         </button>

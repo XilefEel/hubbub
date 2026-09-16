@@ -33,7 +33,7 @@ export default function UpdateUsernameModal() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="New username"
-          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
+          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
         />
 
         {updateUsername.isError && (
