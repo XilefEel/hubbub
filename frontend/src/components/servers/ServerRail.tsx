@@ -40,45 +40,51 @@ export function ServerRail() {
         "bg-white dark:bg-zinc-800",
       )}
     >
-      <Link
-        to="/"
-        className={cn(
-          "flex size-10 shrink-0 items-center justify-center rounded-xl",
-          serverId === undefined
-            ? "bg-teal-500 text-white"
-            : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
-        )}
-      >
-        <Home className="size-5 shrink-0" />
-      </Link>
+      <Tooltip content="Home" side="right">
+        <Link
+          to="/"
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-xl",
+            serverId === undefined
+              ? "bg-teal-500 text-white"
+              : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
+          )}
+        >
+          <Home className="size-5 shrink-0" />
+        </Link>
+      </Tooltip>
 
       <div className="w-12 border-t border-zinc-200 dark:border-zinc-700" />
 
       <div className="flex flex-col items-center gap-2 overflow-y-auto">
         {servers?.map((server) => (
           <ServerContextMenu key={server.id} server={server}>
-            <Link to="/servers/$serverId" params={{ serverId: server.id }}>
-              {server.icon ? (
-                <img
-                  src={pb.files.getURL(server, server.icon, {
-                    thumb: "100x100",
-                  })}
-                  alt={server.name}
-                  className="size-10 shrink-0 rounded-xl object-cover"
-                />
-              ) : (
-                <span
-                  className={cn(
-                    "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                    serverId === server.id
-                      ? "bg-teal-500 text-white"
-                      : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
+            <div>
+              <Tooltip content={server.name} side="right">
+                <Link to="/servers/$serverId" params={{ serverId: server.id }}>
+                  {server.icon ? (
+                    <img
+                      src={pb.files.getURL(server, server.icon, {
+                        thumb: "100x100",
+                      })}
+                      alt={server.name}
+                      className="size-10 shrink-0 rounded-xl object-cover"
+                    />
+                  ) : (
+                    <span
+                      className={cn(
+                        "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                        serverId === server.id
+                          ? "bg-teal-500 text-white"
+                          : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
+                      )}
+                    >
+                      {server.name.slice(0, 2).toUpperCase()}
+                    </span>
                   )}
-                >
-                  {server.name.slice(0, 2).toUpperCase()}
-                </span>
-              )}
-            </Link>
+                </Link>
+              </Tooltip>
+            </div>
           </ServerContextMenu>
         ))}
       </div>
