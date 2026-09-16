@@ -2,7 +2,7 @@ import { cn } from "cn";
 
 type SubmitButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export function SubmitButton({
+export default function SubmitButton({
   className,
   children,
   ...props

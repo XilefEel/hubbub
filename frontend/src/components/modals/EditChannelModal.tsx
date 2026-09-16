@@ -1,5 +1,5 @@
 import { useEditChannelModal } from "../../stores/useModalStore";
-import { Dialog } from "../ui/Dialog";
+import Dialog from "../ui/Dialog";
 import { EditChannelForm } from "../channels/EditChannelForm";
 
 export default function EditChannelModal() {

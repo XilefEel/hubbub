@@ -1,5 +1,5 @@
 import { Pencil, Reply, Trash } from "lucide-react";
-import { Tooltip } from "../ui/Tooltip";
+import Tooltip from "../ui/Tooltip";
 import { useDeleteMessageModal } from "../../stores/useModalStore";
 
 export function MessageActions({

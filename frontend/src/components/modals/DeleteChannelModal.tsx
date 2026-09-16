@@ -1,4 +1,4 @@
-import { ConfirmDialog } from "../ui/ConfirmDialog";
+import ConfirmDialog from "../ui/ConfirmDialog";
 import { useDeleteChannel } from "../../hooks/useChannels";
 import { useDeleteChannelModal } from "../../stores/useModalStore";
 

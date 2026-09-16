@@ -4,8 +4,8 @@ import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { useCreateChannel } from "../../hooks/useChannels";
 import { Hash, Volume2 } from "lucide-react";
 import { cn } from "cn";
-import { SubmitButton } from "../ui/SubmitButton";
-import { Input } from "../ui/Input";
+import SubmitButton from "../ui/SubmitButton";
+import Input from "../ui/Input";
 
 export function CreateChannelForm({
   serverId,

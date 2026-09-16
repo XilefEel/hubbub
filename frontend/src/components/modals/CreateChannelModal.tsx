@@ -1,6 +1,6 @@
 import { useCreateChannelModal } from "../../stores/useModalStore";
 import { CreateChannelForm } from "../channels/CreateChannelForm";
-import { Dialog } from "../ui/Dialog";
+import Dialog from "../ui/Dialog";
 
 export default function CreateChannelModal() {
   const { isOpen, serverId, closeModal } = useCreateChannelModal();

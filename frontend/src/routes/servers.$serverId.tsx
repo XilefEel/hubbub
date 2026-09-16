@@ -10,7 +10,7 @@ import {
 import { ChannelList } from "../components/channels/ChannelList";
 import { MemberList } from "../components/servers/MemberList";
 import { PanelLeft } from "lucide-react";
-import { Tooltip } from "../components/ui/Tooltip";
+import Tooltip from "../components/ui/Tooltip";
 import { useRef } from "react";
 import { usePanelSync } from "../hooks/usePanelSync";
 import { useUIActions } from "../stores/useUIStore";

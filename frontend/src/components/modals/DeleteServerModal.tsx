@@ -1,5 +1,5 @@
 import { useDeleteServerModal } from "../../stores/useModalStore";
-import { ConfirmDialog } from "../ui/ConfirmDialog";
+import ConfirmDialog from "../ui/ConfirmDialog";
 import { useDeleteServer } from "../../hooks/useServers";
 
 export default function DeleteServerModal() {

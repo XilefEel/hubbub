@@ -3,7 +3,7 @@ import { useServers } from "../../hooks/useServers";
 import { Compass, Home, Plus, Settings } from "lucide-react";
 import { cn } from "cn";
 import { ServerContextMenu } from "../context-menus/ServerContextMenu";
-import { Tooltip } from "../ui/Tooltip";
+import Tooltip from "../ui/Tooltip";
 import {
   useCreateServerModal,
   useJoinServerModal,

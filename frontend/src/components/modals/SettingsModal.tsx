@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSettingsModal } from "../../stores/useModalStore";
-import { Dialog } from "../ui/Dialog";
+import Dialog from "../ui/Dialog";
 import { User, Palette } from "lucide-react";
 import { cn } from "cn";
 import AccountSettings from "../settings/AccountSettings";

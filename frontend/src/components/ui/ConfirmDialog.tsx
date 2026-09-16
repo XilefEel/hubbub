@@ -1,7 +1,7 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { cn } from "cn";
 
-export function ConfirmDialog({
+export default function ConfirmDialog({
   open,
   onOpenChange,
   title,

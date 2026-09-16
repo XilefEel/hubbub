@@ -1,6 +1,6 @@
 import { useCreateServerModal } from "../../stores/useModalStore";
 import { CreateServerForm } from "../servers/CreateServerForm";
-import { Dialog } from "../ui/Dialog";
+import Dialog from "../ui/Dialog";
 
 export default function CreateServerModal() {
   const { isOpen, closeModal } = useCreateServerModal();

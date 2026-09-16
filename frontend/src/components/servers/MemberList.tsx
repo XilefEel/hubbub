@@ -4,9 +4,9 @@ import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { usePresence } from "../../hooks/usePresence";
 import { useServerMembers } from "../../hooks/useServerMembers";
 import MemberListItem from "./MemberListItem";
-import { Tooltip } from "../ui/Tooltip";
+import Tooltip from "../ui/Tooltip";
 import { useUIActions } from "../../stores/useUIStore";
-import { Input } from "../ui/Input";
+import Input from "../ui/Input";
 
 export function MemberList({ serverId }: { serverId: string }) {
   const {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useCreateServer } from "../../hooks/useServers";
-import { Input } from "../ui/Input";
-import { SubmitButton } from "../ui/SubmitButton";
+import Input from "../ui/Input";
+import SubmitButton from "../ui/SubmitButton";
 
 export function CreateServerForm({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");

@@ -1,6 +1,6 @@
 import { useJoinServerModal } from "../../stores/useModalStore";
 import { JoinServerForm } from "../servers/JoinServerForm";
-import { Dialog } from "../ui/Dialog";
+import Dialog from "../ui/Dialog";
 
 export default function JoinServerModal() {
   const { isOpen, closeModal } = useJoinServerModal();

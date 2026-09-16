@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useChannels } from "../../hooks/useChannels";
 import { Volume2, Hash, Plus } from "lucide-react";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
-import { Tooltip } from "../ui/Tooltip";
+import Tooltip from "../ui/Tooltip";
 import { useCreateChannelModal } from "../../stores/useModalStore";
 import { ChannelContextMenu } from "../context-menus/ChannelContextMenu";
 

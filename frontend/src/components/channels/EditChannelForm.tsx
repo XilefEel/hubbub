@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUpdateChannel } from "../../hooks/useChannels";
-import { SubmitButton } from "../ui/SubmitButton";
-import { Input } from "../ui/Input";
+import SubmitButton from "../ui/SubmitButton";
+import Input from "../ui/Input";
 
 export function EditChannelForm({
   channelId,

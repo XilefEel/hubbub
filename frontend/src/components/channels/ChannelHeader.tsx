@@ -1,6 +1,6 @@
 import { Volume2, Hash, PanelLeft, PanelRight } from "lucide-react";
 import type { Channel } from "../../lib/types";
-import { Tooltip } from "../ui/Tooltip";
+import Tooltip from "../ui/Tooltip";
 import {
   useIsChannelsOpen,
   useIsMembersOpen,

@@ -1,5 +1,5 @@
 import { useDeleteMessageModal } from "../../stores/useModalStore";
-import { ConfirmDialog } from "../ui/ConfirmDialog";
+import ConfirmDialog from "../ui/ConfirmDialog";
 import { useDeleteMessage } from "../../hooks/useMessages";
 
 export default function DeleteMessageModal() {

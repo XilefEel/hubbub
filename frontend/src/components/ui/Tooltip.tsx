@@ -1,7 +1,7 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "cn";
 
-export function Tooltip({
+export default function Tooltip({
   children,
   content,
   side = "top",

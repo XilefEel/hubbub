@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useUpdateUsernameModal } from "../../stores/useModalStore";
-import { Dialog } from "../ui/Dialog";
+import Dialog from "../ui/Dialog";
 import { useAuth, useUpdateUsername } from "../../hooks/useAuth";
-import { SubmitButton } from "../ui/SubmitButton";
-import { Input } from "../ui/Input";
+import SubmitButton from "../ui/SubmitButton";
+import Input from "../ui/Input";
 
 export default function UpdateUsernameModal() {
   const { user } = useAuth();

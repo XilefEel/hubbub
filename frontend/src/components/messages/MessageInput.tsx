@@ -3,7 +3,7 @@ import { ArrowUp, Plus, Upload, X } from "lucide-react";
 import { FilePreview } from "./FilePreview";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import type { Message } from "../../lib/types";
-import { Tooltip } from "../ui/Tooltip";
+import Tooltip from "../ui/Tooltip";
 import { useSendMessage } from "../../hooks/useMessages";
 import { cn } from "cn";
 

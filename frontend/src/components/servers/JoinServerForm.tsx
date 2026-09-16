@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useJoinServer } from "../../hooks/useServers";
-import { Input } from "../ui/Input";
-import { SubmitButton } from "../ui/SubmitButton";
+import Input from "../ui/Input";
+import SubmitButton from "../ui/SubmitButton";
 
 export function JoinServerForm({ onClose }: { onClose: () => void }) {
   const [inviteCode, setInviteCode] = useState("");

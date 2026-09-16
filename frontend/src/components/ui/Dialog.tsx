@@ -2,7 +2,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { cn } from "cn";
 import { X } from "lucide-react";
 
-export function Dialog({
+export default function Dialog({
   open,
   onOpenChange,
   title,
