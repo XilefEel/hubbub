@@ -4,6 +4,8 @@ import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import { useCreateChannel } from "../../hooks/useChannels";
 import { Hash, Volume2 } from "lucide-react";
 import { cn } from "cn";
+import { SubmitButton } from "../ui/SubmitButton";
+import { Input } from "../ui/Input";
 
 export function CreateChannelForm({
   serverId,
@@ -108,12 +110,12 @@ export function CreateChannelForm({
             )}
           </span>
 
-          <input
+          <Input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="New Channel"
-            className="w-full rounded-lg border border-zinc-200 py-1.5 pr-3 pl-9 text-sm outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-zinc-700"
+            className="py-1.5 pr-3 pl-9"
           />
         </div>
       </div>
@@ -123,13 +125,9 @@ export function CreateChannelForm({
       )}
 
       <div className="flex justify-end gap-2">
-        <button
-          type="submit"
-          disabled={createChannel.isPending || name.trim() === ""}
-          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
-        >
+        <SubmitButton disabled={createChannel.isPending || name.trim() === ""}>
           Create channel
-        </button>
+        </SubmitButton>
       </div>
     </form>
   );

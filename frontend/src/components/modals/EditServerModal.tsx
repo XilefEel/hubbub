@@ -4,6 +4,8 @@ import { Dialog } from "../ui/Dialog";
 import { useUpdateServer } from "../../hooks/useServers";
 import { pb } from "../../lib/pocketbase";
 import type { Server } from "../../lib/types";
+import { Input } from "../ui/Input";
+import { SubmitButton } from "../ui/SubmitButton";
 
 export default function EditServerModal() {
   const { isOpen, server, closeModal } = useEditServerModal();
@@ -139,12 +141,11 @@ function EditServerModalContent({
         </div>
 
         <div className="flex flex-col gap-2">
-          <input
+          <Input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Server name"
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 outline-none focus:outline-none dark:border-zinc-700"
           />
 
           {updateServer.isError && (
@@ -152,15 +153,13 @@ function EditServerModalContent({
           )}
 
           <div className="flex justify-end">
-            <button
-              type="submit"
+            <SubmitButton
               disabled={
                 updateServer.isPending || !hasChanges || name.trim() === ""
               }
-              className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
             >
               Save
-            </button>
+            </SubmitButton>
           </div>
         </div>
       </form>

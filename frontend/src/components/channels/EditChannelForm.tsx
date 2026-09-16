@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useUpdateChannel } from "../../hooks/useChannels";
+import { SubmitButton } from "../ui/SubmitButton";
+import { Input } from "../ui/Input";
 
 export function EditChannelForm({
   channelId,
@@ -29,13 +31,12 @@ export function EditChannelForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
-      <input
+      <Input
         autoFocus
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Channel name"
         disabled={editChannel.isPending}
-        className="rounded-lg border border-zinc-200 px-2 py-1 text-sm outline-none focus:outline-none dark:border-zinc-700"
       />
 
       {editChannel.isError && (
@@ -43,15 +44,13 @@ export function EditChannelForm({
       )}
 
       <div className="flex justify-end gap-2">
-        <button
-          type="submit"
+        <SubmitButton
           disabled={
             editChannel.isPending || name.trim() === "" || name === channelName
           }
-          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
         >
           {editChannel.isPending ? "Saving..." : "Save"}
-        </button>
+        </SubmitButton>
       </div>
     </form>
   );

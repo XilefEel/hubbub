@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useCreateServer } from "../../hooks/useServers";
+import { Input } from "../ui/Input";
+import { SubmitButton } from "../ui/SubmitButton";
 
 export function CreateServerForm({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
@@ -21,12 +23,11 @@ export function CreateServerForm({ onClose }: { onClose: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
-      <input
+      <Input
         autoFocus
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Channel name"
-        className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none dark:border-zinc-700"
       />
 
       {createServer.isError && (
@@ -34,13 +35,9 @@ export function CreateServerForm({ onClose }: { onClose: () => void }) {
       )}
 
       <div className="flex justify-end gap-2">
-        <button
-          type="submit"
-          disabled={createServer.isPending || name.trim() === ""}
-          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
-        >
+        <SubmitButton disabled={createServer.isPending || name.trim() === ""}>
           Create channel
-        </button>
+        </SubmitButton>
       </div>
     </form>
   );

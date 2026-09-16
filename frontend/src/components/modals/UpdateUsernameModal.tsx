@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useUpdateUsernameModal } from "../../stores/useModalStore";
 import { Dialog } from "../ui/Dialog";
 import { useAuth, useUpdateUsername } from "../../hooks/useAuth";
+import { SubmitButton } from "../ui/SubmitButton";
+import { Input } from "../ui/Input";
 
 export default function UpdateUsernameModal() {
   const { user } = useAuth();
@@ -28,12 +30,11 @@ export default function UpdateUsernameModal() {
   return (
     <Dialog open={isOpen} onOpenChange={closeModal} title="Update Username">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
-        <input
+        <Input
           autoFocus
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="New username"
-          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none"
         />
 
         {updateUsername.isError && (
@@ -41,17 +42,15 @@ export default function UpdateUsernameModal() {
         )}
 
         <div className="flex justify-end gap-2">
-          <button
-            type="submit"
+          <SubmitButton
             disabled={
               updateUsername.isPending ||
               name.trim() === "" ||
               name === user?.name
             }
-            className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
           >
             Update
-          </button>
+          </SubmitButton>
         </div>
       </form>
     </Dialog>

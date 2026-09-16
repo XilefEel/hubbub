@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useJoinServer } from "../../hooks/useServers";
+import { Input } from "../ui/Input";
+import { SubmitButton } from "../ui/SubmitButton";
 
 export function JoinServerForm({ onClose }: { onClose: () => void }) {
   const [inviteCode, setInviteCode] = useState("");
@@ -21,12 +23,11 @@ export function JoinServerForm({ onClose }: { onClose: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-sm">
-      <input
+      <Input
         autoFocus
         value={inviteCode}
         onChange={(e) => setInviteCode(e.target.value)}
         placeholder="Invite code"
-        className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:outline-none dark:border-zinc-700"
       />
 
       {joinServer.isError && (
@@ -34,13 +35,11 @@ export function JoinServerForm({ onClose }: { onClose: () => void }) {
       )}
 
       <div className="flex justify-end gap-2">
-        <button
-          type="submit"
+        <SubmitButton
           disabled={joinServer.isPending || inviteCode.trim() === ""}
-          className="rounded-lg bg-teal-500 px-3 py-1.5 text-white disabled:opacity-50"
         >
           Join channel
-        </button>
+        </SubmitButton>
       </div>
     </form>
   );
