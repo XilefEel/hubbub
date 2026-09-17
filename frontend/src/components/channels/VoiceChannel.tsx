@@ -1,17 +1,19 @@
 import {
   useJoinVoiceChannel,
   useLeaveVoiceChannel,
+  useVoiceParticipants,
 } from "../../hooks/useVoiceChannel";
 import type { Channel } from "../../lib/types";
 import { useActiveChannelId } from "../../stores/useVoiceChannelStore";
 
 export function VoiceChannel({ channel }: { channel: Channel }) {
+  const { data: participants } = useVoiceParticipants(channel.id);
+
   const activeChannelId = useActiveChannelId();
   const joinVoice = useJoinVoiceChannel();
   const leaveVoice = useLeaveVoiceChannel();
 
   const isConnected = activeChannelId === channel.id;
-
   const isPending = joinVoice.isPending && joinVoice.variables === channel.id;
 
   return (
@@ -35,6 +37,21 @@ export function VoiceChannel({ channel }: { channel: Channel }) {
       )}
 
       {joinVoice.isError && <p>Couldn't join: {joinVoice.error.message}</p>}
+
+      {leaveVoice.isError && <p>Couldn't leave: {leaveVoice.error.message}</p>}
+
+      <div>
+        <h4>Participants:</h4>
+        {participants ? (
+          <ul>
+            {participants.map((p) => (
+              <li key={p.id}>{p.expand?.user?.name}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>Loading participants...</p>
+        )}
+      </div>
     </div>
   );
 }

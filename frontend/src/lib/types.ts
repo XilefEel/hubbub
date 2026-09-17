@@ -63,3 +63,12 @@ export type VoiceTokenResponse = {
   token: string;
   url: string;
 };
+
+export type VoiceParticipant = RecordModel & {
+  channel: string; // channel id
+  user: string; // user id
+  expand?: {
+    user?: User;
+    channel?: Channel;
+  };
+};
