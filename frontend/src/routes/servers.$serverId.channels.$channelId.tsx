@@ -9,6 +9,7 @@ import { MessageList } from "../components/messages/MessageList";
 import { useState } from "react";
 import type { Message } from "../lib/types";
 import ChannelHeader from "../components/channels/ChannelHeader";
+import { VoiceChannel } from "../components/channels/VoiceChannel";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -42,37 +43,42 @@ function ChannelPage() {
 
   if (channelIsError)
     return (
-      <p className="h-full bg-white p-8 text-red-500 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
+      <p className="h-full bg-white p-8 text-red-500 dark:bg-zinc-800 dark:text-zinc-100">
         Channel not found or access denied: {channelError.message}
       </p>
     );
 
-  return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col p-4 text-zinc-900 dark:text-zinc-100">
-      <ChannelHeader channel={channel} />
+  if (!channel) return null;
 
-      {messagesLoading && <p>Loading messages...</p>}
+  if (channel.type === "text")
+    return (
+      <div className="mx-auto flex h-full max-w-3xl flex-col p-4 text-zinc-900 dark:text-zinc-100">
+        <ChannelHeader channel={channel} />
 
-      {messagesIsError && (
-        <p className="text-red-500">
-          Error loading messages: {messagesError.message}
-        </p>
-      )}
+        {messagesLoading && <p>Loading messages...</p>}
 
-      <MessageList
-        messages={messages}
-        channel={channel!}
-        onReply={setReplyingTo}
-      />
+        {messagesIsError && (
+          <p className="text-red-500">
+            Error loading messages: {messagesError.message}
+          </p>
+        )}
 
-      <TypingIndicator typingNames={typingNames} />
+        <MessageList
+          messages={messages}
+          channel={channel!}
+          onReply={setReplyingTo}
+        />
 
-      <MessageInput
-        replyingTo={replyingTo}
-        channelId={channelId}
-        onTyping={sendTyping}
-        onCancelReply={() => setReplyingTo(null)}
-      />
-    </div>
-  );
+        <TypingIndicator typingNames={typingNames} />
+
+        <MessageInput
+          replyingTo={replyingTo}
+          channelId={channelId}
+          onTyping={sendTyping}
+          onCancelReply={() => setReplyingTo(null)}
+        />
+      </div>
+    );
+
+  return <VoiceChannel channel={channel} />;
 }

@@ -58,3 +58,8 @@ export type Reaction = RecordModel & {
     user?: User;
   };
 };
+
+export type VoiceTokenResponse = {
+  token: string;
+  url: string;
+};
