@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/livekit/protocol/auth"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/subscriptions"
@@ -14,6 +16,7 @@ func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/servers/join", joinServerHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/channels/{channelId}/typing", typingHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/presence/heartbeat", heartbeatHandler).Bind(apis.RequireAuth())
+	se.Router.POST("/api/voice/token", voiceTokenHandler).Bind(apis.RequireAuth())
 }
 
 // auto add the owner to server_members when a server is created
@@ -115,4 +118,72 @@ func typingHandler(e *core.RequestEvent) error {
 func heartbeatHandler(e *core.RequestEvent) error {
 	presenceMap.Store(e.Auth.Id, time.Now())
 	return e.NoContent(200)
+}
+
+// custom endpoint to mint a LiveKit join token for a voice channel
+func voiceTokenHandler(e *core.RequestEvent) error {
+	if e.Auth == nil {
+		return e.ForbiddenError("You must be logged in to join a voice channel", nil)
+	}
+
+	data := struct {
+		ChannelId string `json:"channelId"`
+	}{}
+
+	if err := e.BindBody(&data); err != nil || data.ChannelId == "" {
+		return e.BadRequestError("channelId is required", err)
+	}
+
+	channel, err := e.App.FindRecordById("channels", data.ChannelId)
+	if err != nil {
+		return e.NotFoundError("Channel not found", err)
+	}
+
+	if channel.GetString("type") != "voice" {
+		return e.BadRequestError("This channel is not a voice channel", nil)
+	}
+
+	if !userCanJoinChannel(e.App, e.Auth, channel) {
+		return e.ForbiddenError("You are not allowed to join this channel", nil)
+	}
+
+	apiKey := os.Getenv("LIVEKIT_API_KEY")
+	apiSecret := os.Getenv("LIVEKIT_API_SECRET")
+
+	at := auth.NewAccessToken(apiKey, apiSecret)
+
+	grant := &auth.VideoGrant{
+		RoomJoin: true,
+		Room:     data.ChannelId,
+	}
+
+	at.SetVideoGrant(grant).
+		SetIdentity(e.Auth.Id).
+		SetName(e.Auth.GetString("name")).
+		SetValidFor(time.Hour)
+
+	token, err := at.ToJWT()
+	if err != nil {
+		return e.InternalServerError("Failed to create voice token", err)
+	}
+
+	return e.JSON(http.StatusOK, map[string]string{
+		"token": token,
+		"url":   os.Getenv("LIVEKIT_URL"),
+	})
+}
+
+func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Record) bool {
+	serverId := channel.GetString("server")
+	if serverId == "" {
+		return false
+	}
+
+	membership, err := app.FindFirstRecordByFilter(
+		"server_members",
+		"server = {:server} && user = {:user}",
+		map[string]any{"server": serverId, "user": authRecord.Id},
+	)
+
+	return err == nil && membership != nil
 }
