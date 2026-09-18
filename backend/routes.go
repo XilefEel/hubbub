@@ -18,7 +18,7 @@ func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/channels/{channelId}/typing", typingHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/presence/heartbeat", heartbeatHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/voice/token", voiceTokenHandler).Bind(apis.RequireAuth())
-	se.Router.POST("/api/voice/webhook", voiceWebhookHandler)
+	se.Router.POST("/api/voice/webhook", voiceWebhookHandler).Bind(apis.RequireAuth())
 }
 
 // auto add the owner to server_members when a server is created
@@ -27,6 +27,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 		InviteCode string `json:"inviteCode"`
 	}{}
 
+	// read the request body
 	if err := e.BindBody(&data); err != nil {
 		return e.BadRequestError("Failed to read request data", err)
 	}
@@ -35,6 +36,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 		return e.ForbiddenError("You must be logged in to join a server", nil)
 	}
 
+	// find the server by invite code
 	server, err := e.App.FindFirstRecordByFilter(
 		"servers",
 		"inviteCode = {:code}",
@@ -45,6 +47,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 		return e.NotFoundError("Server not found", err)
 	}
 
+	// check if the user is already a member of the server
 	existing, _ := e.App.FindFirstRecordByFilter(
 		"server_members",
 		"server = {:server} && user = {:user}",
@@ -55,6 +58,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 		return e.BadRequestError("You are already a member of this server", nil)
 	}
 
+	// add the user to server_members
 	collection, err := e.App.FindCollectionByNameOrId("server_members")
 	if err != nil {
 		return err
@@ -69,7 +73,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 		return err
 	}
 
-	return e.JSON(200, map[string]any{
+	return e.JSON(http.StatusOK, map[string]any{
 		"message": "Successfully joined the server",
 		"server":  server,
 	})
@@ -77,6 +81,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 
 // endpoint to send typing events to a channel
 func typingHandler(e *core.RequestEvent) error {
+	// create a new payload for the typing event
 	channelId := e.Request.PathValue("channelId")
 	subscription := "channel_" + channelId
 
@@ -90,7 +95,11 @@ func typingHandler(e *core.RequestEvent) error {
 		return e.InternalServerError("Failed to marshal payload", err)
 	}
 
-	msg := subscriptions.Message{Name: subscription, Data: payload}
+	// create the message to broadcast
+	msg := subscriptions.Message{
+		Name: subscription,
+		Data: payload,
+	}
 
 	// protect agaisnt unauthorized users
 	senderId := ""
@@ -104,8 +113,8 @@ func typingHandler(e *core.RequestEvent) error {
 			continue
 		}
 
+		// prevent the sender from receiving their own typing event
 		authRecord, _ := client.Get(apis.RealtimeClientAuthKey).(*core.Record)
-
 		if authRecord != nil && authRecord.Id == senderId {
 			continue
 		}
@@ -119,7 +128,7 @@ func typingHandler(e *core.RequestEvent) error {
 // endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
 	presenceMap.Store(e.Auth.Id, time.Now())
-	return e.NoContent(200)
+	return e.NoContent(http.StatusOK)
 }
 
 // endpoint to mint a LiveKit join token for a voice channel
@@ -128,10 +137,12 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 		return e.ForbiddenError("You must be logged in to join a voice channel", nil)
 	}
 
+	// read the request body
 	data := struct {
 		ChannelId string `json:"channelId"`
 	}{}
 
+	// validate the request body
 	if err := e.BindBody(&data); err != nil || data.ChannelId == "" {
 		return e.BadRequestError("channelId is required", err)
 	}
@@ -149,26 +160,31 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 		return e.ForbiddenError("You are not allowed to join this channel", nil)
 	}
 
+	// create a LiveKit access token for the user to join the voice channel
 	apiKey := os.Getenv("LIVEKIT_API_KEY")
 	apiSecret := os.Getenv("LIVEKIT_API_SECRET")
 
 	at := auth.NewAccessToken(apiKey, apiSecret)
 
+	// set the video grant to allow joining the room
 	grant := &auth.VideoGrant{
 		RoomJoin: true,
 		Room:     data.ChannelId,
 	}
 
+	// set the identity to the user's id and name
 	at.SetVideoGrant(grant).
 		SetIdentity(e.Auth.Id).
 		SetName(e.Auth.GetString("name")).
 		SetValidFor(time.Hour)
 
+	// generate the JWT token
 	token, err := at.ToJWT()
 	if err != nil {
 		return e.InternalServerError("Failed to create voice token", err)
 	}
 
+	// send the token and LiveKit URL to the client
 	return e.JSON(http.StatusOK, map[string]string{
 		"token": token,
 		"url":   os.Getenv("LIVEKIT_URL"),
@@ -181,6 +197,7 @@ func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Rec
 		return false
 	}
 
+	// check if the user is a member of the server
 	membership, err := app.FindFirstRecordByFilter(
 		"server_members",
 		"server = {:server} && user = {:user}",
@@ -194,11 +211,12 @@ func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Rec
 func voiceWebhookHandler(e *core.RequestEvent) error {
 	app := e.App
 
+	// create a key provider for verifying the webhook signature
 	apiKey := os.Getenv("LIVEKIT_API_KEY")
 	apiSecret := os.Getenv("LIVEKIT_API_SECRET")
-
 	keyProvider := auth.NewSimpleKeyProvider(apiKey, apiSecret)
 
+	// receive the webhook event and verify the signature
 	event, err := webhook.ReceiveWebhookEvent(e.Request, keyProvider)
 	if err != nil {
 		return apis.NewBadRequestError("invalid webhook signature", nil)
@@ -207,26 +225,24 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 	channelId := event.Room.GetName()
 	userId := event.Participant.GetIdentity()
 
+	// handle the event based on its type
 	switch event.Event {
 	case "participant_left":
 		// remove the participant from voice_participants
-		records, err := app.FindRecordsByFilter(
+		record, err := app.FindFirstRecordByFilter(
 			"voice_participants",
 			"channel = {:channel} && user = {:user}",
-			"-created",
-			1,
-			0,
 			map[string]any{"channel": channelId, "user": userId},
 		)
 
-		if err != nil || len(records) == 0 {
+		if err != nil {
 			return e.JSON(http.StatusOK, map[string]bool{"ok": true})
 		}
 
-		app.Delete(records[0])
+		app.Delete(record)
 
 	case "room_finished":
-		// remove all participants from this channel
+		// remove all participants from voice_participants for this channel
 		records, err := app.FindRecordsByFilter(
 			"voice_participants",
 			"channel = {:channel}",

@@ -20,7 +20,9 @@ type PresenceEvent struct {
 func broadcastPresence(app core.App) {
 	onlineIds := []string{}
 	now := time.Now()
+	subscription := "global_presence"
 
+	// for each user in the presence map
 	presenceMap.Range(func(key, value any) bool {
 		userId := key.(string)
 		lastSeen := value.(time.Time)
@@ -35,6 +37,7 @@ func broadcastPresence(app core.App) {
 		return true
 	})
 
+	// create the presence event payload
 	payload, err := json.Marshal(PresenceEvent{
 		Type:   "presence_update",
 		Online: onlineIds,
@@ -45,19 +48,24 @@ func broadcastPresence(app core.App) {
 		return
 	}
 
+	// create the message to broadcast
 	msg := subscriptions.Message{
-		Name: "global_presence",
+		Name: subscription,
 		Data: payload,
 	}
 
+	// for each client subscribed to the channel, send the presence update
 	for _, client := range app.SubscriptionsBroker().Clients() {
-		if client.HasSubscription("global_presence") {
-			client.Send(msg)
+		if !client.HasSubscription(subscription) {
+			continue
 		}
+
+		client.Send(msg)
 	}
 }
 
 func startPresenceHeartbeat(app core.App) {
+	// start a goroutine to periodically broadcast presence updates
 	go func() {
 		ticker := time.NewTicker(15 * time.Second)
 		defer ticker.Stop()
