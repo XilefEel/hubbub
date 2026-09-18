@@ -1,10 +1,9 @@
-import { Link } from "@tanstack/react-router";
 import { useChannels } from "../../hooks/useChannels";
-import { Volume2, Hash, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import Tooltip from "../ui/Tooltip";
 import { useCreateChannelModal } from "../../stores/useModalStore";
-import { ChannelContextMenu } from "../context-menus/ChannelContextMenu";
+import ChannelItem from "./ChannelItem";
 
 export function ChannelList({ serverId }: { serverId: string }) {
   const { data: channel, isLoading, isError, error } = useChannels(serverId);
@@ -40,31 +39,12 @@ export function ChannelList({ serverId }: { serverId: string }) {
 
       <ul className="flex flex-col gap-1">
         {channel?.map((c) => (
-          <ChannelContextMenu
+          <ChannelItem
             key={c.id}
             channel={c}
             serverId={serverId}
             isOwner={isOwner}
-          >
-            <li className="flex items-center justify-between text-sm">
-              <Link
-                to="/servers/$serverId/channels/$channelId"
-                params={{ serverId, channelId: c.id }}
-                className="flex w-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
-                activeProps={{
-                  className:
-                    "bg-zinc-100 hover:bg-zinc-100 font-medium dark:bg-zinc-700 dark:hover:bg-zinc-700",
-                }}
-              >
-                {c.type === "voice" ? (
-                  <Volume2 className="size-4 shrink-0" />
-                ) : (
-                  <Hash className="size-4 shrink-0" />
-                )}
-                <span>{c.name}</span>
-              </Link>
-            </li>
-          </ChannelContextMenu>
+          />
         ))}
       </ul>
     </div>

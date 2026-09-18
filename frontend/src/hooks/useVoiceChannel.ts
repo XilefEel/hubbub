@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   Room,
   RoomEvent,
@@ -30,6 +35,20 @@ export function useJoinVoiceChannel() {
     mutationFn: async (channelId: string) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to join voice channels");
+
+      const current = useVoiceChannelStore.getState();
+      if (
+        current.room &&
+        current.activeChannelId &&
+        current.activeChannelId !== channelId
+      ) {
+        current.room.disconnect();
+        if (current.participantRecordId) {
+          await pb
+            .collection("voice_participants")
+            .delete(current.participantRecordId);
+        }
+      }
 
       const { token, url } = await getVoiceToken(channelId);
 
@@ -134,11 +153,32 @@ export function useVoiceParticipants(channelId: string) {
 
   useEffect(() => {
     if (!channelId) return;
+    const release = getVoiceSubscription(channelId, queryClient);
+    return release;
+  }, [channelId, queryClient]);
 
-    let cancelled = false;
-    let unsub: (() => void) | undefined;
+  return query;
+}
 
-    pb.collection("voice_participants")
+const registry = new Map<
+  string,
+  {
+    refCount: number;
+    unsubPromise: Promise<() => void>;
+  }
+>();
+
+function getVoiceSubscription(
+  channelId: string,
+  queryClient: QueryClient,
+): () => void {
+  const queryKey = ["voice_participants", channelId];
+
+  let entry = registry.get(channelId);
+
+  if (!entry) {
+    const unsubPromise = pb
+      .collection("voice_participants")
       .subscribe<VoiceParticipant>(
         "*",
         (e) => {
@@ -146,41 +186,43 @@ export function useVoiceParticipants(channelId: string) {
             queryClient.setQueryData<VoiceParticipant[]>(
               queryKey,
               (old = []) => {
-                if (old.some((msg) => msg.id === e.record.id)) return old;
+                if (old.some((vp) => vp.id === e.record.id)) return old;
                 return [...old, e.record];
               },
             );
           }
-
           if (e.action === "update") {
             queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old = []) =>
-              old.map((msg) => (msg.id === e.record.id ? e.record : msg)),
+              old.map((vp) => (vp.id === e.record.id ? e.record : vp)),
             );
           }
-
           if (e.action === "delete") {
             queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old = []) =>
-              old.filter((msg) => msg.id !== e.record.id),
+              old.filter((vp) => vp.id !== e.record.id),
             );
           }
         },
-        {
-          filter: `channel = "${channelId}"`,
-          expand: "user",
-        },
-      )
-      .then((fn) => {
-        if (cancelled) fn();
-        else unsub = fn;
-      })
-      .catch((err) => console.warn("voice channel subscription failed:", err));
+        { filter: `channel = "${channelId}"`, expand: "user" },
+      );
 
-    return () => {
-      cancelled = true;
-      unsub?.();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelId, queryClient]);
+    entry = { refCount: 0, unsubPromise };
+    registry.set(channelId, entry);
+  }
 
-  return query;
+  entry.refCount += 1;
+
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+
+    const current = registry.get(channelId);
+    if (!current) return;
+
+    current.refCount -= 1;
+    if (current.refCount <= 0) {
+      registry.delete(channelId);
+      current.unsubPromise.then((unsub) => unsub());
+    }
+  };
 }
