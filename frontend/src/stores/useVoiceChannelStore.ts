@@ -5,12 +5,12 @@ import { Room } from "livekit-client";
 type VoiceChannelStore = {
   room: Room | null;
   activeChannelId: string | null;
-  participantRecordId: string | null;
+  presenceId: string | null;
 
   isMuted: boolean;
   isDeafened: boolean;
 
-  setRoom: (room: Room, channelId: string, participantRecordId: string) => void;
+  setRoom: (room: Room, channelId: string, presenceId: string) => void;
   clearRoom: () => void;
   setMuted: (muted: boolean) => void;
   setDeafened: (deafened: boolean) => void;
@@ -19,15 +19,14 @@ type VoiceChannelStore = {
 export const useVoiceChannelStore = create<VoiceChannelStore>((set) => ({
   room: null,
   activeChannelId: null,
-  participantRecordId: null,
+  presenceId: null,
 
   isMuted: false,
   isDeafened: false,
 
-  setRoom: (room, channelId, participantRecordId) =>
-    set({ room, activeChannelId: channelId, participantRecordId }),
-  clearRoom: () =>
-    set({ room: null, activeChannelId: null, participantRecordId: null }),
+  setRoom: (room, channelId, presenceId) =>
+    set({ room, activeChannelId: channelId, presenceId }),
+  clearRoom: () => set({ room: null, activeChannelId: null, presenceId: null }),
 
   setMuted: (isMuted) => set({ isMuted }),
   setDeafened: (isDeafened) => set({ isDeafened }),
@@ -48,8 +47,7 @@ export const useVoiceRoom = () => useVoiceChannelStore((s) => s.room);
 export const useActiveChannelId = () =>
   useVoiceChannelStore((s) => s.activeChannelId);
 
-export const useParticipantRecordId = () =>
-  useVoiceChannelStore((s) => s.participantRecordId);
+export const usePresenceId = () => useVoiceChannelStore((s) => s.presenceId);
 
 export const useIsMuted = () => useVoiceChannelStore((s) => s.isMuted);
 
