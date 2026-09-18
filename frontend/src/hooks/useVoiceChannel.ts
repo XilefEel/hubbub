@@ -4,14 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import {
-  Room,
-  RoomEvent,
-  Track,
-  RemoteTrack,
-  RemoteTrackPublication,
-  RemoteParticipant,
-} from "livekit-client";
+import { Room } from "livekit-client";
 import { pb } from "../lib/pocketbase";
 import type { VoiceParticipant, VoiceTokenResponse } from "../lib/types";
 import {
@@ -52,28 +45,6 @@ export function useJoinVoiceChannel() {
       const { token, url } = await getVoiceToken(channelId);
 
       const room = new Room();
-
-      room.on(
-        RoomEvent.TrackSubscribed,
-        (
-          track: RemoteTrack,
-          _pub: RemoteTrackPublication,
-          participant: RemoteParticipant,
-        ) => {
-          const el = track.attach();
-          if (track.kind === Track.Kind.Audio) {
-            document.body.appendChild(el);
-          } else if (track.kind === Track.Kind.Video) {
-            document
-              .getElementById(`participant-${participant.identity}`)
-              ?.appendChild(el);
-          }
-        },
-      );
-
-      room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
-        track.detach().forEach((el) => el.remove());
-      });
 
       const existing = await pb
         .collection<VoiceParticipant>("voice_participants")
