@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/livekit/protocol/auth"
+	"github.com/livekit/protocol/webhook"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/subscriptions"
@@ -17,6 +18,7 @@ func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/channels/{channelId}/typing", typingHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/presence/heartbeat", heartbeatHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/voice/token", voiceTokenHandler).Bind(apis.RequireAuth())
+	se.Router.POST("/api/voice/webhook", voiceWebhookHandler)
 }
 
 // auto add the owner to server_members when a server is created
@@ -73,7 +75,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 	})
 }
 
-// custom endpoint to send typing events to a channel
+// endpoint to send typing events to a channel
 func typingHandler(e *core.RequestEvent) error {
 	channelId := e.Request.PathValue("channelId")
 	subscription := "channel_" + channelId
@@ -114,13 +116,13 @@ func typingHandler(e *core.RequestEvent) error {
 	return e.NoContent(http.StatusOK)
 }
 
-// custom endpoint to handle presence heartbeat
+// endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
 	presenceMap.Store(e.Auth.Id, time.Now())
 	return e.NoContent(200)
 }
 
-// custom endpoint to mint a LiveKit join token for a voice channel
+// endpoint to mint a LiveKit join token for a voice channel
 func voiceTokenHandler(e *core.RequestEvent) error {
 	if e.Auth == nil {
 		return e.ForbiddenError("You must be logged in to join a voice channel", nil)
@@ -186,4 +188,62 @@ func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Rec
 	)
 
 	return err == nil && membership != nil
+}
+
+// endpoint to handle LiveKit webhooks for voice channel events
+func voiceWebhookHandler(e *core.RequestEvent) error {
+	app := e.App
+
+	apiKey := os.Getenv("LIVEKIT_API_KEY")
+	apiSecret := os.Getenv("LIVEKIT_API_SECRET")
+
+	keyProvider := auth.NewSimpleKeyProvider(apiKey, apiSecret)
+
+	event, err := webhook.ReceiveWebhookEvent(e.Request, keyProvider)
+	if err != nil {
+		return apis.NewBadRequestError("invalid webhook signature", nil)
+	}
+
+	channelId := event.Room.GetName()
+	userId := event.Participant.GetIdentity()
+
+	switch event.Event {
+	case "participant_left":
+		// remove the participant from voice_participants
+		records, err := app.FindRecordsByFilter(
+			"voice_participants",
+			"channel = {:channel} && user = {:user}",
+			"-created",
+			1,
+			0,
+			map[string]any{"channel": channelId, "user": userId},
+		)
+
+		if err != nil || len(records) == 0 {
+			return e.JSON(http.StatusOK, map[string]bool{"ok": true})
+		}
+
+		app.Delete(records[0])
+
+	case "room_finished":
+		// remove all participants from this channel
+		records, err := app.FindRecordsByFilter(
+			"voice_participants",
+			"channel = {:channel}",
+			"-created",
+			200,
+			0,
+			map[string]any{"channel": channelId},
+		)
+
+		if err != nil || len(records) == 0 {
+			return e.JSON(http.StatusOK, map[string]bool{"ok": true})
+		}
+
+		for _, r := range records {
+			app.Delete(r)
+		}
+	}
+
+	return e.JSON(http.StatusOK, map[string]bool{"ok": true})
 }

@@ -100,7 +100,7 @@ export function useJoinVoiceChannel() {
     onSuccess: ({ room, channelId, presenceId }) => {
       setRoom(room, channelId, presenceId);
       queryClient.invalidateQueries({
-        queryKey: ["voice_participants", channelId],
+        queryKey: queryKeys.voiceParticipants.list(channelId),
       });
     },
     onError: (_err, channelId) => {
