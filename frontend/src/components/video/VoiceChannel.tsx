@@ -20,7 +20,7 @@ export function VoiceChannel({ channel }: { channel: Channel }) {
   return (
     <RoomContext.Provider value={room!}>
       <RoomAudioRenderer />
-      <VideoGrid />
+      <VideoGrid channelId={channel.id} />
     </RoomContext.Provider>
   );
 }
