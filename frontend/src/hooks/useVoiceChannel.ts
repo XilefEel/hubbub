@@ -13,6 +13,7 @@ import {
 } from "../stores/useVoiceChannelStore";
 import { useEffect } from "react";
 import { queryKeys } from "../lib/querykeys";
+import { isUniqueConstraintError } from "../lib/utils";
 
 async function getVoiceToken(channelId: string): Promise<VoiceTokenResponse> {
   return pb.send("/api/voice/token", {
@@ -38,47 +39,57 @@ export function useJoinVoiceChannel() {
       ) {
         current.room.disconnect();
         if (current.presenceId) {
-          await pb.collection("voice_participants").delete(current.presenceId);
+          try {
+            await pb
+              .collection("voice_participants")
+              .delete(current.presenceId);
+          } catch {
+            console.warn(
+              "Failed to delete previous voice participant presence",
+            );
+          }
         }
       }
 
       const { token, url } = await getVoiceToken(channelId);
-
       const room = new Room();
 
-      const existing = await pb
-        .collection<VoiceParticipant>("voice_participants")
-        .getFullList({
-          filter: `user = "${userId}" && channel = "${channelId}"`,
-        });
+      try {
+        await room.connect(url, token);
+        await room.localParticipant.setMicrophoneEnabled(true);
 
-      await Promise.all(
-        existing.map((r) => pb.collection("voice_participants").delete(r.id)),
-      );
+        let presenceId: string;
+        try {
+          const participant = await pb
+            .collection<VoiceParticipant>("voice_participants")
+            .create({ user: userId, channel: channelId });
 
-      await room.connect(url, token);
-      await room.localParticipant.setMicrophoneEnabled(true);
+          presenceId = participant.id;
+        } catch (err) {
+          if (isUniqueConstraintError(err)) {
+            const existing = await pb
+              .collection<VoiceParticipant>("voice_participants")
+              .getFirstListItem(
+                `user = "${userId}" && channel = "${channelId}"`,
+              );
 
-      const participant = await pb
-        .collection<VoiceParticipant>("voice_participants")
-        .create({
-          user: userId,
-          channel: channelId,
-        });
+            presenceId = existing.id;
+          } else {
+            throw err;
+          }
+        }
 
-      return { room, channelId, presenceId: participant.id };
+        return { room, channelId, presenceId };
+      } catch (err) {
+        room.disconnect();
+        throw err;
+      }
     },
     onSuccess: ({ room, channelId, presenceId }) => {
       setRoom(room, channelId, presenceId);
       queryClient.invalidateQueries({
         queryKey: queryKeys.voiceParticipants.list(channelId),
       });
-    },
-    onError: (_err, channelId) => {
-      const state = useVoiceChannelStore.getState();
-      if (state.activeChannelId === channelId) {
-        state.room?.disconnect();
-      }
     },
   });
 }
@@ -94,14 +105,20 @@ export function useLeaveVoiceChannel() {
       room?.disconnect();
 
       if (presenceId) {
-        await pb.collection("voice_participants").delete(presenceId);
+        try {
+          await pb.collection("voice_participants").delete(presenceId);
+        } catch {
+          console.warn("Failed to delete voice participant presence on leave");
+        }
       }
     },
     onSuccess: () => {
       const channelId = useVoiceChannelStore.getState().activeChannelId;
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.voiceParticipants.list(channelId!),
-      });
+      if (channelId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.voiceParticipants.list(channelId),
+        });
+      }
       clearRoom();
     },
   });
@@ -118,6 +135,8 @@ export function useVoiceParticipants(channelId: string) {
         expand: "user",
       }),
     enabled: !!channelId,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   useEffect(() => {
@@ -180,6 +199,7 @@ function getVoiceSubscription(
   entry.refCount += 1;
 
   let released = false;
+
   return () => {
     if (released) return;
     released = true;
@@ -190,7 +210,11 @@ function getVoiceSubscription(
     current.refCount -= 1;
     if (current.refCount <= 0) {
       registry.delete(channelId);
-      current.unsubPromise.then((unsub) => unsub());
+      current.unsubPromise
+        .then((unsub) => unsub())
+        .catch((err) => {
+          console.error("Failed to unsubscribe from voice channel:", err);
+        });
     }
   };
 }

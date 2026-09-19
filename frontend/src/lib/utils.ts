@@ -1,5 +1,11 @@
 import { pb } from "./pocketbase";
 import type { Message, Reaction } from "./types";
+import { ClientResponseError } from "pocketbase";
+
+export function isUniqueConstraintError(err: unknown): boolean {
+  if (!(err instanceof ClientResponseError)) return false;
+  return err.status === 400 && JSON.stringify(err.data).includes("unique");
+}
 
 export function formatMessageDate(dateString: string) {
   const date = new Date(dateString);
