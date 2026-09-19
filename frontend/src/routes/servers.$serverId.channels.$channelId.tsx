@@ -9,7 +9,7 @@ import { MessageList } from "../components/messages/MessageList";
 import { useState } from "react";
 import type { Message } from "../lib/types";
 import ChannelHeader from "../components/channels/ChannelHeader";
-import { VoiceChannel } from "../components/channels/VoiceChannel";
+import { VoiceChannel } from "../components/video/VoiceChannel";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,

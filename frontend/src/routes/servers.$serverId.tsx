@@ -14,7 +14,7 @@ import Tooltip from "../components/ui/Tooltip";
 import { useRef } from "react";
 import { usePanelSync } from "../hooks/usePanelSync";
 import { useUIActions } from "../stores/useUIStore";
-import { VoiceToolbar } from "../components/channels/VoiceToolbar";
+import { VoiceToolbar } from "../components/video/VoiceToolbar";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,

@@ -2,16 +2,21 @@ import type { Room } from "livekit-client";
 import {
   useIsDeafened,
   useIsMuted,
+  useIsScreenSharing,
+  useIsVideoEnabled,
   useVoiceActions,
   useVoiceRoom,
 } from "../stores/useVoiceChannelStore";
 import { useLeaveVoiceChannel } from "./useVoiceChannel";
 
 export function useVoiceControls() {
-  const { setMuted, setDeafened } = useVoiceActions();
+  const { setMuted, setDeafened, setVideoEnabled, setScreenSharing } =
+    useVoiceActions();
   const room = useVoiceRoom();
   const isMuted = useIsMuted();
   const isDeafened = useIsDeafened();
+  const isVideoEnabled = useIsVideoEnabled();
+  const isScreenSharing = useIsScreenSharing();
   const leaveVoice = useLeaveVoiceChannel();
 
   const toggleMute = async () => {
@@ -38,11 +43,31 @@ export function useVoiceControls() {
     }
   };
 
+  const toggleVideo = async () => {
+    if (!room) return;
+    const next = !isVideoEnabled;
+    await room.localParticipant.setCameraEnabled(next);
+    setVideoEnabled(next);
+  };
+
+  const toggleScreenShare = async () => {
+    if (!room) return;
+    const next = !isScreenSharing;
+    await room.localParticipant.setScreenShareEnabled(next);
+    setScreenSharing(next);
+  };
+
   const disconnect = () => {
     leaveVoice.mutate();
   };
 
-  return { toggleMute, toggleDeafen, disconnect };
+  return {
+    toggleMute,
+    toggleDeafen,
+    toggleVideo,
+    toggleScreenShare,
+    disconnect,
+  };
 }
 
 function setRemoteAudioEnabled(room: Room, enabled: boolean) {

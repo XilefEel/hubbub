@@ -9,11 +9,15 @@ type VoiceChannelStore = {
 
   isMuted: boolean;
   isDeafened: boolean;
+  isVideoEnabled: boolean;
+  isScreenSharing: boolean;
 
   setRoom: (room: Room, channelId: string, presenceId: string) => void;
   clearRoom: () => void;
   setMuted: (muted: boolean) => void;
   setDeafened: (deafened: boolean) => void;
+  setVideoEnabled: (enabled: boolean) => void;
+  setScreenSharing: (enabled: boolean) => void;
 };
 
 export const useVoiceChannelStore = create<VoiceChannelStore>((set) => ({
@@ -23,6 +27,8 @@ export const useVoiceChannelStore = create<VoiceChannelStore>((set) => ({
 
   isMuted: false,
   isDeafened: false,
+  isVideoEnabled: false,
+  isScreenSharing: false,
 
   setRoom: (room, channelId, presenceId) =>
     set({ room, activeChannelId: channelId, presenceId }),
@@ -30,6 +36,8 @@ export const useVoiceChannelStore = create<VoiceChannelStore>((set) => ({
 
   setMuted: (isMuted) => set({ isMuted }),
   setDeafened: (isDeafened) => set({ isDeafened }),
+  setVideoEnabled: (isVideoEnabled) => set({ isVideoEnabled }),
+  setScreenSharing: (isScreenSharing) => set({ isScreenSharing }),
 }));
 
 export const useVoiceActions = () =>
@@ -39,6 +47,8 @@ export const useVoiceActions = () =>
       clearRoom: s.clearRoom,
       setMuted: s.setMuted,
       setDeafened: s.setDeafened,
+      setVideoEnabled: s.setVideoEnabled,
+      setScreenSharing: s.setScreenSharing,
     })),
   );
 
@@ -52,3 +62,9 @@ export const usePresenceId = () => useVoiceChannelStore((s) => s.presenceId);
 export const useIsMuted = () => useVoiceChannelStore((s) => s.isMuted);
 
 export const useIsDeafened = () => useVoiceChannelStore((s) => s.isDeafened);
+
+export const useIsVideoEnabled = () =>
+  useVoiceChannelStore((s) => s.isVideoEnabled);
+
+export const useIsScreenSharing = () =>
+  useVoiceChannelStore((s) => s.isScreenSharing);
