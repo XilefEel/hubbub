@@ -5,6 +5,8 @@ import { groupReactionsByMessage, isSameGroup } from "../../lib/utils";
 import { useReactions } from "../../hooks/useReactions";
 import { Hash } from "lucide-react";
 import { useMarkChannelRead } from "../../hooks/useReadStates";
+import { useChannelFocus } from "../../hooks/useChannelFocus";
+import { pb } from "../../lib/pocketbase";
 
 export function MessageList({
   messages,
@@ -27,23 +29,30 @@ export function MessageList({
   const scrollToBottom = () =>
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
 
-  const markRead = useMarkChannelRead();
-  const newest = messages?.at(-1)?.created;
+  const { atBottom } = useChannelFocus(messagesEndRef, channel.id);
 
-  useEffect(() => {
-    if (!messages || messages.length === 0) return;
-    scrollToBottom();
-  }, [messages]);
+  const markRead = useMarkChannelRead();
+  const lastMessage = messages?.at(-1);
+  const lastId = lastMessage?.id;
+  const newestMessage = lastMessage?.created;
 
   useEffect(() => {
     scrollToBottom();
   }, [channel.id]);
 
   useEffect(() => {
-    if (!newest) return;
-    markRead.mutate({ channelId: channel.id, lastReadAt: newest });
+    if (!lastId) return;
+    const isOwn = lastMessage?.user === pb.authStore.record?.id;
+    if (!atBottom && !isOwn) return;
+    scrollToBottom();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.id, newest]);
+  }, [lastId]);
+
+  useEffect(() => {
+    if (!newestMessage || !atBottom) return;
+    markRead.mutate({ channelId: channel.id, lastReadAt: newestMessage });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channel.id, newestMessage, atBottom]);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">

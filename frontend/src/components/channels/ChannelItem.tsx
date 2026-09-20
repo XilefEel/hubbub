@@ -1,7 +1,7 @@
 import { Volume2, Hash } from "lucide-react";
 import type { Channel } from "../../lib/types";
 import { ChannelContextMenu } from "../context-menus/ChannelContextMenu";
-import { Link, useParams } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   useVoiceParticipants,
   useJoinVoiceChannel,
@@ -9,7 +9,6 @@ import {
 import { useActiveChannelId } from "../../stores/useVoiceChannelStore";
 import UserAvatar from "../ui/UserAvatar";
 import { useChannelReads } from "../../hooks/useReadStates";
-import { cn } from "cn";
 
 export default function ChannelItem({
   channel,
@@ -20,9 +19,6 @@ export default function ChannelItem({
   serverId: string;
   isOwner: boolean;
 }) {
-  const params = useParams({ strict: false });
-  const isViewing = params.channelId === channel.id;
-
   const { data: participants } = useVoiceParticipants(channel.id);
   const activeChannelId = useActiveChannelId();
   const joinVoice = useJoinVoiceChannel();
@@ -33,7 +29,6 @@ export default function ChannelItem({
   const read = reads?.find((r) => r.channel === channel.id);
 
   const isUnread =
-    !isViewing &&
     channel.type !== "voice" &&
     !!channel.last_message_at &&
     (!read || channel.last_message_at > read.last_read_at);
@@ -68,9 +63,7 @@ export default function ChannelItem({
               <Hash className="size-4 shrink-0" />
             )}
 
-            <span className={cn("truncate", isUnread && "font-medium")}>
-              {channel.name}
-            </span>
+            <span className="truncate">{channel.name}</span>
 
             {isUnread && (
               <span className="ml-auto size-1.5 rounded-full bg-teal-500" />
