@@ -1,9 +1,21 @@
+import { useCreateServerModal } from "../../stores/useModalStore";
+import Dialog from "../ui/Dialog";
 import { useState } from "react";
 import { useCreateServer } from "../../hooks/useServers";
 import Input from "../ui/Input";
 import SubmitButton from "../ui/SubmitButton";
 
-export function CreateServerForm({ onClose }: { onClose: () => void }) {
+export default function CreateServerModal() {
+  const { isOpen, closeModal, setIsOpen } = useCreateServerModal();
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen} title="Create server">
+      <CreateServerForm onClose={closeModal} />
+    </Dialog>
+  );
+}
+
+function CreateServerForm({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
   const createServer = useCreateServer();
 

@@ -1,14 +1,14 @@
-import ChangePasswordModal from "./ChangePasswordModal.tsx";
+import ChangePasswordModal from "./ChangePasswordModal";
 import CreateChannelModal from "./CreateChannelModal";
-import CreateServerModal from "./CreateServerModal.tsx";
+import CreateServerModal from "./CreateServerModal";
 import DeleteChannelModal from "./DeleteChannelModal";
 import DeleteMessageModal from "./DeleteMessageModal";
 import DeleteServerModal from "./DeleteServerModal";
 import EditChannelModal from "./EditChannelModal";
-import EditServerModal from "./EditServerModal.tsx";
-import JoinServerModal from "./JoinServerModal.tsx";
-import SettingsModal from "./SettingsModal.tsx";
-import UpdateUsernameModal from "./UpdateUsernameModal.tsx";
+import EditServerModal from "./EditServerModal";
+import JoinServerModal from "./JoinServerModal";
+import SettingsModal from "./SettingsModal";
+import UpdateUsernameModal from "./UpdateUsernameModal";
 
 export function GlobalModals() {
   return (
