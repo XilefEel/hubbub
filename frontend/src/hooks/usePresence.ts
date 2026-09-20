@@ -20,28 +20,22 @@ export function usePresence() {
     sendHeartbeat();
     const interval = setInterval(sendHeartbeat, 20_000);
 
-    let cancelled = false;
-    let unsub: (() => void) | undefined;
-
-    const topic = "global_presence";
-
-    // Subscribe to real-time updates for presence changes
-    pb.realtime
-      .subscribe(topic, (e: { type?: string; online?: string[] }) => {
+    const unsubPromise = pb.realtime.subscribe(
+      "global_presence",
+      (e: { type?: string; online?: string[] }) => {
         if (e.type === "presence_update" && Array.isArray(e.online)) {
           setOnlineUserIds(e.online);
         }
-      })
-      .then((fn) => {
-        if (cancelled) fn();
-        else unsub = fn;
-      })
-      .catch((err) => console.warn("heartbeat failed:", err));
+      },
+    );
+
+    unsubPromise.catch((err) =>
+      console.warn("presence subscription failed:", err),
+    );
 
     return () => {
-      cancelled = true;
       clearInterval(interval);
-      unsub?.();
+      unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
   }, []);
 

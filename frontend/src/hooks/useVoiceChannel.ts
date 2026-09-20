@@ -135,8 +135,6 @@ export function useVoiceParticipants(channelId: string) {
         expand: "user",
       }),
     enabled: !!channelId,
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 5,
   });
 
   useEffect(() => {
@@ -184,11 +182,22 @@ function getVoiceSubscription(
             }
           });
         },
-        { filter: `channel = "${channelId}"`, expand: "user" },
+        {
+          filter: pb.filter("channel = {:id}", { id: channelId }),
+          expand: "user",
+        },
       );
 
-    entry = { refCount: 0, unsubPromise };
-    registry.set(channelId, entry);
+    const newEntry = { refCount: 0, unsubPromise };
+    entry = newEntry;
+    registry.set(channelId, newEntry);
+
+    unsubPromise.catch((err) => {
+      console.warn("voice subscription failed:", err);
+      if (registry.get(channelId) === newEntry) {
+        registry.delete(channelId);
+      }
+    });
   }
 
   entry.refCount += 1;
@@ -205,11 +214,7 @@ function getVoiceSubscription(
     current.refCount -= 1;
     if (current.refCount <= 0) {
       registry.delete(channelId);
-      current.unsubPromise
-        .then((unsub) => unsub())
-        .catch((err) => {
-          console.error("Failed to unsubscribe from voice channel:", err);
-        });
+      current.unsubPromise.then((unsub) => unsub()).catch(() => {});
     }
   };
 }

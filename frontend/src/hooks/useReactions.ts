@@ -6,7 +6,6 @@ import { useEffect } from "react";
 
 export function useReactions(channelId: string) {
   const queryClient = useQueryClient();
-  const queryKey = queryKeys.reactions.list(channelId);
 
   const query = useQuery({
     queryKey: queryKeys.reactions.list(channelId),
@@ -22,43 +21,36 @@ export function useReactions(channelId: string) {
   useEffect(() => {
     if (!channelId) return;
 
-    let cancelled = false;
-    let unsub: (() => void) | undefined;
+    const key = queryKeys.reactions.list(channelId);
+    const unsubPromise = pb.collection("reactions").subscribe<Reaction>(
+      "*",
+      (e) => {
+        queryClient.setQueryData<Reaction[]>(key, (old = []) => {
+          switch (e.action) {
+            case "create":
+              return old.some((r) => r.id === e.record.id)
+                ? old
+                : [...old, e.record];
+            case "delete":
+              return old.filter((r) => r.id !== e.record.id);
+            default:
+              return old;
+          }
+        });
+      },
+      {
+        filter: pb.filter("message.channel = {:id}", { id: channelId }),
+        expand: "user",
+      },
+    );
 
-    // Subscribe to real-time updates for reactions in the specified channel
-    pb.collection("reactions")
-      .subscribe<Reaction>(
-        "*",
-        (e) => {
-          queryClient.setQueryData<Reaction[]>(queryKey, (old = []) => {
-            switch (e.action) {
-              case "create":
-                return old.some((r) => r.id === e.record.id)
-                  ? old
-                  : [...old, e.record];
-              case "delete":
-                return old.filter((r) => r.id !== e.record.id);
-              default:
-                return old;
-            }
-          });
-        },
-        {
-          filter: `message.channel = "${channelId}"`,
-          expand: "user",
-        },
-      )
-      .then((fn) => {
-        if (cancelled) fn();
-        else unsub = fn;
-      })
-      .catch((err) => console.warn("reactions subscription failed:", err));
+    unsubPromise.catch((err) =>
+      console.warn("reactions subscription failed:", err),
+    );
 
     return () => {
-      cancelled = true;
-      unsub?.();
+      unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, queryClient]);
 
   return query;

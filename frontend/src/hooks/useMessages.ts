@@ -63,10 +63,9 @@ export function useDeleteMessage() {
 
 export function useMessages(channelId: string) {
   const queryClient = useQueryClient();
-  const queryKey = queryKeys.messages.list(channelId);
 
   const query = useQuery<Message[]>({
-    queryKey,
+    queryKey: queryKeys.messages.list(channelId),
     queryFn: async () => {
       return await pb.collection("messages").getFullList<Message>({
         filter: `channel = "${channelId}"`,
@@ -80,47 +79,38 @@ export function useMessages(channelId: string) {
   useEffect(() => {
     if (!channelId) return;
 
-    let cancelled = false;
-    let unsub: (() => void) | undefined;
+    const key = queryKeys.messages.list(channelId);
+    const unsubPromise = pb.collection("messages").subscribe<Message>(
+      "*",
+      (e) => {
+        queryClient.setQueryData<Message[]>(key, (old = []) => {
+          switch (e.action) {
+            case "create":
+              return old.some((m) => m.id === e.record.id)
+                ? old
+                : [...old, e.record];
+            case "update":
+              return old.map((m) => (m.id === e.record.id ? e.record : m));
+            case "delete":
+              return old.filter((m) => m.id !== e.record.id);
+            default:
+              return old;
+          }
+        });
+      },
+      {
+        filter: pb.filter("channel = {:id}", { id: channelId }),
+        expand: "user,replyTo,replyTo.user",
+      },
+    );
 
-    // Subscribe to real-time updates for messages in the specified channel
-    pb.collection("messages")
-      .subscribe<Message>(
-        "*",
-        (e) => {
-          queryClient.setQueryData<Message[]>(queryKey, (old = []) => {
-            switch (e.action) {
-              case "create":
-                return old.some((msg) => msg.id === e.record.id)
-                  ? old
-                  : [...old, e.record];
-              case "update":
-                return old.map((msg) =>
-                  msg.id === e.record.id ? e.record : msg,
-                );
-              case "delete":
-                return old.filter((msg) => msg.id !== e.record.id);
-              default:
-                return old;
-            }
-          });
-        },
-        {
-          filter: `channel = "${channelId}"`,
-          expand: "user,replyTo,replyTo.user",
-        },
-      )
-      .then((fn) => {
-        if (cancelled) fn();
-        else unsub = fn;
-      })
-      .catch((err) => console.warn("message subscription failed:", err));
+    unsubPromise.catch((err) =>
+      console.warn("message subscription failed:", err),
+    );
 
     return () => {
-      cancelled = true;
-      unsub?.();
+      unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, queryClient]);
 
   return query;

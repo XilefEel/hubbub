@@ -14,22 +14,16 @@ export function useTypingIndicator(
   useEffect(() => {
     if (!channelId) return;
 
-    let cancelled = false;
-    let unsub: (() => void) | undefined;
-
-    const topic = `channel_${channelId}`;
-
-    // Subscribe to real-time updates for typing events
-    pb.realtime
-      .subscribe(topic, (e: { name: string; type: string; userId: string }) => {
+    const unsubPromise = pb.realtime.subscribe(
+      `channel_${channelId}`,
+      (e: { name: string; type: string; userId: string }) => {
         if (e.type !== "typing" || !e.userId) return;
 
         const userId = e.userId;
 
-        setTypingUserIds((prev) => {
-          if (prev.includes(userId)) return prev;
-          return [...prev, userId];
-        });
+        setTypingUserIds((prev) =>
+          prev.includes(userId) ? prev : [...prev, userId],
+        );
 
         if (timeoutsRef.current[userId]) {
           clearTimeout(timeoutsRef.current[userId]);
@@ -39,20 +33,18 @@ export function useTypingIndicator(
           setTypingUserIds((prev) => prev.filter((id) => id !== userId));
           delete timeoutsRef.current[userId];
         }, 3000);
-      })
-      .then((fn) => {
-        if (cancelled) fn();
-        else unsub = fn;
-      })
-      .catch((err) => console.warn("typing subscription failed:", err));
+      },
+    );
+
+    unsubPromise.catch((err) =>
+      console.warn("typing subscription failed:", err),
+    );
 
     return () => {
-      pb.realtime.unsubscribe(topic);
+      unsubPromise.then((unsub) => unsub()).catch(() => {});
       Object.values(timeoutsRef.current).forEach(clearTimeout);
       timeoutsRef.current = {};
       setTypingUserIds([]);
-      cancelled = true;
-      unsub?.();
     };
   }, [channelId]);
 
