@@ -83,24 +83,22 @@ export function useMessages(channelId: string) {
       .subscribe<Message>(
         "*",
         (e) => {
-          if (e.action === "create") {
-            queryClient.setQueryData<Message[]>(queryKey, (old = []) => {
-              if (old.some((msg) => msg.id === e.record.id)) return old;
-              return [...old, e.record];
-            });
-          }
-
-          if (e.action === "update") {
-            queryClient.setQueryData<Message[]>(queryKey, (old = []) =>
-              old.map((msg) => (msg.id === e.record.id ? e.record : msg)),
-            );
-          }
-
-          if (e.action === "delete") {
-            queryClient.setQueryData<Message[]>(queryKey, (old = []) =>
-              old.filter((msg) => msg.id !== e.record.id),
-            );
-          }
+          queryClient.setQueryData<Message[]>(queryKey, (old = []) => {
+            switch (e.action) {
+              case "create":
+                return old.some((msg) => msg.id === e.record.id)
+                  ? old
+                  : [...old, e.record];
+              case "update":
+                return old.map((msg) =>
+                  msg.id === e.record.id ? e.record : msg,
+                );
+              case "delete":
+                return old.filter((msg) => msg.id !== e.record.id);
+              default:
+                return old;
+            }
+          });
         },
         {
           filter: `channel = "${channelId}"`,

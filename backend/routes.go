@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -18,7 +19,7 @@ func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/channels/{channelId}/typing", typingHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/presence/heartbeat", heartbeatHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/voice/token", voiceTokenHandler).Bind(apis.RequireAuth())
-	se.Router.POST("/api/voice/webhook", voiceWebhookHandler).Bind(apis.RequireAuth())
+	se.Router.POST("/api/voice/webhook", voiceWebhookHandler)
 }
 
 // auto add the owner to server_members when a server is created
@@ -172,7 +173,6 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 		Room:     data.ChannelId,
 	}
 
-	// set the identity to the user's id and name
 	at.SetVideoGrant(grant).
 		SetIdentity(e.Auth.Id).
 		SetName(e.Auth.GetString("name")).
@@ -219,7 +219,7 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 	// receive the webhook event and verify the signature
 	event, err := webhook.ReceiveWebhookEvent(e.Request, keyProvider)
 	if err != nil {
-		return apis.NewBadRequestError("invalid webhook signature", nil)
+		return e.BadRequestError("invalid webhook signature", nil)
 	}
 
 	channelId := event.Room.GetName()
@@ -239,7 +239,9 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 			return e.JSON(http.StatusOK, map[string]bool{"ok": true})
 		}
 
-		app.Delete(record)
+		if err := app.Delete(record); err != nil {
+			log.Printf("voice webhook: failed to delete participant record %s: %v", record.Id, err)
+		}
 
 	case "room_finished":
 		// remove all participants from voice_participants for this channel
@@ -257,7 +259,9 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 		}
 
 		for _, r := range records {
-			app.Delete(r)
+			if err := app.Delete(r); err != nil {
+				log.Printf("voice webhook: failed to delete participant record %s: %v", r.Id, err)
+			}
 		}
 	}
 

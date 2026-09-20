@@ -26,12 +26,12 @@ export function VideoGrid({ channelId }: { channelId: string }) {
 
   return (
     <GridLayout tracks={tracks}>
-      <VideoTiles userByIdentity={userByIdentity} />
+      <VideoTile userByIdentity={userByIdentity} />
     </GridLayout>
   );
 }
 
-function VideoTiles({ userByIdentity }: { userByIdentity: Map<string, User> }) {
+function VideoTile({ userByIdentity }: { userByIdentity: Map<string, User> }) {
   const isDeafened = useIsDeafened();
 
   return (

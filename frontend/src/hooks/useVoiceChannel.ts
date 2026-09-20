@@ -169,25 +169,20 @@ function getVoiceSubscription(
       .subscribe<VoiceParticipant>(
         "*",
         (e) => {
-          if (e.action === "create") {
-            queryClient.setQueryData<VoiceParticipant[]>(
-              queryKey,
-              (old = []) => {
-                if (old.some((vp) => vp.id === e.record.id)) return old;
-                return [...old, e.record];
-              },
-            );
-          }
-          if (e.action === "update") {
-            queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old = []) =>
-              old.map((vp) => (vp.id === e.record.id ? e.record : vp)),
-            );
-          }
-          if (e.action === "delete") {
-            queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old = []) =>
-              old.filter((vp) => vp.id !== e.record.id),
-            );
-          }
+          queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old = []) => {
+            switch (e.action) {
+              case "create":
+                return old.some((vp) => vp.id === e.record.id)
+                  ? old
+                  : [...old, e.record];
+              case "update":
+                return old.map((vp) => (vp.id === e.record.id ? e.record : vp));
+              case "delete":
+                return old.filter((vp) => vp.id !== e.record.id);
+              default:
+                return old;
+            }
+          });
         },
         { filter: `channel = "${channelId}"`, expand: "user" },
       );

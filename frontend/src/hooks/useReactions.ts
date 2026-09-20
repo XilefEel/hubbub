@@ -30,18 +30,18 @@ export function useReactions(channelId: string) {
       .subscribe<Reaction>(
         "*",
         (e) => {
-          if (e.action === "create") {
-            queryClient.setQueryData<Reaction[]>(queryKey, (old = []) => {
-              if (old.some((r) => r.id === e.record.id)) return old;
-              return [...old, e.record];
-            });
-          }
-
-          if (e.action === "delete") {
-            queryClient.setQueryData<Reaction[]>(queryKey, (old = []) =>
-              old.filter((r) => r.id !== e.record.id),
-            );
-          }
+          queryClient.setQueryData<Reaction[]>(queryKey, (old = []) => {
+            switch (e.action) {
+              case "create":
+                return old.some((r) => r.id === e.record.id)
+                  ? old
+                  : [...old, e.record];
+              case "delete":
+                return old.filter((r) => r.id !== e.record.id);
+              default:
+                return old;
+            }
+          });
         },
         {
           filter: `message.channel = "${channelId}"`,
