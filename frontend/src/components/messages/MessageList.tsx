@@ -4,6 +4,7 @@ import type { Channel, Message } from "../../lib/types";
 import { groupReactionsByMessage, isSameGroup } from "../../lib/utils";
 import { useReactions } from "../../hooks/useReactions";
 import { Hash } from "lucide-react";
+import { useMarkChannelRead } from "../../hooks/useReadStates";
 
 export function MessageList({
   messages,
@@ -26,6 +27,9 @@ export function MessageList({
   const scrollToBottom = () =>
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
 
+  const markRead = useMarkChannelRead();
+  const newest = messages?.at(-1)?.created;
+
   useEffect(() => {
     if (!messages || messages.length === 0) return;
     scrollToBottom();
@@ -34,6 +38,12 @@ export function MessageList({
   useEffect(() => {
     scrollToBottom();
   }, [channel.id]);
+
+  useEffect(() => {
+    if (!newest) return;
+    markRead.mutate({ channelId: channel.id, lastReadAt: newest });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channel.id, newest]);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">

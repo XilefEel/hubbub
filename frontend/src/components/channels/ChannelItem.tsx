@@ -1,13 +1,15 @@
 import { Volume2, Hash } from "lucide-react";
 import type { Channel } from "../../lib/types";
 import { ChannelContextMenu } from "../context-menus/ChannelContextMenu";
-import { Link } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import {
   useVoiceParticipants,
   useJoinVoiceChannel,
 } from "../../hooks/useVoiceChannel";
 import { useActiveChannelId } from "../../stores/useVoiceChannelStore";
 import UserAvatar from "../ui/UserAvatar";
+import { useChannelReads } from "../../hooks/useReadStates";
+import { cn } from "cn";
 
 export default function ChannelItem({
   channel,
@@ -18,11 +20,23 @@ export default function ChannelItem({
   serverId: string;
   isOwner: boolean;
 }) {
+  const params = useParams({ strict: false });
+  const isViewing = params.channelId === channel.id;
+
   const { data: participants } = useVoiceParticipants(channel.id);
   const activeChannelId = useActiveChannelId();
   const joinVoice = useJoinVoiceChannel();
 
   const isThisChannelActive = activeChannelId === channel.id;
+
+  const { data: reads } = useChannelReads();
+  const read = reads?.find((r) => r.channel === channel.id);
+
+  const isUnread =
+    !isViewing &&
+    channel.type !== "voice" &&
+    !!channel.last_message_at &&
+    (!read || channel.last_message_at > read.last_read_at);
 
   const handleClick = () => {
     if (channel.type !== "voice") return;
@@ -45,7 +59,7 @@ export default function ChannelItem({
             className="flex w-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
             activeProps={{
               className:
-                "bg-zinc-100 hover:bg-zinc-100 font-medium dark:bg-zinc-700 dark:hover:bg-zinc-700",
+                "bg-zinc-100 hover:bg-zinc-100 font-semibold dark:bg-zinc-700 dark:hover:bg-zinc-700",
             }}
           >
             {channel.type === "voice" ? (
@@ -53,7 +67,14 @@ export default function ChannelItem({
             ) : (
               <Hash className="size-4 shrink-0" />
             )}
-            <span>{channel.name}</span>
+
+            <span className={cn("truncate", isUnread && "font-medium")}>
+              {channel.name}
+            </span>
+
+            {isUnread && (
+              <span className="ml-auto size-1.5 rounded-full bg-teal-500" />
+            )}
           </Link>
         </li>
       </ChannelContextMenu>
