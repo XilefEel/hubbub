@@ -1,6 +1,10 @@
 package main
 
-import "github.com/pocketbase/pocketbase/core"
+import (
+	"log"
+
+	"github.com/pocketbase/pocketbase/core"
+)
 
 func registerServerHooks(app core.App) {
 	app.OnRecordAfterCreateSuccess("servers").BindFunc(func(e *core.RecordEvent) error {
@@ -36,4 +40,22 @@ func registerServerHooks(app core.App) {
 
 		return e.Next()
 	})
+
+	// update the last_message_at field of the channel when a new message is created
+	app.OnRecordAfterCreateSuccess("messages").BindFunc(func(e *core.RecordEvent) error {
+		channel, err := e.App.FindRecordById("channels", e.Record.GetString("channel"))
+		if err != nil {
+			log.Println("last_message_at: channel not found:", err)
+			return e.Next()
+		}
+
+		channel.Set("last_message_at", e.Record.GetString("created"))
+
+		if err := e.App.Save(channel); err != nil {
+			log.Println("last_message_at: failed to save channel:", err)
+		}
+
+		return e.Next()
+	})
+
 }
