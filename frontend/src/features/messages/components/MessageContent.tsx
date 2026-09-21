@@ -7,7 +7,7 @@ export default function MessageContent({
   currentUserId,
 }: {
   content: string;
-  mentions: User[];
+  mentions: User[] | undefined;
   currentUserId: string | undefined;
 }) {
   if (!mentions || mentions.length === 0) {
