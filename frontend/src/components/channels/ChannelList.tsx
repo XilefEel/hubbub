@@ -4,11 +4,13 @@ import { useCurrentMembership } from "../../hooks/useCurrentMembership";
 import Tooltip from "../ui/Tooltip";
 import { useCreateChannelModal } from "../../stores/useModalStore";
 import ChannelItem from "./ChannelItem";
+import { useReadStatesSubscription } from "../../hooks/useReadStates";
 
 export function ChannelList({ serverId }: { serverId: string }) {
   const { data: channel, isLoading, isError, error } = useChannels(serverId);
   const { isOwner } = useCurrentMembership(serverId);
   const { openModal } = useCreateChannelModal();
+  useReadStatesSubscription();
 
   if (isLoading)
     return <p className="text-sm text-zinc-500">Loading channels...</p>;

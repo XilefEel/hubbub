@@ -28,6 +28,8 @@ export default function ChannelItem({
   const { data: reads } = useChannelReads();
   const read = reads?.find((r) => r.channel === channel.id);
 
+  const mentionCount = read?.mention_count ?? 0;
+
   const isUnread =
     channel.type !== "voice" &&
     !!channel.last_message_at &&
@@ -65,8 +67,14 @@ export default function ChannelItem({
 
             <span className="truncate">{channel.name}</span>
 
-            {isUnread && (
-              <span className="ml-auto size-1.5 rounded-full bg-teal-500" />
+            {mentionCount > 0 ? (
+              <span className="ml-auto rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                {mentionCount}
+              </span>
+            ) : (
+              isUnread && (
+                <span className="ml-auto size-1.5 rounded-full bg-teal-500" />
+              )
             )}
           </Link>
         </li>
