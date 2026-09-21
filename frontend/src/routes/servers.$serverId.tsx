@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useServerDetail } from "../hooks/useServers";
+import { useServerDetail } from "../features/servers/hooks/useServers";
 import {
   Group,
   Panel,
@@ -7,14 +7,14 @@ import {
   useDefaultLayout,
   type PanelImperativeHandle,
 } from "react-resizable-panels";
-import { ChannelList } from "../components/channels/ChannelList";
-import { MemberList } from "../components/servers/MemberList";
+import { ChannelList } from "../features/channels/components/ChannelList";
+import { MemberList } from "../features/members/components/MemberList";
 import { PanelLeft } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
 import { useRef } from "react";
-import { usePanelSync } from "../hooks/usePanelSync";
-import { useUIActions } from "../stores/useUIStore";
-import { VoiceToolbar } from "../components/video/VoiceToolbar";
+import { usePanelSync } from "../features/servers/hooks/usePanelSync";
+import { useUIActions } from "../app/stores/useUIStore";
+import { VoiceToolbar } from "../features/voice/components/VoiceToolbar";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,

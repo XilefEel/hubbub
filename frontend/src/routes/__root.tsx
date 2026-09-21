@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { pb } from "../lib/pocketbase";
-import { ServerRail } from "../components/servers/ServerRail";
+import { ServerRail } from "../features/servers/components/ServerRail";
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {

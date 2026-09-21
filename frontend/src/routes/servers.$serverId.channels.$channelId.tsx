@@ -1,15 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMessages } from "../hooks/useMessages";
-import { useTypingIndicator } from "../hooks/useTypingIndicator";
-import { useServerMembers } from "../hooks/useServerMembers";
-import { TypingIndicator } from "../components/messages/TypingIndicator";
-import { useChannelDetail } from "../hooks/useChannels";
-import { MessageInput } from "../components/messages/MessageInput";
-import { MessageList } from "../components/messages/MessageList";
+import { useMessages } from "../features/messages/hooks/useMessages";
+import { useTypingIndicator } from "../features/channels/hooks/useTypingIndicator";
+import { useServerMembers } from "../features/members/hooks/useServerMembers";
+import { TypingIndicator } from "../features/messages/components/TypingIndicator";
+import { useChannelDetail } from "../features/channels/hooks/useChannels";
+import { MessageInput } from "../features/messages/components/MessageInput";
+import { MessageList } from "../features/messages/components/MessageList";
 import { useState } from "react";
 import type { Message } from "../lib/types";
-import ChannelHeader from "../components/channels/ChannelHeader";
-import { VoiceChannel } from "../components/video/VoiceChannel";
+import ChannelHeader from "../features/channels/components/ChannelHeader";
+import { VoiceChannel } from "../features/voice/components/VoiceChannel";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
