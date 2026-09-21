@@ -72,6 +72,7 @@ function ChannelPage() {
         <TypingIndicator typingNames={typingNames} />
 
         <MessageInput
+          members={members}
           replyingTo={replyingTo}
           channelId={channelId}
           onTyping={sendTyping}
