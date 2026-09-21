@@ -11,6 +11,7 @@ import { MessageContextMenu } from "../context-menus/MessageContextMenu";
 import { useToggleReaction } from "../../hooks/useReactions";
 import { ReactionRow } from "./ReactionRow";
 import UserAvatar from "../ui/UserAvatar";
+import MessageContent from "./MessageContent";
 
 export function MessageItem({
   message,
@@ -135,9 +136,11 @@ export function MessageItem({
               />
             </div>
           ) : (
-            <p className="text-sm text-zinc-800 dark:text-zinc-200">
-              {message.content}
-            </p>
+            <MessageContent
+              content={message.content}
+              mentions={message.expand?.mentions}
+              currentUserId={currentUserId}
+            />
           )}
 
           <AttachmentGrid message={message} />

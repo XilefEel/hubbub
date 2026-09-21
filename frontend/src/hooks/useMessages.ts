@@ -77,7 +77,7 @@ export function useMessages(channelId: string) {
       return await pb.collection("messages").getFullList<Message>({
         filter: `channel = "${channelId}"`,
         sort: "created",
-        expand: "user,replyTo,replyTo.user",
+        expand: "user,replyTo,replyTo.user,mentions",
       });
     },
     enabled: !!channelId,
@@ -107,7 +107,7 @@ export function useMessages(channelId: string) {
       },
       {
         filter: pb.filter("channel = {:id}", { id: channelId }),
-        expand: "user,replyTo,replyTo.user",
+        expand: "user,replyTo,replyTo.user,mentions",
       },
     );
 
