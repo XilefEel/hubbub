@@ -12,11 +12,13 @@ export function useSendMessage() {
       channelId,
       files,
       replyTo,
+      mentions,
     }: {
       content: string;
       channelId: string;
       files?: File[];
       replyTo?: string;
+      mentions?: string[];
     }) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to send messages");
@@ -31,7 +33,12 @@ export function useSendMessage() {
         formData.append("attachments", file);
       }
 
+      for (const mention of mentions ?? []) {
+        formData.append("mentions", mention);
+      }
+
       const message = await pb.collection("messages").create(formData);
+
       await pb.collection("channels").update(channelId, {
         last_message_at: message.created,
       });

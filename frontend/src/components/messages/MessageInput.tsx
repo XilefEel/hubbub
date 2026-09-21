@@ -150,13 +150,24 @@ export function MessageInput({
     e.preventDefault();
     if (!content.trim() && files.length === 0) return;
 
+    const activeMentions = mentions
+      .filter((m) => content.includes(`@${m.name}`))
+      .map((m) => m.id);
+
     sendMessage.mutate(
-      { content, channelId, files, replyTo: replyingTo?.id },
+      {
+        content,
+        channelId,
+        files,
+        replyTo: replyingTo?.id,
+        mentions: activeMentions,
+      },
       { onSuccess: onCancelReply },
     );
 
     setContent("");
     setFiles([]);
+    setMentions([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 

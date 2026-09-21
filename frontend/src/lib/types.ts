@@ -24,6 +24,7 @@ export type ServerMember = RecordModel & {
   expand?: {
     user?: User;
     server?: Server;
+    mentions?: User[];
   };
 };
 
