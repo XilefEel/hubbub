@@ -49,7 +49,7 @@ func registerServerHooks(app core.App) {
 			return err
 		}
 
-		channel.Set("last_message_at", e.Record.GetString("created"))
+		channel.Set("lastMessageAt", e.Record.GetString("created"))
 
 		if err := e.App.Save(channel); err != nil {
 			return err
@@ -78,10 +78,10 @@ func registerServerHooks(app core.App) {
 				state = core.NewRecord(readStates)
 				state.Set("user", id)
 				state.Set("channel", channelId)
-				state.Set("last_read_at", channel.GetString("last_message_at"))
+				state.Set("lastReadAt", channel.GetString("lastMessageAt"))
 			}
 
-			state.Set("mention_count", state.GetInt("mention_count")+1)
+			state.Set("mentionCount", state.GetInt("mentionCount")+1)
 			if err := e.App.Save(state); err != nil {
 				log.Println("hook: failed to save read state:", err)
 			}

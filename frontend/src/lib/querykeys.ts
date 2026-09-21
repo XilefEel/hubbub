@@ -19,4 +19,7 @@ export const queryKeys = {
   voiceParticipants: {
     list: (channelId: string) => ["voice_participants", channelId] as const,
   },
+  readStates: {
+    list: () => ["read_states"] as const,
+  },
 };

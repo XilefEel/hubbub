@@ -34,6 +34,7 @@ export type Channel = RecordModel & {
   name: string;
   server: string; // server id
   type: ChannelType;
+  lastMessageAt?: string;
   expand?: {
     server?: Server;
   };
@@ -68,6 +69,17 @@ export type VoiceTokenResponse = {
 export type VoiceParticipant = RecordModel & {
   channel: string; // channel id
   user: string; // user id
+  expand?: {
+    user?: User;
+    channel?: Channel;
+  };
+};
+
+export type ReadState = RecordModel & {
+  user: string; // user id
+  channel: string; // channel id
+  lastReadAt: string;
+  mentionCount: number;
   expand?: {
     user?: User;
     channel?: Channel;

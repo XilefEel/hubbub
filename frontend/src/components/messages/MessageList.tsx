@@ -66,7 +66,7 @@ export function MessageList({
     if (capturedFor.current === channel.id) return;
 
     capturedFor.current = channel.id;
-    setDividerAt(readState?.last_read_at ?? null);
+    setDividerAt(readState?.lastReadAt ?? null);
   }, [channel.id, reads, readState]);
 
   useEffect(() => {

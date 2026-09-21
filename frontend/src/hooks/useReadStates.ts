@@ -1,15 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
-import type { RecordModel } from "pocketbase";
 import { useEffect } from "react";
+import { queryKeys } from "../lib/querykeys";
+import type { ReadState } from "../lib/types";
 
 export function useChannelReads() {
   const userId = pb.authStore.record?.id;
 
-  return useQuery({
-    queryKey: ["read_states"],
+  return useQuery<ReadState[]>({
+    queryKey: queryKeys.readStates.list(),
     queryFn: async () => {
-      return await pb.collection("read_states").getFullList({
+      return await pb.collection("read_states").getFullList<ReadState>({
         filter: `user = "${userId}"`,
       });
     },
@@ -35,18 +36,18 @@ export function useMarkChannelRead() {
 
         return await pb
           .collection("read_states")
-          .update(existing.id, { last_read_at: lastReadAt, mention_count: 0 });
+          .update(existing.id, { lastReadAt, mentionCount: 0 });
       } catch {
         return await pb.collection("read_states").create({
           user: userId,
           channel: channelId,
-          last_read_at: lastReadAt,
-          mention_count: 0,
+          lastReadAt,
+          mentionCount: 0,
         });
       }
     },
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["read_states"] }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.readStates.list() }),
   });
 }
 
@@ -57,11 +58,11 @@ export function useReadStatesSubscription() {
   useEffect(() => {
     if (!userId) return;
 
-    const key = ["read_states"];
-    const unsubPromise = pb.collection("read_states").subscribe(
+    const key = queryKeys.readStates.list();
+    const unsubPromise = pb.collection("read_states").subscribe<ReadState>(
       "*",
       (e) => {
-        queryClient.setQueryData<RecordModel[]>(key, (old = []) => {
+        queryClient.setQueryData<ReadState[]>(key, (old = []) => {
           switch (e.action) {
             case "create":
               return old.some((r) => r.id === e.record.id)

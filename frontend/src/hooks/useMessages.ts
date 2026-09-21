@@ -40,7 +40,7 @@ export function useSendMessage() {
       const message = await pb.collection("messages").create(formData);
 
       await pb.collection("channels").update(channelId, {
-        last_message_at: message.created,
+        lastMessageAt: message.created,
       });
 
       return message;

@@ -28,12 +28,12 @@ export default function ChannelItem({
   const { data: reads } = useChannelReads();
   const read = reads?.find((r) => r.channel === channel.id);
 
-  const mentionCount = read?.mention_count ?? 0;
+  const mentionCount = read?.mentionCount ?? 0;
 
   const isUnread =
     channel.type !== "voice" &&
-    !!channel.last_message_at &&
-    (!read || channel.last_message_at > read.last_read_at);
+    !!channel.lastMessageAt &&
+    (!read || channel.lastMessageAt > read.lastReadAt);
 
   const handleClick = () => {
     if (channel.type !== "voice") return;
