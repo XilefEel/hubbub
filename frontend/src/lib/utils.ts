@@ -1,25 +1,39 @@
 import { pb } from "./pocketbase";
 import type { Message, Reaction } from "./types";
 import { ClientResponseError } from "pocketbase";
+import { isToday, isYesterday } from "date-fns";
 
 export function isUniqueConstraintError(err: unknown): boolean {
   if (!(err instanceof ClientResponseError)) return false;
   return err.status === 400 && JSON.stringify(err.data).includes("unique");
 }
 
-export function formatMessageDate(dateString: string) {
+export function getTime(dateString: string) {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Unknown time";
 
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear().toString().slice(-2);
-
-  const time = date.toLocaleTimeString([], {
+  return date.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
   });
+}
 
-  return `${day}/${month}/${year}, ${time}`;
+export function formatMessageDate(dateString: string) {
+  const date = new Date(dateString);
+
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear().toString().slice(-2);
+
+  const time = getTime(dateString);
+
+  if (isToday(date)) {
+    return time;
+  } else if (isYesterday(date)) {
+    return `Yesterday at ${time}`;
+  } else {
+    return `${day}/${month}/${year}, ${time}`;
+  }
 }
 
 export function isSameGroup(

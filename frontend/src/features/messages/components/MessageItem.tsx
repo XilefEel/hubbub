@@ -4,7 +4,7 @@ import { MessageEditForm } from "./MessageEditForm";
 import { useEditMessage } from "../hooks/useMessages";
 import { pb } from "@/lib/pocketbase";
 import type { Message, Reaction } from "@/lib/types";
-import { formatMessageDate, groupReactionsByEmoji } from "@/lib/utils";
+import { formatMessageDate, getTime, groupReactionsByEmoji } from "@/lib/utils";
 import { AttachmentGrid } from "./AttachmentGrid";
 import { ReplyReference } from "./ReplyReference";
 import { MessageContextMenu } from "./MessageContextMenu";
@@ -99,7 +99,11 @@ export function MessageItem({
         {showHeader ? (
           <UserAvatar user={message.expand?.user} />
         ) : (
-          <div className="w-10 shrink-0" />
+          <div className="w-10 shrink-0">
+            <span className="absolute top-2.5 left-2.5 text-[10px] text-zinc-400 opacity-0 transition-opacity duration-100 group-hover:opacity-100 dark:text-zinc-500">
+              {getTime(message.created)}
+            </span>
+          </div>
         )}
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -113,7 +117,7 @@ export function MessageItem({
                 {message.expand?.user?.name || "Unknown User"}
               </span>
 
-              <span className="text-xs text-zinc-400 dark:text-zinc-500">
+              <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
                 {formatMessageDate(message.created)}
               </span>
 
