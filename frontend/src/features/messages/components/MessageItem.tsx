@@ -102,7 +102,7 @@ export function MessageItem({
           <div className="w-10 shrink-0" />
         )}
 
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           {message.expand?.replyTo && (
             <ReplyReference replyTo={message.expand.replyTo} />
           )}

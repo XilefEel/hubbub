@@ -12,19 +12,16 @@ export default function MessageContent({
 }) {
   if (!mentions || mentions.length === 0) {
     return (
-      <p className="text-sm text-zinc-800 dark:text-zinc-200">{content}</p>
+      <p className="text-sm wrap-anywhere whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
+        {content}
+      </p>
     );
   }
 
-  const names = mentions.map((u) => u.name).sort((a, b) => b.length - a.length);
-
-  const escaped = names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const pattern = new RegExp(`(@(?:${escaped.join("|")}))`, "g");
-
-  const parts = content.split(pattern);
+  const parts = parseMentions(mentions, content);
 
   return (
-    <p className="text-sm text-zinc-800 dark:text-zinc-200">
+    <p className="text-sm wrap-anywhere whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
       {parts.map((part, i) => {
         const mention = mentions.find((u) => `@${u.name}` === part);
         const isMe = mention?.id === currentUserId;
@@ -47,4 +44,14 @@ export default function MessageContent({
       })}
     </p>
   );
+}
+
+function parseMentions(mentions: User[], content: string) {
+  const names = mentions.map((u) => u.name).sort((a, b) => b.length - a.length);
+
+  const escaped = names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const pattern = new RegExp(`(@(?:${escaped.join("|")}))`, "g");
+
+  const parts = content.split(pattern);
+  return parts;
 }
