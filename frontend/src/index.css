@@ -3,6 +3,19 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@layer base {
+  @font-face {
+    font-family: "Manrope";
+    src: url("./assets/fonts/Manrope.ttf") format("truetype");
+    font-weight: 200 800;
+    font-display: swap;
+  }
+
+  body {
+    font-family: "Manrope", sans-serif;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
