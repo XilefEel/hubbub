@@ -48,7 +48,7 @@ export default function AccountSettings() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isPending}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
             >
               {updateAvatar.isPending ? "Uploading..." : "Change avatar"}
             </button>
@@ -57,7 +57,7 @@ export default function AccountSettings() {
               <button
                 onClick={() => removeAvatar.mutate()}
                 disabled={isPending}
-                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
               >
                 {removeAvatar.isPending ? "Removing..." : "Remove"}
               </button>
@@ -77,7 +77,7 @@ export default function AccountSettings() {
         </div>
         <button
           onClick={openUpdateUsername}
-          className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+          className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
         >
           Edit
         </button>
@@ -88,7 +88,7 @@ export default function AccountSettings() {
         <div className="ml-auto rounded-md text-sm text-zinc-600 dark:text-zinc-300">
           {user?.email}
         </div>
-        <button className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50">
+        <button className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50">
           Edit
         </button>
       </div>
@@ -97,7 +97,7 @@ export default function AccountSettings() {
         <span className="mb-1 block text-sm">Password</span>
         <button
           onClick={openChangePassword}
-          className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+          className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
         >
           Edit
         </button>
@@ -107,7 +107,7 @@ export default function AccountSettings() {
 
       <div className="flex items-center gap-4">
         <span className="mb-1 block text-sm">Delete Account</span>
-        <button className="ml-auto w-18 rounded-md bg-red-500 py-1.5 text-sm text-white hover:bg-red-600">
+        <button className="ml-auto w-18 rounded-md bg-red-500 py-1.5 text-sm text-white transition-colors duration-100 hover:bg-red-600">
           Delete
         </button>
       </div>

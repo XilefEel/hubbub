@@ -209,7 +209,7 @@ export function MessageInput({
 
           <button
             onClick={onCancelReply}
-            className="text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400"
+            className="text-zinc-400 transition-colors duration-100 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400"
           >
             <X className="size-4 shrink-0" />
           </button>
@@ -230,7 +230,7 @@ export function MessageInput({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
+              className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
             >
               <Plus className="size-5 shrink-0" />
             </button>
@@ -247,8 +247,8 @@ export function MessageInput({
                       pickMention(user);
                     }}
                     className={cn(
-                      "flex w-full items-center gap-2 px-3 py-2 text-left text-sm",
-                      i === selectedMention && "bg-zinc-100 dark:bg-zinc-700",
+                      "flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-100",
+                      i === selectedMention && "bg-zinc-50 dark:bg-zinc-700/50",
                     )}
                   >
                     <UserAvatar user={user} size="size-5" />
@@ -272,7 +272,7 @@ export function MessageInput({
           <button
             type="submit"
             disabled={sendMessage.isPending || content.trim() === ""}
-            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
+            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
           >
             <ArrowUp className="size-5 shrink-0" />
           </button>

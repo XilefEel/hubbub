@@ -44,7 +44,7 @@ export function ServerRail() {
         <Link
           to="/"
           className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-xl",
+            "flex size-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-100",
             serverId === undefined
               ? "bg-teal-500 text-white"
               : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",

@@ -28,7 +28,7 @@ export default function MemberListItem({
     >
       <li
         className={cn(
-          "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700/50",
+          "flex items-center gap-2 rounded px-2 py-1 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50",
           !isOnline && "opacity-70 hover:opacity-100",
         )}
       >

@@ -69,7 +69,7 @@ function CreateChannelForm({
           <RadioGroup.Item
             value="text"
             className={cn(
-              "group flex items-center justify-between rounded-lg p-3",
+              "group flex items-center justify-between rounded-lg p-3 transition-colors duration-100",
               "hover:bg-zinc-50 data-[state=checked]:bg-zinc-100 dark:hover:bg-zinc-700/50 dark:data-[state=checked]:bg-zinc-700",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500",
             )}
@@ -93,7 +93,7 @@ function CreateChannelForm({
           <RadioGroup.Item
             value="voice"
             className={cn(
-              "group flex items-center justify-between rounded-lg p-3",
+              "group flex items-center justify-between rounded-lg p-3 transition-colors duration-100",
               "hover:bg-zinc-50 data-[state=checked]:bg-zinc-100 dark:hover:bg-zinc-700/50 dark:data-[state=checked]:bg-zinc-700",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500",
             )}

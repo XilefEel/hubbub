@@ -34,7 +34,7 @@ export function FilePreview({
       <button
         type="button"
         onClick={onRemove}
-        className="ml-auto text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400"
+        className="ml-auto text-zinc-400 transition-colors duration-100 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400"
       >
         <X className="size-4 shrink-0" />
       </button>

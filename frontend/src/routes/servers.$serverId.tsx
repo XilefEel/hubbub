@@ -87,7 +87,7 @@ function ServerPage() {
           </aside>
         </Panel>
 
-        <Separator className="w-px cursor-col-resize border-l border-zinc-200 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
+        <Separator className="w-px cursor-col-resize border-l border-zinc-200 transition-colors duration-100 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
 
         <Panel id="main-content" minSize="50%">
           <main className="h-full">
@@ -95,7 +95,7 @@ function ServerPage() {
           </main>
         </Panel>
 
-        <Separator className="w-px cursor-col-resize border-l border-zinc-200 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
+        <Separator className="w-px cursor-col-resize border-l border-zinc-200 transition-colors duration-100 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
 
         <Panel
           id="members-sidebar"

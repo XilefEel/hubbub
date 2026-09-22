@@ -53,7 +53,7 @@ export default function ChannelItem({
             to="/servers/$serverId/channels/$channelId"
             params={{ serverId, channelId: channel.id }}
             onClick={handleClick}
-            className="flex w-full items-center gap-1 rounded px-2 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
+            className="flex w-full items-center gap-1 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
             activeProps={{
               className:
                 "bg-zinc-100 hover:bg-zinc-100 font-semibold dark:bg-zinc-700 dark:hover:bg-zinc-700",

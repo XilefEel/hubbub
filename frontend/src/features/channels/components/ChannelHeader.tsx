@@ -22,7 +22,7 @@ export default function ChannelHeader({
         <Tooltip content="Show Channels">
           <button
             onClick={toggleChannels}
-            className="text-sm hover:text-teal-500 dark:hover:text-teal-400"
+            className="text-sm transition-colors duration-100 hover:text-teal-500 dark:hover:text-teal-400"
           >
             <PanelLeft className="size-4 shrink-0" />
           </button>
@@ -42,7 +42,7 @@ export default function ChannelHeader({
         <Tooltip content="Show Members">
           <button
             onClick={toggleMembers}
-            className="ml-auto text-sm hover:text-teal-500 dark:hover:text-teal-400"
+            className="ml-auto text-sm transition-colors duration-100 hover:text-teal-500 dark:hover:text-teal-400"
           >
             <PanelRight className="size-4 shrink-0" />
           </button>

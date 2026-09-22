@@ -49,7 +49,7 @@ export function MemberList({ serverId }: { serverId: string }) {
         <Tooltip content="Hide Members">
           <button
             onClick={toggleMembers}
-            className="text-sm hover:text-teal-500"
+            className="text-sm transition-colors duration-100 hover:text-teal-500"
           >
             <PanelRight className="size-4 shrink-0" />
           </button>

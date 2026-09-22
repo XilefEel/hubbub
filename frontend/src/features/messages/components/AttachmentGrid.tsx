@@ -18,7 +18,7 @@ export function AttachmentGrid({ message }: { message: Message }) {
             src={pb.files.getURL(message, filename)}
             alt="Attachment"
             loading="lazy"
-            className="w-auto object-cover hover:opacity-95"
+            className="w-auto object-cover transition-opacity duration-100 hover:opacity-95"
           />
         </a>
       ))}

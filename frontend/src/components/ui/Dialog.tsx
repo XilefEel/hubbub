@@ -37,7 +37,7 @@ export default function Dialog({
               {title}
             </RadixDialog.Title>
 
-            <RadixDialog.Close className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
+            <RadixDialog.Close className="text-zinc-400 transition-colors duration-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
               <X className="size-4 shrink-0" />
             </RadixDialog.Close>
           </div>

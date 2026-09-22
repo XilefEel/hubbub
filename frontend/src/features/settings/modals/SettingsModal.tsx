@@ -31,7 +31,7 @@ export default function SettingsModal() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm",
+                "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors duration-100",
                 tab.id === activeTab
                   ? "bg-zinc-100 font-medium dark:bg-zinc-700"
                   : "text-zinc-600 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-700/50",

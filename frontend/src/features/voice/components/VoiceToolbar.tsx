@@ -41,7 +41,7 @@ export function VoiceToolbar() {
       <Tooltip content={isMuted ? "Unmute" : "Mute"}>
         <button
           onClick={toggleMute}
-          className="rounded p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          className="rounded p-1.5 transition-colors duration-100 hover:bg-zinc-100 dark:hover:bg-zinc-700"
         >
           {isMuted ? (
             <MicOff className="size-4 shrink-0" />
@@ -54,7 +54,7 @@ export function VoiceToolbar() {
       <Tooltip content={isDeafened ? "Undeafen" : "Deafen"}>
         <button
           onClick={toggleDeafen}
-          className="rounded p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          className="rounded p-1.5 transition-colors duration-100 hover:bg-zinc-100 dark:hover:bg-zinc-700"
         >
           {isDeafened ? (
             <HeadphoneOff className="size-4 shrink-0" />
@@ -67,7 +67,7 @@ export function VoiceToolbar() {
       <Tooltip content={isVideoEnabled ? "Disable Video" : "Enable Video"}>
         <button
           onClick={toggleVideo}
-          className="rounded p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          className="rounded p-1.5 transition-colors duration-100 hover:bg-zinc-100 dark:hover:bg-zinc-700"
         >
           {isVideoEnabled ? (
             <Video className="size-4 shrink-0" />
@@ -84,7 +84,7 @@ export function VoiceToolbar() {
       >
         <button
           onClick={toggleScreenShare}
-          className="rounded p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          className="rounded p-1.5 transition-colors duration-100 hover:bg-zinc-100 dark:hover:bg-zinc-700"
         >
           {isScreenSharing ? (
             <Monitor className="size-4 shrink-0" />
@@ -97,7 +97,7 @@ export function VoiceToolbar() {
       <Tooltip content="Disconnect">
         <button
           onClick={disconnect}
-          className="rounded p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30"
+          className="rounded p-1.5 text-red-500 transition-colors duration-100 hover:bg-red-100 dark:hover:bg-red-900/30"
         >
           <PhoneOff className="size-4 shrink-0" />
         </button>

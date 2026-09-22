@@ -58,7 +58,7 @@ export function ContextMenuItem({
     <RadixContextMenu.Item
       disabled={disabled}
       className={cn(
-        "flex items-center gap-3 rounded px-2 py-1.5 text-sm transition-colors outline-none",
+        "flex items-center gap-3 rounded px-2 py-1.5 text-sm transition-colors duration-100 outline-none",
         "text-zinc-900 dark:text-zinc-100",
         "hover:bg-zinc-50 dark:hover:bg-zinc-700/50",
         isDelete &&

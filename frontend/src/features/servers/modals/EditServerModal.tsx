@@ -116,7 +116,7 @@ function EditServerModalContent({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={updateServer.isPending}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
             >
               Change icon
             </button>
@@ -128,7 +128,7 @@ function EditServerModalContent({
                   setIconFile(null);
                   setRemoveIcon(true);
                 }}
-                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
               >
                 Remove
               </button>
