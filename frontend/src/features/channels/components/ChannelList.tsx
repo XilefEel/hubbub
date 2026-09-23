@@ -6,7 +6,7 @@ import { useReadStatesSubscription } from "../hooks/useReadStates";
 import ChannelItem from "./ChannelItem";
 import Tooltip from "@/components/ui/Tooltip";
 
-export function ChannelList({ serverId }: { serverId: string }) {
+export default function ChannelList({ serverId }: { serverId: string }) {
   const { data: channel, isLoading, isError, error } = useChannels(serverId);
   const { isOwner } = useCurrentMembership(serverId);
   const { openModal } = useCreateChannelModal();

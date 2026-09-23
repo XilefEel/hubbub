@@ -10,7 +10,7 @@ import JoinServerModal from "../../features/servers/modals/JoinServerModal";
 import SettingsModal from "../../features/settings/modals/SettingsModal";
 import UpdateUsernameModal from "../../features/settings/modals/UpdateUsernameModal";
 
-export function GlobalModals() {
+export default function GlobalModals() {
   return (
     <>
       <CreateServerModal />

@@ -5,9 +5,9 @@ import {
   useVoiceRoom,
   useActiveChannelId,
 } from "../store/useVoiceChannelStore";
-import { VideoGrid } from "./VideoGrid";
+import VideoGrid from "./VideoGrid";
 
-export function VoiceChannel({ channel }: { channel: Channel }) {
+export default function VoiceChannel({ channel }: { channel: Channel }) {
   const room = useVoiceRoom();
   const activeChannelId = useActiveChannelId();
   const joinVoice = useJoinVoiceChannel();

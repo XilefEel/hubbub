@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useMemo } from "react";
 
-export function FilePreview({
+export default function FilePreview({
   file,
   onRemove,
 }: {

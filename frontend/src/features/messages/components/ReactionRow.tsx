@@ -1,6 +1,6 @@
 import { cn } from "cn";
 
-export function ReactionRow({
+export default function ReactionRow({
   reactions,
   onToggle,
 }: {

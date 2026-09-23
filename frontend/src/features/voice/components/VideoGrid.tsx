@@ -12,7 +12,7 @@ import { MicOff, HeadphoneOff } from "lucide-react";
 import { useVoiceParticipants } from "../hooks/useVoiceChannel";
 import { useIsDeafened } from "../store/useVoiceChannelStore";
 
-export function VideoGrid({ channelId }: { channelId: string }) {
+export default function VideoGrid({ channelId }: { channelId: string }) {
   const { data: participants } = useVoiceParticipants(channelId);
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },

@@ -3,7 +3,7 @@ import { pb } from "@/lib/pocketbase";
 import type { ServerMember } from "@/lib/types";
 import { cn } from "cn";
 import UserAvatar from "@/components/ui/UserAvatar";
-import { MemberContextMenu } from "./MemberContextMenu";
+import MemberContextMenu from "./MemberContextMenu";
 
 export default function MemberListItem({
   member,

@@ -1,5 +1,4 @@
 import { Volume2, Hash } from "lucide-react";
-import type { Channel } from "../../../lib/types";
 import { Link } from "@tanstack/react-router";
 import UserAvatar from "@/components/ui/UserAvatar";
 import {
@@ -8,7 +7,8 @@ import {
 } from "@/features/voice/hooks/useVoiceChannel";
 import { useActiveChannelId } from "@/features/voice/store/useVoiceChannelStore";
 import { useChannelReads } from "../hooks/useReadStates";
-import { ChannelContextMenu } from "./ChannelContextMenu";
+import ChannelContextMenu from "./ChannelContextMenu";
+import type { Channel } from "@/lib/types";
 
 export default function ChannelItem({
   channel,

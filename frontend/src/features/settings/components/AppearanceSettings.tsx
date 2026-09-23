@@ -2,7 +2,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme, useUIActions } from "@/app/stores/useUIStore";
 import { cn } from "cn";
 
-export function AppearanceSettings() {
+export default function AppearanceSettings() {
   const theme = useTheme();
   const { toggleTheme } = useUIActions();
 

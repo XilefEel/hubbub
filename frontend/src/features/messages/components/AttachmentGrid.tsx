@@ -1,7 +1,7 @@
 import { pb } from "@/lib/pocketbase";
 import type { Message } from "@/lib/types";
 
-export function AttachmentGrid({ message }: { message: Message }) {
+export default function AttachmentGrid({ message }: { message: Message }) {
   if (!message.attachments || message.attachments.length === 0) return null;
 
   return (

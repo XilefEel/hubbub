@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MessageActions } from "./MessageActions";
-import { MessageEditForm } from "./MessageEditForm";
+import MessageActions from "./MessageActions";
+import MessageEditForm from "./MessageEditForm";
 import { useEditMessage } from "../hooks/useMessages";
 import { pb } from "@/lib/pocketbase";
 import type { Message, Reaction } from "@/lib/types";
 import { formatMessageDate, getTime, groupReactionsByEmoji } from "@/lib/utils";
-import { AttachmentGrid } from "./AttachmentGrid";
-import { ReplyReference } from "./ReplyReference";
-import { MessageContextMenu } from "./MessageContextMenu";
+import AttachmentGrid from "./AttachmentGrid";
+import ReplyReference from "./ReplyReference";
+import MessageContextMenu from "./MessageContextMenu";
 import { useToggleReaction } from "../hooks/useReactions";
-import { ReactionRow } from "./ReactionRow";
+import ReactionRow from "./ReactionRow";
 import UserAvatar from "@/components/ui/UserAvatar";
 import MessageContent from "./MessageContent";
 
-export function MessageItem({
+export default function MessageItem({
   message,
   reactions,
   showHeader = true,

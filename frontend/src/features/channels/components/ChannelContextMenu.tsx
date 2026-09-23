@@ -10,7 +10,7 @@ import {
   useDeleteChannelModal,
 } from "@/app/modals/useModalStore";
 
-export function ChannelContextMenu({
+export default function ChannelContextMenu({
   channel,
   serverId,
   isOwner,

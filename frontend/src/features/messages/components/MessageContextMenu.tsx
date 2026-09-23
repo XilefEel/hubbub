@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/ContextMenu";
 import { useDeleteMessageModal } from "@/app/modals/useModalStore";
 
-export function MessageContextMenu({
+export default function MessageContextMenu({
   messageId,
   isOwner,
   isPending,

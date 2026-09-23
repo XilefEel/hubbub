@@ -1,4 +1,4 @@
-export function MessageEditForm({
+export default function MessageEditForm({
   value,
   onChange,
   onSubmit,

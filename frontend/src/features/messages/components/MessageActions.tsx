@@ -2,7 +2,7 @@ import { Pencil, Reply, Trash } from "lucide-react";
 import Tooltip from "@/components/ui/Tooltip";
 import { useDeleteMessageModal } from "@/app/modals/useModalStore";
 
-export function MessageActions({
+export default function MessageActions({
   messageId,
   isPending,
   isOwner,

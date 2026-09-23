@@ -8,7 +8,7 @@ import Tooltip from "@/components/ui/Tooltip";
 import { useUIActions } from "@/app/stores/useUIStore";
 import Input from "@/components/ui/Input";
 
-export function MemberList({ serverId }: { serverId: string }) {
+export default function MemberList({ serverId }: { serverId: string }) {
   const {
     data: members,
     isLoading,

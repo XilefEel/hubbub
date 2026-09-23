@@ -4,7 +4,7 @@ import Dialog from "@/components/ui/Dialog";
 import { User, Palette } from "lucide-react";
 import { cn } from "cn";
 import AccountSettings from "../components/AccountSettings";
-import { AppearanceSettings } from "../components/AppearanceSettings";
+import AppearanceSettings from "../components/AppearanceSettings";
 
 type TabId = "account" | "appearance";
 

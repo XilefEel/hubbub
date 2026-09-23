@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { MessageItem } from "./MessageItem";
+import MessageItem from "./MessageItem";
 import type { Channel, Message } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
 import { useReactions } from "../hooks/useReactions";
@@ -11,7 +11,7 @@ import {
 import { useChannelFocus } from "../../channels/hooks/useChannelFocus";
 import { pb } from "@/lib/pocketbase";
 
-export function MessageList({
+export default function MessageList({
   messages,
   channel,
   onReply,

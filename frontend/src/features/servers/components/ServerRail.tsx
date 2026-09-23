@@ -9,9 +9,9 @@ import {
   useSettingsModal,
 } from "@/app/modals/useModalStore";
 import { pb } from "@/lib/pocketbase";
-import { ServerContextMenu } from "./ServerContextMenu";
+import ServerContextMenu from "./ServerContextMenu";
 
-export function ServerRail() {
+export default function ServerRail() {
   const { serverId } = useParams({ strict: false });
   const { data: servers, isLoading, isError, error } = useServers();
   const { openModal: openCreate } = useCreateServerModal();

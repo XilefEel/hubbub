@@ -9,7 +9,7 @@ import type { Server } from "@/lib/types";
 import { Copy, Settings, Trash2, LogOut } from "lucide-react";
 import { useLeaveServer, useDeleteServer } from "../hooks/useServers";
 
-export function ServerContextMenu({
+export default function ServerContextMenu({
   server,
   children,
 }: {

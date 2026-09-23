@@ -1,20 +1,20 @@
+import { useUIActions } from "@/app/stores/useUIStore";
+import Tooltip from "@/components/ui/Tooltip";
+import ChannelList from "@/features/channels/components/ChannelList";
+import MemberList from "@/features/members/components/MemberList";
+import { usePanelSync } from "@/features/servers/hooks/usePanelSync";
+import { useServerDetail } from "@/features/servers/hooks/useServers";
+import VoiceToolbar from "@/features/voice/components/VoiceToolbar";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useServerDetail } from "../features/servers/hooks/useServers";
+import { PanelLeft } from "lucide-react";
+import { useRef } from "react";
 import {
-  Group,
+  type PanelImperativeHandle,
+  useDefaultLayout,
   Panel,
   Separator,
-  useDefaultLayout,
-  type PanelImperativeHandle,
+  Group,
 } from "react-resizable-panels";
-import { ChannelList } from "../features/channels/components/ChannelList";
-import { MemberList } from "../features/members/components/MemberList";
-import { PanelLeft } from "lucide-react";
-import Tooltip from "../components/ui/Tooltip";
-import { useRef } from "react";
-import { usePanelSync } from "../features/servers/hooks/usePanelSync";
-import { useUIActions } from "../app/stores/useUIStore";
-import { VoiceToolbar } from "../features/voice/components/VoiceToolbar";
 
 export const Route = createFileRoute("/servers/$serverId")({
   component: ServerPage,

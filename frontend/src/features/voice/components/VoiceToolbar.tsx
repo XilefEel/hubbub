@@ -19,7 +19,7 @@ import {
   useIsMuted,
 } from "../store/useVoiceChannelStore";
 
-export function VoiceToolbar() {
+export default function VoiceToolbar() {
   const activeChannelId = useActiveChannelId();
   const isMuted = useIsMuted();
   const isDeafened = useIsDeafened();

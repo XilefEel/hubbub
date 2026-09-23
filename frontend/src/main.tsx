@@ -4,7 +4,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { GlobalModals } from "./app/modals/GlobalModals";
+import GlobalModals from "./app/modals/GlobalModals";
 import "./index.css";
 import "@livekit/components-styles";
 

@@ -7,7 +7,7 @@ import type { ServerMember } from "@/lib/types";
 import { ArrowUpCircle, ArrowDownCircle, ShieldBan } from "lucide-react";
 import { useUpdateMemberRole, useBanMember } from "../hooks/useServerMembers";
 
-export function MemberContextMenu({
+export default function MemberContextMenu({
   member,
   serverId,
   isOwner,
