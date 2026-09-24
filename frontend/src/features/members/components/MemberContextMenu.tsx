@@ -25,6 +25,10 @@ export default function MemberContextMenu({
 
   const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
 
+  const isMember = member.role === "member";
+  const isAdmin = member.role === "admin";
+  const canBeBan = member.role !== "owner";
+
   const handlePromote = () =>
     updateRoleMutation.mutate({ membershipId: member.id, role: "admin" });
 
@@ -38,36 +42,32 @@ export default function MemberContextMenu({
       disabled={isSelf || !isOwner}
       content={
         <>
-          {member.role === "member" && (
-            <ContextMenuItem
-              action={handlePromote}
-              Icon={ArrowUpCircle}
-              label="Promote to Admin"
-              disabled={isPending}
-            />
-          )}
+          <ContextMenuItem
+            action={handlePromote}
+            Icon={ArrowUpCircle}
+            label="Promote to Admin"
+            show={isMember}
+            disabled={isPending}
+          />
 
-          {member.role === "admin" && (
-            <ContextMenuItem
-              action={handleDemote}
-              Icon={ArrowDownCircle}
-              label="Demote to Member"
-              disabled={isPending}
-            />
-          )}
+          <ContextMenuItem
+            action={handleDemote}
+            Icon={ArrowDownCircle}
+            label="Demote to Member"
+            show={isAdmin}
+            disabled={isPending}
+          />
 
-          {member.role !== "owner" && (
-            <>
-              <ContextMenuSeparator />
-              <ContextMenuItem
-                action={handleBan}
-                Icon={ShieldBan}
-                label="Ban"
-                isDelete
-                disabled={isPending}
-              />
-            </>
-          )}
+          <ContextMenuSeparator show={canBeBan} />
+
+          <ContextMenuItem
+            action={handleBan}
+            Icon={ShieldBan}
+            label="Ban"
+            isDelete
+            show={canBeBan}
+            disabled={isPending}
+          />
         </>
       }
     >

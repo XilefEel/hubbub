@@ -38,21 +38,19 @@ export default function ChannelContextMenu({
     <BaseContextMenu
       content={
         <>
-          {isOwner && (
-            <>
-              <ContextMenuItem
-                action={() => openEdit(channel.id, channel.name)}
-                Icon={Edit}
-                label="Edit Channel"
-              />
+          <ContextMenuItem
+            action={() => openEdit(channel.id, channel.name)}
+            Icon={Edit}
+            label="Edit Channel"
+            show={isOwner}
+          />
 
-              <ContextMenuItem
-                action={() => {}}
-                Icon={Copy}
-                label="Duplicate Channel"
-              />
-            </>
-          )}
+          <ContextMenuItem
+            action={() => {}}
+            Icon={Copy}
+            label="Duplicate Channel"
+            show={isOwner}
+          />
 
           <ContextMenuItem
             action={handleMarkRead}
@@ -60,18 +58,15 @@ export default function ChannelContextMenu({
             label="Mark as Read"
           />
 
-          {isOwner && (
-            <>
-              <ContextMenuSeparator />
+          <ContextMenuSeparator show={isOwner} />
 
-              <ContextMenuItem
-                action={() => openDelete(serverId, channel.id)}
-                Icon={Trash}
-                label="Delete Channel"
-                isDelete
-              />
-            </>
-          )}
+          <ContextMenuItem
+            action={() => openDelete(serverId, channel.id)}
+            Icon={Trash}
+            label="Delete Channel"
+            isDelete
+            show={isOwner}
+          />
         </>
       }
     >

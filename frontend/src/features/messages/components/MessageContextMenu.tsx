@@ -28,26 +28,25 @@ export default function MessageContextMenu({
       content={
         <>
           <ContextMenuItem action={onReply} Icon={Reply} label="Reply" />
-          {isOwner && (
-            <>
-              <ContextMenuItem
-                action={onEdit}
-                Icon={Pencil}
-                label="Edit"
-                disabled={isPending}
-              />
 
-              <ContextMenuSeparator />
+          <ContextMenuItem
+            action={onEdit}
+            Icon={Pencil}
+            label="Edit"
+            show={isOwner}
+            disabled={isPending}
+          />
 
-              <ContextMenuItem
-                action={() => openModal(messageId)}
-                Icon={Trash2}
-                label="Delete"
-                isDelete
-                disabled={isPending}
-              />
-            </>
-          )}
+          <ContextMenuSeparator show={isOwner} />
+
+          <ContextMenuItem
+            action={() => openModal(messageId)}
+            Icon={Trash2}
+            label="Delete"
+            isDelete
+            show={isOwner}
+            disabled={isPending}
+          />
         </>
       }
     >

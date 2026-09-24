@@ -38,33 +38,32 @@ export default function ServerContextMenu({
             label="Copy invite code"
           />
 
-          {isOwner && (
-            <ContextMenuItem
-              action={() => openModal(server)}
-              Icon={Settings}
-              label="Server settings"
-            />
-          )}
+          <ContextMenuItem
+            action={() => openModal(server)}
+            Icon={Settings}
+            label="Server settings"
+            show={isOwner}
+          />
 
           <ContextMenuSeparator />
 
-          {isOwner ? (
-            <ContextMenuItem
-              action={() => deleteServer.mutate(server.id)}
-              Icon={Trash2}
-              label="Delete server"
-              isDelete
-              disabled={isPending}
-            />
-          ) : (
-            <ContextMenuItem
-              action={() => leaveServer.mutate(server.id)}
-              Icon={LogOut}
-              label="Leave server"
-              isDelete
-              disabled={isPending}
-            />
-          )}
+          <ContextMenuItem
+            action={() => deleteServer.mutate(server.id)}
+            Icon={Trash2}
+            label="Delete server"
+            isDelete
+            show={isOwner}
+            disabled={isPending}
+          />
+
+          <ContextMenuItem
+            action={() => leaveServer.mutate(server.id)}
+            Icon={LogOut}
+            label="Leave server"
+            isDelete
+            show={!isOwner}
+            disabled={isPending}
+          />
         </>
       }
     >

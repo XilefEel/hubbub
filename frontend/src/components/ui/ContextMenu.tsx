@@ -44,6 +44,7 @@ export function ContextMenuItem({
   Icon,
   label,
   isDelete,
+  show = true,
   disabled,
   children,
 }: {
@@ -51,9 +52,12 @@ export function ContextMenuItem({
   Icon: LucideIcon;
   label?: string;
   isDelete?: boolean;
+  show?: boolean;
   disabled?: boolean;
   children?: React.ReactNode;
 }) {
+  if (!show) return null;
+
   return (
     <RadixContextMenu.Item
       disabled={disabled}
@@ -74,7 +78,9 @@ export function ContextMenuItem({
   );
 }
 
-export function ContextMenuSeparator() {
+export function ContextMenuSeparator({ show = true }: { show?: boolean }) {
+  if (!show) return null;
+
   return (
     <RadixContextMenu.Separator className="my-1 shrink-0 border-t border-zinc-200 dark:border-zinc-700" />
   );
