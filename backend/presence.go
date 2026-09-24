@@ -17,10 +17,9 @@ type PresenceEvent struct {
 	Online []string `json:"online"`
 }
 
-func broadcastPresence(app core.App) {
+func onlineUserIds() []string {
 	onlineIds := []string{}
 	now := time.Now()
-	subscription := "global_presence"
 
 	// for each user in the presence map
 	presenceMap.Range(func(key, value any) bool {
@@ -37,10 +36,16 @@ func broadcastPresence(app core.App) {
 		return true
 	})
 
+	return onlineIds
+}
+
+func broadcastPresence(app core.App) {
+	subscription := "global_presence"
+
 	// create the presence event payload
 	payload, err := json.Marshal(PresenceEvent{
 		Type:   "presence_update",
-		Online: onlineIds,
+		Online: onlineUserIds(),
 	})
 
 	if err != nil {

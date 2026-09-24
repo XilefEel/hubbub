@@ -128,8 +128,15 @@ func typingHandler(e *core.RequestEvent) error {
 
 // endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
-	presenceMap.Store(e.Auth.Id, time.Now())
-	return e.NoContent(http.StatusOK)
+	_, wasOnline := presenceMap.Swap(e.Auth.Id, time.Now())
+
+	if !wasOnline {
+		broadcastPresence(e.App)
+	}
+
+	return e.JSON(http.StatusOK, map[string]any{
+		"online": onlineUserIds(),
+	})
 }
 
 // endpoint to mint a LiveKit join token for a voice channel

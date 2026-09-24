@@ -11,14 +11,24 @@ export function usePresence() {
   useEffect(() => {
     if (!pb.authStore.isValid) return;
 
-    const sendHeartbeat = () => {
-      pb.send("/api/presence/heartbeat", { method: "POST" }).catch((err) => {
+    const sendHeartbeat = async () => {
+      try {
+        const res = await pb.send<{ online?: string[] }>(
+          "/api/presence/heartbeat",
+          {
+            method: "POST",
+          },
+        );
+
+        if (Array.isArray(res.online)) setOnlineUserIds(res.online);
+      } catch (err) {
         console.warn("heartbeat failed:", err);
-      });
+      }
     };
 
     sendHeartbeat();
-    const interval = setInterval(sendHeartbeat, 20_000);
+
+    const interval = setInterval(sendHeartbeat, 15_000);
 
     const unsubPromise = pb.realtime.subscribe(
       "global_presence",
