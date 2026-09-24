@@ -5,22 +5,13 @@ import { useChannels } from "../hooks/useChannels";
 import { useReadStatesSubscription } from "../hooks/useReadStates";
 import ChannelItem from "./ChannelItem";
 import Tooltip from "@/components/ui/Tooltip";
+import ChannelListSkeleton from "./ChannelListSkeleton";
 
 export default function ChannelList({ serverId }: { serverId: string }) {
-  const { data: channel, isLoading, isError, error } = useChannels(serverId);
+  const { data: channels, isLoading, isError, error } = useChannels(serverId);
   const { isOwner } = useCurrentMembership(serverId);
   const { openModal } = useCreateChannelModal();
   useReadStatesSubscription();
-
-  if (isLoading)
-    return <p className="text-sm text-zinc-500">Loading channels...</p>;
-
-  if (isError)
-    return (
-      <p className="text-sm text-red-500">
-        Failed to load channels: {error.message}
-      </p>
-    );
 
   return (
     <div className="flex flex-col gap-2">
@@ -39,16 +30,24 @@ export default function ChannelList({ serverId }: { serverId: string }) {
         )}
       </div>
 
-      <ul className="flex flex-col gap-1">
-        {channel?.map((c) => (
-          <ChannelItem
-            key={c.id}
-            channel={c}
-            serverId={serverId}
-            isOwner={isOwner}
-          />
-        ))}
-      </ul>
+      {isError ? (
+        <p className="text-sm text-red-500">
+          Failed to load channels: {error.message}
+        </p>
+      ) : isLoading ? (
+        <ChannelListSkeleton />
+      ) : (
+        <ul className="flex flex-col gap-1">
+          {channels?.map((c) => (
+            <ChannelItem
+              key={c.id}
+              channel={c}
+              serverId={serverId}
+              isOwner={isOwner}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
