@@ -21,12 +21,13 @@ export default function ChannelItem({
 
   const isThisChannelActive = activeChannelId === channel.id;
 
-  const { data: reads } = useChannelReads();
-  const read = reads?.find((r) => r.channel === channel.id);
+  const { data: reads, isPending } = useChannelReads();
+  const read = reads?.get(channel.id);
 
   const mentionCount = read?.mentionCount ?? 0;
 
   const isUnread =
+    !isPending &&
     channel.type !== "voice" &&
     !!channel.lastMessageAt &&
     (!read || channel.lastMessageAt > read.lastReadAt);

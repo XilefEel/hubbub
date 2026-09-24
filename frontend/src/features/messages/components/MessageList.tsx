@@ -25,7 +25,7 @@ export default function MessageList({
   const { data: reactions } = useReactions(channel.id);
   const { data: reads } = useChannelReads();
 
-  const readState = reads?.find((state) => state.channel === channel.id);
+  const readState = reads?.get(channel.id);
   const [dividerAt, setDividerAt] = useState<string | null>(null);
   const capturedFor = useRef<string | null>(null);
 

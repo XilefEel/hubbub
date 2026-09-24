@@ -7,13 +7,14 @@ import type { ReadState } from "@/lib/types";
 export function useChannelReads() {
   const userId = pb.authStore.record?.id;
 
-  return useQuery<ReadState[]>({
+  return useQuery<ReadState[], Error, Map<string, ReadState>>({
     queryKey: queryKeys.readStates.list(),
     queryFn: async () => {
       return await pb.collection("read_states").getFullList<ReadState>({
         filter: pb.filter("user = {:id}", { id: userId }),
       });
     },
+    select: (rows) => new Map(rows.map((r) => [r.channel, r])),
   });
 }
 

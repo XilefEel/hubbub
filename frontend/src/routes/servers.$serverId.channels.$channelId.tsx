@@ -1,9 +1,11 @@
 import ChannelHeader from "@/features/channels/components/ChannelHeader";
+import ChannelPageSkeleton from "@/features/channels/components/ChannelPageSkeleton";
 import { useChannelDetail } from "@/features/channels/hooks/useChannels";
 import { useTypingIndicator } from "@/features/channels/hooks/useTypingIndicator";
 import { useServerMembers } from "@/features/members/hooks/useServerMembers";
 import MessageInput from "@/features/messages/components/MessageInput";
 import MessageList from "@/features/messages/components/MessageList";
+import MessagesSkeleton from "@/features/messages/components/MessagesSkeleton";
 import TypingIndicator from "@/features/messages/components/TypingIndicator";
 import { useMessages } from "@/features/messages/hooks/useMessages";
 import VoiceChannel from "@/features/voice/components/VoiceChannel";
@@ -38,8 +40,7 @@ function ChannelPage() {
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
-  if (channelLoading)
-    return <div className="h-full bg-white dark:bg-zinc-800">Loading...</div>;
+  if (channelLoading) return <ChannelPageSkeleton />;
 
   if (channelIsError)
     return (
@@ -55,19 +56,19 @@ function ChannelPage() {
       <div className="mx-auto flex h-full max-w-3xl flex-col p-4 text-zinc-900 dark:text-zinc-100">
         <ChannelHeader channel={channel} />
 
-        {messagesLoading && <p>Loading messages...</p>}
-
-        {messagesIsError && (
+        {messagesIsError ? (
           <p className="text-red-500">
             Error loading messages: {messagesError.message}
           </p>
+        ) : messagesLoading ? (
+          <MessagesSkeleton />
+        ) : (
+          <MessageList
+            messages={messages}
+            channel={channel}
+            onReply={setReplyingTo}
+          />
         )}
-
-        <MessageList
-          messages={messages}
-          channel={channel!}
-          onReply={setReplyingTo}
-        />
 
         <TypingIndicator typingNames={typingNames} />
 
