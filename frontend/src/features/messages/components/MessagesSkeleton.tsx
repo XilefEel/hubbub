@@ -1,3 +1,4 @@
+import Skeleton from "@/components/ui/Skeleton";
 import { cn } from "cn";
 
 const ROWS = [
@@ -17,20 +18,12 @@ export default function MessagesSkeleton() {
     <div className="flex flex-1 flex-col gap-3">
       {ROWS.map((row, i) => (
         <div key={i} className="flex animate-pulse items-start gap-4 px-2 py-1">
-          <div className="size-10 shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+          <Skeleton className="size-10 shrink-0 rounded-full" />
           <div className="flex flex-1 flex-col gap-2">
-            <div
-              className={cn(
-                "h-3 rounded bg-zinc-200 dark:bg-zinc-700",
-                row.name,
-              )}
-            />
+            <Skeleton className={cn("h-3", row.name)} />
 
             {row.lines.map((w, j) => (
-              <div
-                key={j}
-                className={cn("h-3 rounded bg-zinc-200 dark:bg-zinc-700", w)}
-              />
+              <Skeleton key={j} className={cn("h-3", w)} />
             ))}
           </div>
         </div>
