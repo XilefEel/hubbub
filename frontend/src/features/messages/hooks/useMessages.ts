@@ -75,7 +75,7 @@ export function useMessages(channelId: string) {
     queryKey: queryKeys.messages.list(channelId),
     queryFn: async () => {
       return await pb.collection("messages").getFullList<Message>({
-        filter: `channel = "${channelId}"`,
+        filter: pb.filter("channel = {:id}", { id: channelId }),
         sort: "created",
         expand: "user,replyTo,replyTo.user,mentions",
       });

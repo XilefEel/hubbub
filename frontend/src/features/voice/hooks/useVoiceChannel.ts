@@ -131,7 +131,7 @@ export function useVoiceParticipants(channelId: string) {
     queryKey: queryKeys.voiceParticipants.list(channelId),
     queryFn: () =>
       pb.collection("voice_participants").getFullList({
-        filter: `channel = "${channelId}"`,
+        filter: pb.filter("channel = {:id}", { id: channelId }),
         expand: "user",
       }),
     enabled: !!channelId,

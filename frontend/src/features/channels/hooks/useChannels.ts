@@ -11,7 +11,7 @@ export function useChannels(serverId: string) {
     queryKey: queryKeys.channels.list(serverId),
     queryFn: async () => {
       return await pb.collection("channels").getFullList<Channel>({
-        filter: `server = "${serverId}"`,
+        filter: pb.filter("server = {:id}", { id: serverId }),
         sort: "type,name",
       });
     },

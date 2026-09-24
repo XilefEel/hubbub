@@ -8,7 +8,7 @@ export function useServerMembers(serverId: string) {
     queryKey: queryKeys.serverMembers.list(serverId),
     queryFn: async () => {
       return await pb.collection("server_members").getFullList<ServerMember>({
-        filter: `server = "${serverId}"`,
+        filter: pb.filter("server = {:id}", { id: serverId }),
         expand: "user",
         sort: "role",
         requestKey: null,

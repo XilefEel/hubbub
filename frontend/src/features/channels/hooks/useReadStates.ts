@@ -11,7 +11,7 @@ export function useChannelReads() {
     queryKey: queryKeys.readStates.list(),
     queryFn: async () => {
       return await pb.collection("read_states").getFullList<ReadState>({
-        filter: `user = "${userId}"`,
+        filter: pb.filter("user = {:id}", { id: userId }),
       });
     },
   });

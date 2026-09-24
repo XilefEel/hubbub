@@ -11,7 +11,7 @@ export function useReactions(channelId: string) {
     queryKey: queryKeys.reactions.list(channelId),
     queryFn: async () => {
       return await pb.collection("reactions").getFullList<Reaction>({
-        filter: `message.channel = "${channelId}"`,
+        filter: pb.filter("message.channel = {:id}", { id: channelId }),
         expand: "user",
       });
     },
