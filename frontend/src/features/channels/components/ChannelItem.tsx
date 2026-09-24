@@ -1,14 +1,11 @@
 import { Volume2, Hash } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import UserAvatar from "@/components/ui/UserAvatar";
-import {
-  useVoiceParticipants,
-  useJoinVoiceChannel,
-} from "@/features/voice/hooks/useVoiceChannel";
+import { useJoinVoiceChannel } from "@/features/voice/hooks/useVoiceChannel";
 import { useActiveChannelId } from "@/features/voice/store/useVoiceChannelStore";
 import { useChannelReads } from "../hooks/useReadStates";
 import ChannelContextMenu from "./ChannelContextMenu";
 import type { Channel } from "@/lib/types";
+import VoiceParticipantsList from "@/features/voice/components/VoiceParticipantsList";
 
 export default function ChannelItem({
   channel,
@@ -19,7 +16,6 @@ export default function ChannelItem({
   serverId: string;
   isOwner: boolean;
 }) {
-  const { data: participants } = useVoiceParticipants(channel.id);
   const activeChannelId = useActiveChannelId();
   const joinVoice = useJoinVoiceChannel();
 
@@ -80,15 +76,8 @@ export default function ChannelItem({
         </li>
       </ChannelContextMenu>
 
-      {channel.type === "voice" && participants && participants.length > 0 && (
-        <ul className="mt-1 ml-8 flex flex-col gap-1">
-          {participants.map((p) => (
-            <li key={p.id} className="flex items-center gap-2 text-sm">
-              <UserAvatar user={p.expand?.user} size="size-5" />
-              {p.expand?.user?.name}
-            </li>
-          ))}
-        </ul>
+      {channel.type === "voice" && (
+        <VoiceParticipantsList channelId={channel.id} />
       )}
     </div>
   );
