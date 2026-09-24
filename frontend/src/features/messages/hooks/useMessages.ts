@@ -122,3 +122,12 @@ export function useMessages(channelId: string) {
 
   return query;
 }
+
+export async function fetchLastMessage(channelId: string) {
+  const res = await pb.collection("messages").getList<Message>(1, 1, {
+    filter: pb.filter("channel = {:id}", { id: channelId }),
+    sort: "-created",
+    skipTotal: true,
+  });
+  return res.items[0] ?? null;
+}
