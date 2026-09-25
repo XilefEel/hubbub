@@ -85,7 +85,7 @@ export type ReadState = BaseRecord & {
   user: string; // user id
   channel: string; // channel id
   lastReadAt: string;
-  mentionCount: number;
+  mentionCount?: number;
   expand?: {
     user?: User;
     channel?: Channel;
