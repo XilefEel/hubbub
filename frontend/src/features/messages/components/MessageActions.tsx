@@ -1,5 +1,6 @@
-import { Pencil, Reply, Trash } from "lucide-react";
+import { Pencil, Reply, SmilePlus, Trash } from "lucide-react";
 import Tooltip from "@/components/ui/Tooltip";
+import { EmojiPickerPopover } from "@/components/ui/EmojiPickerPopover";
 import { useDeleteMessageModal } from "@/app/modals/useModalStore";
 
 export default function MessageActions({
@@ -41,6 +42,16 @@ export default function MessageActions({
       >
         😂
       </button>
+
+      <EmojiPickerPopover
+        onEmojiSelect={onToggleReaction}
+        side="top"
+        align="end"
+      >
+        <button className="text-zinc-400 transition-colors duration-100 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300">
+          <SmilePlus className="size-4 shrink-0" />
+        </button>
+      </EmojiPickerPopover>
 
       <Tooltip content="Reply">
         <button
