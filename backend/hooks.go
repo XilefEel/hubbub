@@ -42,8 +42,8 @@ func registerServerHooks(app core.App) {
 		return e.Next()
 	})
 
-	// update the last_message_at field of the channel when a new message is created
 	app.OnRecordAfterCreateSuccess("messages").BindFunc(func(e *core.RecordEvent) error {
+		// update the last_message_at field of the channel when a new message is created
 		channel, err := e.App.FindRecordById("channels", e.Record.GetString("channel"))
 		if err != nil {
 			return err
@@ -86,6 +86,9 @@ func registerServerHooks(app core.App) {
 				log.Println("hook: failed to save read state:", err)
 			}
 		}
+
+		// broadcast typing stop event when a new message is created
+		broadcastTyping(e.App, e.Record.GetString("channel"), e.Record.GetString("user"), "stop_typing")
 
 		return e.Next()
 	})

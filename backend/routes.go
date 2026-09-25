@@ -82,18 +82,23 @@ func joinServerHandler(e *core.RequestEvent) error {
 
 // endpoint to send typing events to a channel
 func typingHandler(e *core.RequestEvent) error {
-	// create a new payload for the typing event
 	channelId := e.Request.PathValue("channelId")
+	broadcastTyping(e.App, channelId, e.Auth.Id, "typing")
+	return e.NoContent(http.StatusOK)
+}
+
+func broadcastTyping(app core.App, channelId string, userId string, eventType string) {
 	subscription := "channel_" + channelId
 
+	// create a new payload for the typing event
 	payload, err := json.Marshal(map[string]any{
-		"name":   e.Auth.GetString("name"),
-		"type":   "typing",
-		"userId": e.Auth.Id,
+		"type":   eventType,
+		"userId": userId,
 	})
 
 	if err != nil {
-		return e.InternalServerError("Failed to marshal payload", err)
+		log.Println("Failed to marshal typing payload:", err)
+		return
 	}
 
 	// create the message to broadcast
@@ -102,28 +107,19 @@ func typingHandler(e *core.RequestEvent) error {
 		Data: payload,
 	}
 
-	// protect agaisnt unauthorized users
-	senderId := ""
-	if e.Auth != nil {
-		senderId = e.Auth.Id
-	}
-
 	// for each client subscribed to the channel, send the typing event
-	for _, client := range e.App.SubscriptionsBroker().Clients() {
+	for _, client := range app.SubscriptionsBroker().Clients() {
 		if !client.HasSubscription(subscription) {
 			continue
 		}
 
 		// prevent the sender from receiving their own typing event
 		authRecord, _ := client.Get(apis.RealtimeClientAuthKey).(*core.Record)
-		if authRecord != nil && authRecord.Id == senderId {
+		if authRecord != nil && authRecord.Id == userId {
 			continue
 		}
-
 		client.Send(msg)
 	}
-
-	return e.NoContent(http.StatusOK)
 }
 
 // endpoint to handle presence heartbeat

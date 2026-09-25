@@ -16,8 +16,17 @@ export function useTypingIndicator(
 
     const unsubPromise = pb.realtime.subscribe(
       `channel_${channelId}`,
-      (e: { name: string; type: string; userId: string }) => {
-        if (e.type !== "typing" || !e.userId) return;
+      (e: { type: string; userId: string }) => {
+        if (!e.userId) return;
+
+        if (e.type === "stop_typing") {
+          clearTimeout(timeoutsRef.current[e.userId]);
+          delete timeoutsRef.current[e.userId];
+          setTypingUserIds((prev) => prev.filter((id) => id !== e.userId));
+          return;
+        }
+
+        if (e.type !== "typing") return;
 
         const userId = e.userId;
 
