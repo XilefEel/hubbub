@@ -6,6 +6,7 @@ import type {
   EmojiPickerListRowProps,
   EmojiPickerListEmojiProps,
 } from "frimousse";
+import { cn } from "cn";
 
 export function EmojiPickerPopover({
   onEmojiSelect,
@@ -29,7 +30,11 @@ export function EmojiPickerPopover({
           sideOffset={8}
           side={side}
           align={align}
-          className="z-50"
+          className={cn(
+            "z-50",
+            "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+            "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+          )}
         >
           <EmojiPicker.Root
             onEmojiSelect={({ emoji }) => {
