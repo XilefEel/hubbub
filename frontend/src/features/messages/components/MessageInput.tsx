@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useMemo } from "react";
-import { ArrowUp, Plus, Upload, X } from "lucide-react";
+import { ArrowUp, FaceSlightlySmiling, Plus, Upload, X } from "lucide-react";
 import FilePreview from "./FilePreview";
 import { useFileDrop } from "../hooks/useFileDrop";
 import type { Message, ServerMember, User } from "@/lib/types";
@@ -8,6 +8,7 @@ import { useSendMessage } from "../hooks/useMessages";
 import { cn } from "cn";
 import { pb } from "@/lib/pocketbase";
 import UserAvatar from "@/components/ui/UserAvatar";
+import { EmojiPickerPopover } from "@/components/ui/EmojiPickerPopover";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_FILES = 10;
@@ -266,8 +267,19 @@ export default function MessageInput({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
-            className="w-full rounded-xl border border-zinc-200 px-12 py-2 outline-none focus:outline-none dark:border-zinc-700"
+            className="w-full rounded-xl border border-zinc-200 py-2 pr-20 pl-12 outline-none focus:outline-none dark:border-zinc-700"
           />
+
+          <EmojiPickerPopover
+            onEmojiSelect={(emoji) => setContent((prev) => prev + emoji)}
+          >
+            <button
+              type="button"
+              className="absolute top-1/2 right-12 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
+            >
+              <FaceSlightlySmiling className="size-5 shrink-0" />
+            </button>
+          </EmojiPickerPopover>
 
           <button
             type="submit"
