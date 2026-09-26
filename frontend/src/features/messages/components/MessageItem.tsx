@@ -10,7 +10,7 @@ import ReplyReference from "./ReplyReference";
 import MessageContextMenu from "./MessageContextMenu";
 import { useToggleReaction } from "../hooks/useReactions";
 import ReactionRow from "./ReactionRow";
-import UserAvatar from "@/components/ui/UserAvatar";
+import UserAvatar from "@/features/users/components/UserAvatar";
 import MessageContent from "./MessageContent";
 
 export default function MessageItem({

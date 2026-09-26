@@ -1,4 +1,4 @@
-import UserAvatar from "@/components/ui/UserAvatar";
+import UserAvatar from "@/features/users/components/UserAvatar";
 import type { User } from "@/lib/types";
 import {
   useTracks,

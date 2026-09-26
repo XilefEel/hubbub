@@ -4,7 +4,7 @@ import {
   useRemoveAvatar,
   useUpdateAvatar,
 } from "../../auth/hooks/useAuth";
-import UserAvatar from "@/components/ui/UserAvatar";
+import UserAvatar from "@/features/users/components/UserAvatar";
 import {
   useChangePasswordModal,
   useUpdateUsernameModal,

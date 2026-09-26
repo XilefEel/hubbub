@@ -7,7 +7,7 @@ import Tooltip from "@/components/ui/Tooltip";
 import { useSendMessage } from "../hooks/useMessages";
 import { cn } from "cn";
 import { pb } from "@/lib/pocketbase";
-import UserAvatar from "@/components/ui/UserAvatar";
+import UserAvatar from "@/features/users/components/UserAvatar";
 import { EmojiPickerPopover } from "@/components/ui/EmojiPickerPopover";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
