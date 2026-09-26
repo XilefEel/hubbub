@@ -144,3 +144,16 @@ export function useChangePassword() {
     },
   });
 }
+
+export function useUpdateBio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (bio: string) => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Must be logged in to update bio");
+
+      return await pb.collection("users").update(userId, { bio });
+    },
+    onSuccess: () => invalidateUserDependents(queryClient),
+  });
+}

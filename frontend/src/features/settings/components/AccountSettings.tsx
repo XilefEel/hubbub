@@ -1,23 +1,26 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   useAuth,
   useRemoveAvatar,
   useUpdateAvatar,
+  useUpdateBio,
 } from "../../auth/hooks/useAuth";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import {
   useChangePasswordModal,
   useUpdateUsernameModal,
 } from "@/app/modals/useModalStore";
+import { cn } from "cn";
 
 export default function AccountSettings() {
   const { user } = useAuth();
-  const updateAvatar = useUpdateAvatar();
-  const removeAvatar = useRemoveAvatar();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { openModal: openUpdateUsername } = useUpdateUsernameModal();
   const { openModal: openChangePassword } = useChangePasswordModal();
+
+  const updateAvatar = useUpdateAvatar();
+  const removeAvatar = useRemoveAvatar();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -28,8 +31,39 @@ export default function AccountSettings() {
 
   const isPending = updateAvatar.isPending || removeAvatar.isPending;
 
+  const [bioDraft, setBioDraft] = useState(user?.bio ?? "");
+  const updateBio = useUpdateBio();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 0);
+  };
+
+  const handleBlur = async () => {
+    setIsEditing(false);
+    if (bioDraft !== user?.bio) updateBio.mutate(bioDraft);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") e.currentTarget.blur();
+
+    if (e.key === "Escape") {
+      setBioDraft(user?.bio ?? "");
+      e.currentTarget.blur();
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-6">
+    <div
+      style={{ scrollbarGutter: "stable" }}
+      className="flex flex-col gap-6 overflow-y-auto"
+    >
       <h3 className="font-semibold">Account</h3>
 
       <div className="flex items-center gap-4">
@@ -101,6 +135,36 @@ export default function AccountSettings() {
         >
           Edit
         </button>
+      </div>
+
+      <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+
+      <div className="flex flex-col gap-2">
+        <label className="mb-1 block text-sm">About Me</label>
+
+        <div
+          onDoubleClick={handleDoubleClick}
+          className={cn(
+            "ml-0.5 cursor-text rounded-lg transition-all",
+            isEditing
+              ? "px-3 shadow-sm ring ring-teal-500"
+              : "text-zinc-500 hover:opacity-80 dark:text-zinc-400",
+          )}
+        >
+          <input
+            ref={inputRef}
+            placeholder="None"
+            value={bioDraft}
+            onChange={(e) => setBioDraft(e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            readOnly={!isEditing}
+            className={cn(
+              "truncate bg-transparent text-sm focus:outline-none",
+              !isEditing && "pointer-events-none",
+            )}
+          />
+        </div>
       </div>
 
       <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />

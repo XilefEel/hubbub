@@ -30,6 +30,12 @@ export default function UserCard({
             </div>
 
             <h3 className="font-semibold">{user.name}</h3>
+
+            {user.bio && (
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                {user.bio}
+              </p>
+            )}
           </div>
         </>
       }
