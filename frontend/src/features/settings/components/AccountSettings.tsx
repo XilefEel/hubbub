@@ -11,6 +11,7 @@ import {
   useUpdateUsernameModal,
 } from "@/app/modals/useModalStore";
 import { cn } from "cn";
+import { AtSign, KeyRound, Mail, Quote, Trash2 } from "lucide-react";
 
 export default function AccountSettings() {
   const { user } = useAuth();
@@ -47,6 +48,8 @@ export default function AccountSettings() {
 
   const handleBlur = async () => {
     setIsEditing(false);
+    window.getSelection()?.removeAllRanges();
+
     if (bioDraft !== user?.bio) updateBio.mutate(bioDraft);
   };
 
@@ -75,7 +78,7 @@ export default function AccountSettings() {
             ref={fileInputRef}
             onChange={handleFileChange}
             className="hidden"
-            multiple
+            accept="image/*"
           />
 
           <div className="flex gap-2">
@@ -105,10 +108,15 @@ export default function AccountSettings() {
       </div>
 
       <div className="flex items-center gap-4">
-        <label className="mb-1 block text-sm">Username</label>
+        <label className="flex items-center gap-2 text-sm">
+          <AtSign className="size-4 shrink-0" />
+          Username
+        </label>
+
         <div className="ml-auto rounded-md text-sm text-zinc-600 dark:text-zinc-300">
           {user?.name}
         </div>
+
         <button
           onClick={openUpdateUsername}
           className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
@@ -118,17 +126,26 @@ export default function AccountSettings() {
       </div>
 
       <div className="flex items-center gap-4">
-        <label className="mb-1 block text-sm">Email</label>
+        <label className="flex items-center gap-2 text-sm">
+          <Mail className="size-4 shrink-0" />
+          Email
+        </label>
+
         <div className="ml-auto rounded-md text-sm text-zinc-600 dark:text-zinc-300">
           {user?.email}
         </div>
+
         <button className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50">
           Edit
         </button>
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="mb-1 block text-sm">Password</span>
+        <label className="flex items-center gap-2 text-sm">
+          <KeyRound className="size-4 shrink-0" />
+          Password
+        </label>
+
         <button
           onClick={openChangePassword}
           className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
@@ -139,28 +156,37 @@ export default function AccountSettings() {
 
       <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
 
-      <div className="flex flex-col gap-2">
-        <label className="mb-1 block text-sm">About Me</label>
+      <div className="flex flex-col gap-1">
+        <label className="flex items-center gap-2 text-sm">
+          <Quote className="size-4 shrink-0" />
+          About Me
+        </label>
+
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          {isEditing
+            ? "Click outside or press Enter to save"
+            : "Double click to edit your bio."}
+        </p>
 
         <div
           onDoubleClick={handleDoubleClick}
           className={cn(
-            "ml-0.5 cursor-text rounded-lg transition-all",
+            "mt-1 ml-0.5 cursor-text rounded-lg transition-all",
             isEditing
               ? "px-3 shadow-sm ring ring-teal-500"
-              : "text-zinc-500 hover:opacity-80 dark:text-zinc-400",
+              : "text-zinc-600 hover:opacity-80 dark:text-zinc-300 dark:hover:opacity-80",
           )}
         >
           <input
             ref={inputRef}
-            placeholder="None"
+            placeholder="No bio yet."
             value={bioDraft}
             onChange={(e) => setBioDraft(e.target.value)}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             readOnly={!isEditing}
             className={cn(
-              "truncate bg-transparent text-sm focus:outline-none",
+              "w-full bg-transparent text-sm focus:outline-none",
               !isEditing && "pointer-events-none",
             )}
           />
@@ -170,7 +196,11 @@ export default function AccountSettings() {
       <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
 
       <div className="flex items-center gap-4">
-        <span className="mb-1 block text-sm">Delete Account</span>
+        <label className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400">
+          <Trash2 className="size-4 shrink-0" />
+          Delete Account
+        </label>
+
         <button className="ml-auto w-18 rounded-md bg-red-500 py-1.5 text-sm text-white transition-colors duration-100 hover:bg-red-600">
           Delete
         </button>
