@@ -45,7 +45,7 @@ export default function AddFriendTab() {
   const feedback = status ? MESSAGES[status] : null;
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col">
       <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
           autoFocus

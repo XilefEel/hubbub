@@ -1,4 +1,6 @@
 import AddFriendTab from "@/features/friends/components/AddFriendInput";
+import { useFriendships } from "@/features/friends/hooks/useFriendships";
+import { pb } from "@/lib/pocketbase";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useRef } from "react";
 import {
@@ -14,7 +16,23 @@ export const Route = createFileRoute("/me")({
 });
 
 function MePage() {
+  const userId = pb.authStore.record?.id;
+
   const sidebarRef = useRef<PanelImperativeHandle>(null);
+
+  const { data: friendships } = useFriendships(userId);
+
+  const incomingPending =
+    friendships?.filter(
+      (f) => f.status === "pending" && f.addressee === userId,
+    ) ?? [];
+
+  const outgoingPending =
+    friendships?.filter(
+      (f) => f.status === "pending" && f.requester === userId,
+    ) ?? [];
+
+  const accepted = friendships?.filter((f) => f.status === "accepted") ?? [];
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: "hubbub-dm-layout",
@@ -25,8 +43,49 @@ function MePage() {
     <div className="flex h-full bg-white dark:bg-zinc-800">
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel id="dm-sidebar" minSize="15%" panelRef={sidebarRef} collapsible>
-          <aside className="flex h-full flex-col p-4 text-zinc-900 dark:text-zinc-100">
+          <aside className="flex h-full flex-col gap-4 p-4 text-zinc-900 dark:text-zinc-100">
             <AddFriendTab />
+
+            <div className="flex flex-col gap-1 text-sm">
+              <h2 className="font-semibold text-zinc-500 dark:text-zinc-400">
+                Incoming Friend Requests
+              </h2>
+
+              {incomingPending.length > 0 &&
+                incomingPending.map((f) => (
+                  <span key={f.id}>{f.expand?.requester?.name}</span>
+                ))}
+            </div>
+
+            <div className="flex flex-col gap-1 text-sm">
+              <h2 className="font-semibold text-zinc-500 dark:text-zinc-400">
+                Outgoing Friend Requests
+              </h2>
+
+              {outgoingPending.length > 0 &&
+                outgoingPending.map((f) => (
+                  <div key={f.id} className="flex">
+                    <span>{f.expand?.addressee?.name}</span>
+                    <button className="ml-auto text-xs">accept</button>
+                  </div>
+                ))}
+            </div>
+
+            <div className="flex flex-col gap-1 text-sm">
+              <h2 className="font-semibold text-zinc-500 dark:text-zinc-400">
+                Friends
+              </h2>
+
+              {accepted.length > 0 &&
+                accepted.map((f) => {
+                  const friend =
+                    f.requester === userId
+                      ? f.expand?.addressee
+                      : f.expand?.requester;
+
+                  return <span key={f.id}>{friend?.name}</span>;
+                })}
+            </div>
           </aside>
         </Panel>
 
