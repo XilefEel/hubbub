@@ -93,3 +93,22 @@ export type ReadState = BaseRecord & {
     channel?: Channel;
   };
 };
+
+export type FriendshipStatus = "pending" | "accepted";
+
+export type Friendship = BaseRecord & {
+  requester: string; // user id
+  addressee: string; // user id
+  status: FriendshipStatus;
+  expand?: {
+    requester?: User;
+    addressee?: User;
+  };
+};
+
+export type FriendRequestStatus =
+  "sent" | "not_found" | "already_friends" | "already_pending" | "self";
+
+export type SendFriendRequestResult = {
+  status: FriendRequestStatus;
+};

@@ -1,3 +1,4 @@
+import AddFriendTab from "@/features/friends/components/AddFriendInput";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useRef } from "react";
 import {
@@ -25,7 +26,7 @@ function MePage() {
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel id="dm-sidebar" minSize="15%" panelRef={sidebarRef} collapsible>
           <aside className="flex h-full flex-col p-4 text-zinc-900 dark:text-zinc-100">
-            hi
+            <AddFriendTab />
           </aside>
         </Panel>
 
