@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MeRouteImport } from './routes/me'
+import { Route as MeIndexRouteImport } from './routes/me.index'
 import { Route as ServersServerIdRouteImport } from './routes/servers.$serverId'
+import { Route as MeConversationsConversationIdRouteImport } from './routes/me.conversations.$conversationId'
 import { Route as ServersServerIdIndexRouteImport } from './routes/servers.$serverId.index'
 import { Route as ServersServerIdChannelsChannelIdRouteImport } from './routes/servers.$serverId.channels.$channelId'
 
@@ -25,11 +28,27 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeIndexRoute = MeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MeRoute,
+} as any)
 const ServersServerIdRoute = ServersServerIdRouteImport.update({
   id: '/servers/$serverId',
   path: '/servers/$serverId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MeConversationsConversationIdRoute =
+  MeConversationsConversationIdRouteImport.update({
+    id: '/conversations/$conversationId',
+    path: '/conversations/$conversationId',
+    getParentRoute: () => MeRoute,
+  } as any)
 const ServersServerIdIndexRoute = ServersServerIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -45,13 +64,18 @@ const ServersServerIdChannelsChannelIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/me': typeof MeRouteWithChildren
   '/servers/$serverId': typeof ServersServerIdRouteWithChildren
+  '/me/': typeof MeIndexRoute
+  '/me/conversations/$conversationId': typeof MeConversationsConversationIdRoute
   '/servers/$serverId/': typeof ServersServerIdIndexRoute
   '/servers/$serverId/channels/$channelId': typeof ServersServerIdChannelsChannelIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/me': typeof MeIndexRoute
+  '/me/conversations/$conversationId': typeof MeConversationsConversationIdRoute
   '/servers/$serverId': typeof ServersServerIdIndexRoute
   '/servers/$serverId/channels/$channelId': typeof ServersServerIdChannelsChannelIdRoute
 }
@@ -59,7 +83,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/me': typeof MeRouteWithChildren
   '/servers/$serverId': typeof ServersServerIdRouteWithChildren
+  '/me/': typeof MeIndexRoute
+  '/me/conversations/$conversationId': typeof MeConversationsConversationIdRoute
   '/servers/$serverId/': typeof ServersServerIdIndexRoute
   '/servers/$serverId/channels/$channelId': typeof ServersServerIdChannelsChannelIdRoute
 }
@@ -68,20 +95,28 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/me'
     | '/servers/$serverId'
+    | '/me/'
+    | '/me/conversations/$conversationId'
     | '/servers/$serverId/'
     | '/servers/$serverId/channels/$channelId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
+    | '/me'
+    | '/me/conversations/$conversationId'
     | '/servers/$serverId'
     | '/servers/$serverId/channels/$channelId'
   id:
     | '__root__'
     | '/'
     | '/login'
+    | '/me'
     | '/servers/$serverId'
+    | '/me/'
+    | '/me/conversations/$conversationId'
     | '/servers/$serverId/'
     | '/servers/$serverId/channels/$channelId'
   fileRoutesById: FileRoutesById
@@ -89,6 +124,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  MeRoute: typeof MeRouteWithChildren
   ServersServerIdRoute: typeof ServersServerIdRouteWithChildren
 }
 
@@ -108,12 +144,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me/': {
+      id: '/me/'
+      path: '/'
+      fullPath: '/me/'
+      preLoaderRoute: typeof MeIndexRouteImport
+      parentRoute: typeof MeRoute
+    }
     '/servers/$serverId': {
       id: '/servers/$serverId'
       path: '/servers/$serverId'
       fullPath: '/servers/$serverId'
       preLoaderRoute: typeof ServersServerIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/me/conversations/$conversationId': {
+      id: '/me/conversations/$conversationId'
+      path: '/conversations/$conversationId'
+      fullPath: '/me/conversations/$conversationId'
+      preLoaderRoute: typeof MeConversationsConversationIdRouteImport
+      parentRoute: typeof MeRoute
     }
     '/servers/$serverId/': {
       id: '/servers/$serverId/'
@@ -132,6 +189,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MeRouteChildren {
+  MeIndexRoute: typeof MeIndexRoute
+  MeConversationsConversationIdRoute: typeof MeConversationsConversationIdRoute
+}
+
+const MeRouteChildren: MeRouteChildren = {
+  MeIndexRoute: MeIndexRoute,
+  MeConversationsConversationIdRoute: MeConversationsConversationIdRoute,
+}
+
+const MeRouteWithChildren = MeRoute._addFileChildren(MeRouteChildren)
+
 interface ServersServerIdRouteChildren {
   ServersServerIdIndexRoute: typeof ServersServerIdIndexRoute
   ServersServerIdChannelsChannelIdRoute: typeof ServersServerIdChannelsChannelIdRoute
@@ -149,6 +218,7 @@ const ServersServerIdRouteWithChildren = ServersServerIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  MeRoute: MeRouteWithChildren,
   ServersServerIdRoute: ServersServerIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport

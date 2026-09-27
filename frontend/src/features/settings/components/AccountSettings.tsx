@@ -212,7 +212,7 @@ export default function AccountSettings() {
           onColorSelect={handleColorSelect}
         >
           <div
-            style={{ backgroundColor: user?.bannerColor }}
+            style={{ backgroundColor: user?.bannerColor ?? "#14B8A6" }}
             className="h-16 w-full rounded-lg transition-opacity duration-100 hover:opacity-80"
           />
         </ColorPicker>

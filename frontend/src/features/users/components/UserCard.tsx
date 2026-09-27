@@ -20,7 +20,7 @@ export default function UserCard({
         <>
           <div
             style={{
-              backgroundColor: user?.bannerColor,
+              backgroundColor: user?.bannerColor ?? "#14B8A6",
             }}
             className="h-20 w-full rounded-t-lg"
           />

@@ -16,7 +16,7 @@ export default function LoginForm() {
       { email, password },
       {
         onSuccess: () => {
-          navigate({ to: "/" });
+          navigate({ to: "/me" });
         },
       },
     );

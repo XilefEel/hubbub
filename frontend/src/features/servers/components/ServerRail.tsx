@@ -42,7 +42,7 @@ export default function ServerRail() {
     >
       <Tooltip content="Home" side="right">
         <Link
-          to="/"
+          to="/me"
           className={cn(
             "flex size-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-100",
             serverId === undefined

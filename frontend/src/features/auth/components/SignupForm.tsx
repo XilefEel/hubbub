@@ -16,7 +16,7 @@ export default function SignupForm() {
 
     signup.mutate(
       { username, email, password, passwordConfirm },
-      { onSuccess: () => navigate({ to: "/" }) },
+      { onSuccess: () => navigate({ to: "/me" }) },
     );
   };
 
