@@ -8,6 +8,7 @@ type BaseRecord = RecordModel & {
 export type User = BaseRecord & {
   name: string;
   bio?: string;
+  bannerColor?: string;
   avatar?: string;
 };
 

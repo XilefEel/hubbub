@@ -2,7 +2,7 @@ import * as RadixPopover from "@radix-ui/react-popover";
 import { cn } from "cn";
 import { useState } from "react";
 
-export default function BasePopover({
+export default function Popover({
   trigger,
   content,
   align = "start",

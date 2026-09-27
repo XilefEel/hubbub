@@ -3,6 +3,7 @@ import {
   useAuth,
   useRemoveAvatar,
   useUpdateAvatar,
+  useUpdateBannerColor,
   useUpdateBio,
 } from "../../auth/hooks/useAuth";
 import UserAvatar from "@/features/users/components/UserAvatar";
@@ -11,7 +12,8 @@ import {
   useUpdateUsernameModal,
 } from "@/app/modals/useModalStore";
 import { cn } from "cn";
-import { AtSign, KeyRound, Mail, Quote, Trash2 } from "lucide-react";
+import { AtSign, KeyRound, Mail, Palette, Quote, Trash2 } from "lucide-react";
+import ColorPicker from "@/components/ui/ColorPicker";
 
 export default function AccountSettings() {
   const { user } = useAuth();
@@ -60,6 +62,12 @@ export default function AccountSettings() {
       setBioDraft(user?.bio ?? "");
       e.currentTarget.blur();
     }
+  };
+
+  const updateBannerColor = useUpdateBannerColor();
+
+  const handleColorSelect = (color: string) => {
+    updateBannerColor.mutate(color);
   };
 
   return (
@@ -191,6 +199,23 @@ export default function AccountSettings() {
             )}
           />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="flex items-center gap-2 text-sm">
+          <Palette className="size-4 shrink-0" />
+          Banner Color
+        </label>
+
+        <ColorPicker
+          currentColor={user?.bannerColor ?? "#14B8A6"}
+          onColorSelect={handleColorSelect}
+        >
+          <div
+            style={{ backgroundColor: user?.bannerColor }}
+            className="h-16 w-full rounded-lg transition-opacity duration-100 hover:opacity-80"
+          />
+        </ColorPicker>
       </div>
 
       <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />

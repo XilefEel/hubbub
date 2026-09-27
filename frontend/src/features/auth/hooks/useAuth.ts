@@ -157,3 +157,16 @@ export function useUpdateBio() {
     onSuccess: () => invalidateUserDependents(queryClient),
   });
 }
+
+export function useUpdateBannerColor() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (bannerColor: string) => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Must be logged in to update banner color");
+
+      return await pb.collection("users").update(userId, { bannerColor });
+    },
+    onSuccess: () => invalidateUserDependents(queryClient),
+  });
+}

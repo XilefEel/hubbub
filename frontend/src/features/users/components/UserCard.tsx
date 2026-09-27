@@ -1,4 +1,4 @@
-import BasePopover from "@/components/ui/Popover";
+import Popover from "@/components/ui/Popover";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import type { User } from "@/lib/types";
 
@@ -12,13 +12,18 @@ export default function UserCard({
   if (!user) return null;
 
   return (
-    <BasePopover
+    <Popover
       padding="p-0"
       side="right"
       trigger={children}
       content={
         <>
-          <div className="h-20 w-full rounded-t-lg bg-teal-500" />
+          <div
+            style={{
+              backgroundColor: user?.bannerColor,
+            }}
+            className="h-20 w-full rounded-t-lg"
+          />
 
           <div className="px-3 pb-3">
             <div className="relative -mt-10 mb-2">
