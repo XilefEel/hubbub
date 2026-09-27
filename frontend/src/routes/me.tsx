@@ -1,5 +1,8 @@
-import AddFriendTab from "@/features/friends/components/AddFriendInput";
-import { useFriendships } from "@/features/friends/hooks/useFriendships";
+import AddFriendInput from "@/features/friends/components/AddFriendInput";
+import {
+  useFriendships,
+  useRespondToFriendRequest,
+} from "@/features/friends/hooks/useFriendships";
 import { pb } from "@/lib/pocketbase";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useRef } from "react";
@@ -21,6 +24,15 @@ function MePage() {
   const sidebarRef = useRef<PanelImperativeHandle>(null);
 
   const { data: friendships } = useFriendships(userId);
+  const respondToFriendRequest = useRespondToFriendRequest();
+
+  const handleAccept = (friendshipId: string) => {
+    respondToFriendRequest.mutate({ friendshipId, accept: true });
+  };
+
+  const handleIgnore = (friendshipId: string) => {
+    respondToFriendRequest.mutate({ friendshipId, accept: false });
+  };
 
   const incomingPending =
     friendships?.filter(
@@ -44,7 +56,7 @@ function MePage() {
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel id="dm-sidebar" minSize="15%" panelRef={sidebarRef} collapsible>
           <aside className="flex h-full flex-col gap-4 p-4 text-zinc-900 dark:text-zinc-100">
-            <AddFriendTab />
+            <AddFriendInput />
 
             <div className="flex flex-col gap-1 text-sm">
               <h2 className="font-semibold text-zinc-500 dark:text-zinc-400">
@@ -53,7 +65,23 @@ function MePage() {
 
               {incomingPending.length > 0 &&
                 incomingPending.map((f) => (
-                  <span key={f.id}>{f.expand?.requester?.name}</span>
+                  <div key={f.id} className="flex">
+                    <span>{f.expand?.requester?.name}</span>
+
+                    <button
+                      onClick={() => handleAccept(f.id)}
+                      className="ml-auto text-xs"
+                    >
+                      accept
+                    </button>
+
+                    <button
+                      onClick={() => handleIgnore(f.id)}
+                      className="ml-1 text-xs"
+                    >
+                      ignore
+                    </button>
+                  </div>
                 ))}
             </div>
 
@@ -66,7 +94,13 @@ function MePage() {
                 outgoingPending.map((f) => (
                   <div key={f.id} className="flex">
                     <span>{f.expand?.addressee?.name}</span>
-                    <button className="ml-auto text-xs">accept</button>
+
+                    <button
+                      onClick={() => handleIgnore(f.id)}
+                      className="ml-auto text-xs"
+                    >
+                      cancel
+                    </button>
                   </div>
                 ))}
             </div>

@@ -1,6 +1,5 @@
-// features/friends/components/AddFriendTab.tsx
 import { useState } from "react";
-import { useSendFriendRequest } from "../hooks/useSendFriendRequest";
+import { useSendFriendRequest } from "../hooks/useFriendships";
 import { cn } from "cn";
 import type { FriendRequestStatus } from "@/lib/types";
 import Input from "@/components/ui/Input";
@@ -23,7 +22,7 @@ const MESSAGES: Record<
   },
 };
 
-export default function AddFriendTab() {
+export default function AddFriendInput() {
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState<FriendRequestStatus | null>(null);
 

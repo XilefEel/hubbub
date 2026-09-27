@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
-import type { Friendship } from "@/lib/types";
+import type { Friendship, SendFriendRequestResult, User } from "@/lib/types";
 
 export function useFriendships(userId: string | undefined) {
   const queryClient = useQueryClient();
@@ -61,4 +61,93 @@ export function useFriendships(userId: string | undefined) {
   }, [userId, queryClient]);
 
   return query;
+}
+
+export function useSendFriendRequest() {
+  const queryClient = useQueryClient();
+  const currentUserId = pb.authStore.record?.id;
+
+  return useMutation({
+    mutationFn: async (username: string): Promise<SendFriendRequestResult> => {
+      if (!currentUserId)
+        throw new Error("Must be logged in to send friend requests");
+
+      let targetUser: User;
+
+      try {
+        targetUser = await pb
+          .collection("users")
+          .getFirstListItem<User>(
+            pb.filter("name = {:name}", { name: username }),
+          );
+      } catch {
+        return { status: "not_found" };
+      }
+
+      if (targetUser.id === currentUserId) {
+        return { status: "self" };
+      }
+
+      let existing: Friendship | undefined;
+
+      try {
+        existing = await pb
+          .collection("friendships")
+          .getFirstListItem<Friendship>(
+            pb.filter(
+              "(requester = {:a} && addressee = {:b}) || (requester = {:b} && addressee = {:a})",
+              { a: currentUserId, b: targetUser.id },
+            ),
+          );
+      } catch {
+        existing = undefined;
+      }
+
+      if (existing) {
+        return existing.status === "accepted"
+          ? { status: "already_friends" }
+          : { status: "already_pending" };
+      }
+
+      await pb.collection("friendships").create({
+        requester: currentUserId,
+        addressee: targetUser.id,
+        status: "pending",
+      });
+
+      return { status: "sent" };
+    },
+    onSuccess: (result) => {
+      if (result.status === "sent") {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.friendships.list(currentUserId || ""),
+        });
+      }
+    },
+  });
+}
+
+export function useRespondToFriendRequest() {
+  const currentUserId = pb.authStore.record?.id;
+
+  return useMutation({
+    mutationFn: async ({
+      friendshipId,
+      accept,
+    }: {
+      friendshipId: string;
+      accept: boolean;
+    }) => {
+      if (!currentUserId)
+        throw new Error("Must be logged in to respond to friend requests");
+
+      if (accept) {
+        await pb.collection("friendships").update(friendshipId, {
+          status: "accepted",
+        });
+      } else {
+        await pb.collection("friendships").delete(friendshipId);
+      }
+    },
+  });
 }
