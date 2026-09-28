@@ -8,8 +8,7 @@ import {
 import Tooltip from "@/components/ui/Tooltip";
 
 export default function FriendRequestButton({ user }: { user: User }) {
-  const { data: relation } = useFriendshipStatus(user?.id);
-
+  const relation = useFriendshipStatus(user?.id);
   const sendRequest = useSendFriendRequest();
   const respondToFriendRequest = useRespondToFriendRequest();
 

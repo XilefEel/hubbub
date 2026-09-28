@@ -7,6 +7,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { pb } from "../lib/pocketbase";
 import ServerRail from "@/features/servers/components/ServerRail";
+import { useFriendshipsSubscription } from "@/features/friends/hooks/useFriendships";
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {
@@ -26,6 +27,9 @@ export const Route = createRootRoute({
 function RootLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
+  const userId = pb.authStore.record?.id;
+
+  useFriendshipsSubscription(userId);
 
   if (isLoginPage) {
     return (

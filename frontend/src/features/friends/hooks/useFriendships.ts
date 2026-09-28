@@ -3,28 +3,29 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
 import {
-  type FriendshipRelation,
   type Friendship,
+  type FriendshipRelation,
   type SendFriendRequestResult,
   type User,
 } from "@/lib/types";
 
 export function useFriendships(userId: string | undefined) {
-  const queryClient = useQueryClient();
-
-  const query = useQuery<Friendship[]>({
+  return useQuery<Friendship[]>({
     queryKey: queryKeys.friendships.list(userId ?? ""),
-    queryFn: async () => {
-      return await pb.collection("friendships").getFullList<Friendship>({
+    queryFn: () =>
+      pb.collection("friendships").getFullList<Friendship>({
         filter: pb.filter("requester = {:id} || addressee = {:id}", {
           id: userId,
         }),
         sort: "-created",
         expand: "requester,addressee",
-      });
-    },
+      }),
     enabled: !!userId,
   });
+}
+
+export function useFriendshipsSubscription(userId: string | undefined) {
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!userId) return;
@@ -64,8 +65,6 @@ export function useFriendships(userId: string | undefined) {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
   }, [userId, queryClient]);
-
-  return query;
 }
 
 export function useSendFriendRequest() {
@@ -157,44 +156,27 @@ export function useRespondToFriendRequest() {
   });
 }
 
-export function useFriendshipStatus(userId: string | undefined) {
+export function useFriendshipStatus(
+  userId: string | undefined,
+): FriendshipRelation {
   const currentUserId = pb.authStore.record?.id;
+  const { data: friendships } = useFriendships(currentUserId);
 
-  return useQuery<FriendshipRelation | null>({
-    queryKey: queryKeys.friendships.status(currentUserId ?? "", userId ?? ""),
-    queryFn: async () => {
-      if (!currentUserId || !userId)
-        throw new Error(
-          "Must be logged in and have a userId to check friendship status",
-        );
+  const row = friendships?.find(
+    (f) =>
+      (f.requester === currentUserId && f.addressee === userId) ||
+      (f.requester === userId && f.addressee === currentUserId),
+  );
 
-      let row: Friendship | undefined;
+  if (!row) return { kind: "none" };
 
-      try {
-        row = await pb
-          .collection("friendships")
-          .getFirstListItem<Friendship>(
-            pb.filter(
-              "(requester = {:a} && addressee = {:b}) || (requester = {:b} && addressee = {:a})",
-              { a: currentUserId, b: userId },
-            ),
-          );
-      } catch {
-        row = undefined;
-      }
+  if (row.status === "accepted")
+    return {
+      kind: "friends",
+      friendship: row,
+    };
 
-      if (!row) return { kind: "none" };
-
-      if (row.status === "accepted")
-        return {
-          kind: "friends",
-          friendship: row,
-        };
-
-      return row.requester === currentUserId
-        ? { kind: "outgoing_pending", friendship: row }
-        : { kind: "incoming_pending", friendship: row };
-    },
-    enabled: !!currentUserId && !!userId && currentUserId !== userId,
-  });
+  return row.requester === currentUserId
+    ? { kind: "outgoing_pending", friendship: row }
+    : { kind: "incoming_pending", friendship: row };
 }
