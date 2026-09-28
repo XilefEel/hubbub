@@ -43,9 +43,45 @@ func registerServerHooks(app core.App) {
 		return e.Next()
 	})
 
+	// auto validate messages to ensure they belong to either a channel or a conversation, but not both
+	app.OnRecordCreate("messages").BindFunc(func(e *core.RecordEvent) error {
+		hasChannel := e.Record.GetString("channel")
+		hasConversation := e.Record.GetString("conversation")
+
+		if hasChannel == "" && hasConversation == "" {
+			return apis.NewBadRequestError("A message must belong to either a channel or a conversation", nil)
+		}
+
+		if hasChannel != "" && hasConversation != "" {
+			return apis.NewBadRequestError("A message cannot belong to both a channel and a conversation", nil)
+		}
+
+		return e.Next()
+	})
+
 	app.OnRecordAfterCreateSuccess("messages").BindFunc(func(e *core.RecordEvent) error {
+		conversationId := e.Record.GetString("conversation")
+
+		// if the message belongs to a conversation, update the last_message_at field of the conversation
+		if conversationId != "" {
+			conversation, err := e.App.FindRecordById("conversations", conversationId)
+			if err != nil {
+				return err
+			}
+
+			conversation.Set("lastMessageAt", e.Record.GetString("created"))
+			if err := e.App.Save(conversation); err != nil {
+				return err
+			}
+
+			// skip the rest of the hook
+			return e.Next()
+		}
+
 		// update the last_message_at field of the channel when a new message is created
-		channel, err := e.App.FindRecordById("channels", e.Record.GetString("channel"))
+		channelId := e.Record.GetString("channel")
+
+		channel, err := e.App.FindRecordById("channels", channelId)
 		if err != nil {
 			return err
 		}
@@ -61,7 +97,6 @@ func registerServerHooks(app core.App) {
 			return err
 		}
 
-		channelId := e.Record.GetString("channel")
 		userId := e.Record.GetString("user")
 
 		for _, id := range e.Record.GetStringSlice("mentions") {
@@ -84,12 +119,12 @@ func registerServerHooks(app core.App) {
 
 			state.Set("mentionCount", state.GetInt("mentionCount")+1)
 			if err := e.App.Save(state); err != nil {
-				log.Println("hook: failed to save read state:", err)
+				log.Println("failed to save read state:", err)
 			}
 		}
 
 		// broadcast typing stop event when a new message is created
-		broadcastTyping(e.App, e.Record.GetString("channel"), e.Record.GetString("user"), "stop_typing")
+		broadcastTyping(e.App, channelId, userId, "stop_typing")
 
 		return e.Next()
 	})
