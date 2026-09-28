@@ -24,5 +24,7 @@ export const queryKeys = {
   },
   friendships: {
     list: (userId: string) => ["friendships", userId] as const,
+    status: (userId1: string, userId2: string) =>
+      ["friendships", "status", userId1, userId2] as const,
   },
 };

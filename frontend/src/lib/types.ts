@@ -112,3 +112,9 @@ export type FriendRequestStatus =
 export type SendFriendRequestResult = {
   status: FriendRequestStatus;
 };
+
+export type FriendshipRelation =
+  | { kind: "none" }
+  | { kind: "outgoing_pending"; friendship: Friendship }
+  | { kind: "incoming_pending"; friendship: Friendship }
+  | { kind: "friends"; friendship: Friendship };

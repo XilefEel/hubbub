@@ -2,7 +2,12 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
-import type { Friendship, SendFriendRequestResult, User } from "@/lib/types";
+import {
+  type FriendshipRelation,
+  type Friendship,
+  type SendFriendRequestResult,
+  type User,
+} from "@/lib/types";
 
 export function useFriendships(userId: string | undefined) {
   const queryClient = useQueryClient();
@@ -149,5 +154,47 @@ export function useRespondToFriendRequest() {
         await pb.collection("friendships").delete(friendshipId);
       }
     },
+  });
+}
+
+export function useFriendshipStatus(userId: string | undefined) {
+  const currentUserId = pb.authStore.record?.id;
+
+  return useQuery<FriendshipRelation | null>({
+    queryKey: queryKeys.friendships.status(currentUserId ?? "", userId ?? ""),
+    queryFn: async () => {
+      if (!currentUserId || !userId)
+        throw new Error(
+          "Must be logged in and have a userId to check friendship status",
+        );
+
+      let row: Friendship | undefined;
+
+      try {
+        row = await pb
+          .collection("friendships")
+          .getFirstListItem<Friendship>(
+            pb.filter(
+              "(requester = {:a} && addressee = {:b}) || (requester = {:b} && addressee = {:a})",
+              { a: currentUserId, b: userId },
+            ),
+          );
+      } catch {
+        row = undefined;
+      }
+
+      if (!row) return { kind: "none" };
+
+      if (row.status === "accepted")
+        return {
+          kind: "friends",
+          friendship: row,
+        };
+
+      return row.requester === currentUserId
+        ? { kind: "outgoing_pending", friendship: row }
+        : { kind: "incoming_pending", friendship: row };
+    },
+    enabled: !!currentUserId && !!userId && currentUserId !== userId,
   });
 }
