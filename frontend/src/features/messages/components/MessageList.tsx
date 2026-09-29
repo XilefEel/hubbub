@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import MessageItem from "./MessageItem";
-import type { Channel, Message } from "@/lib/types";
+import type { Message, MessageScope } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
 import { useReactions } from "../hooks/useReactions";
 import { Hash } from "lucide-react";
@@ -13,19 +13,19 @@ import { pb } from "@/lib/pocketbase";
 
 export default function MessageList({
   messages,
-  channel,
+  scope,
   onReply,
 }: {
   messages: Message[] | undefined;
-  channel: Channel;
+  scope: MessageScope;
   onReply: (message: Message) => void;
 }) {
   const userId = pb.authStore.record?.id;
 
-  const { data: reactions } = useReactions(channel.id);
+  const { data: reactions } = useReactions(scope.id);
   const { data: reads } = useChannelReads();
 
-  const readState = reads?.get(channel.id);
+  const readState = reads?.get(scope.id);
   const [dividerAt, setDividerAt] = useState<string | null>(null);
   const capturedFor = useRef<string | null>(null);
 
@@ -53,7 +53,7 @@ export default function MessageList({
   const scrollToBottom = () =>
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
 
-  const { atBottom } = useChannelFocus(messagesEndRef, channel.id);
+  const { atBottom } = useChannelFocus(messagesEndRef, scope.id);
 
   const markRead = useMarkChannelRead();
   const lastMessage = messages?.at(-1);
@@ -62,15 +62,15 @@ export default function MessageList({
 
   useEffect(() => {
     scrollToBottom();
-  }, [channel.id]);
+  }, [scope.id]);
 
   useEffect(() => {
     if (!reads) return;
-    if (capturedFor.current === channel.id) return;
+    if (capturedFor.current === scope.id) return;
 
-    capturedFor.current = channel.id;
+    capturedFor.current = scope.id;
     setDividerAt(readState?.lastReadAt ?? null);
-  }, [channel.id, reads, readState]);
+  }, [scope.id, reads, readState]);
 
   useEffect(() => {
     if (!lastId) return;
@@ -83,10 +83,11 @@ export default function MessageList({
   }, [lastId]);
 
   useEffect(() => {
+    if (scope.type !== "channel") return;
     if (!newestMessage || !atBottom) return;
-    markRead.mutate({ channelId: channel.id, lastReadAt: newestMessage });
+    markRead.mutate({ channelId: scope.id, lastReadAt: newestMessage });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.id, newestMessage, atBottom]);
+  }, [scope.id, newestMessage, atBottom]);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
@@ -124,9 +125,9 @@ export default function MessageList({
             <Hash className="size-10 text-zinc-700 dark:text-zinc-200" />
           </div>
 
-          <h1 className="text-3xl font-bold">Welcome to #{channel.name}!</h1>
+          <h1 className="text-3xl font-bold">Welcome to!</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            This is the start of the #{channel.name} channel.
+            This is the start of the channel.
           </p>
         </div>
       )}

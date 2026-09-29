@@ -78,7 +78,7 @@ export function useMessages(scope: MessageScope) {
     queryKey: queryKeys.messages.list(type, id),
     queryFn: async () => {
       return await pb.collection("messages").getFullList<Message>({
-        filter: pb.filter("channel = {:id}", { id }),
+        filter: pb.filter(`${type} = {:id}`, { id }),
         sort: "created",
         expand: "user,replyTo,replyTo.user,mentions",
       });
@@ -109,7 +109,7 @@ export function useMessages(scope: MessageScope) {
         });
       },
       {
-        filter: pb.filter("channel = {:id}", { id }),
+        filter: pb.filter(`${type} = {:id}`, { id }),
         expand: "user,replyTo,replyTo.user,mentions",
       },
     );

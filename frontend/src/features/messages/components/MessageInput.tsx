@@ -2,7 +2,7 @@ import { useRef, useState, useCallback, useMemo } from "react";
 import { ArrowUp, FaceSlightlySmiling, Plus, Upload, X } from "lucide-react";
 import FilePreview from "./FilePreview";
 import { useFileDrop } from "../hooks/useFileDrop";
-import type { Message, ServerMember, User } from "@/lib/types";
+import type { Message, MessageScope, ServerMember, User } from "@/lib/types";
 import Tooltip from "@/components/ui/Tooltip";
 import { useSendMessage } from "../hooks/useMessages";
 import { cn } from "cn";
@@ -16,13 +16,13 @@ const MAX_FILES = 10;
 export default function MessageInput({
   members,
   replyingTo,
-  channelId,
+  scope,
   onTyping,
   onCancelReply,
 }: {
   members: ServerMember[] | undefined;
   replyingTo: Message | null;
-  channelId: string;
+  scope: MessageScope;
   onTyping: () => void;
   onCancelReply: () => void;
 }) {
@@ -158,7 +158,7 @@ export default function MessageInput({
     sendMessage.mutate(
       {
         content,
-        source: { type: "channel", id: channelId },
+        scope,
         files,
         replyTo: replyingTo?.id,
         mentions: activeMentions,

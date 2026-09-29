@@ -9,7 +9,7 @@ import MessagesSkeleton from "@/features/messages/components/MessagesSkeleton";
 import TypingIndicator from "@/features/messages/components/TypingIndicator";
 import { useMessages } from "@/features/messages/hooks/useMessages";
 import VoiceChannel from "@/features/voice/components/VoiceChannel";
-import type { Message } from "@/lib/types";
+import type { Message, MessageScope } from "@/lib/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -19,6 +19,11 @@ export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
 
 function ChannelPage() {
   const { serverId, channelId } = Route.useParams();
+
+  const scope: MessageScope = {
+    type: "channel",
+    id: channelId,
+  };
 
   const {
     data: channel,
@@ -68,7 +73,7 @@ function ChannelPage() {
         ) : (
           <MessageList
             messages={messages}
-            channel={channel}
+            scope={scope}
             onReply={setReplyingTo}
           />
         )}
@@ -78,7 +83,7 @@ function ChannelPage() {
         <MessageInput
           members={members}
           replyingTo={replyingTo}
-          channelId={channelId}
+          scope={scope}
           onTyping={sendTyping}
           onCancelReply={() => setReplyingTo(null)}
         />
