@@ -1,3 +1,4 @@
+import ChannelEmpty from "@/features/channels/components/ChannelEmpty";
 import ChannelHeader from "@/features/channels/components/ChannelHeader";
 import ChannelPageSkeleton from "@/features/channels/components/ChannelPageSkeleton";
 import { useChannelDetail } from "@/features/channels/hooks/useChannels";
@@ -75,6 +76,7 @@ function ChannelPage() {
             messages={messages}
             scope={scope}
             onReply={setReplyingTo}
+            emptyState={<ChannelEmpty channelName={channel.name} />}
           />
         )}
 

@@ -3,7 +3,6 @@ import MessageItem from "./MessageItem";
 import type { Message, MessageScope } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
 import { useReactions } from "../hooks/useReactions";
-import { Hash } from "lucide-react";
 import {
   useChannelReads,
   useMarkChannelRead,
@@ -15,10 +14,12 @@ export default function MessageList({
   messages,
   scope,
   onReply,
+  emptyState,
 }: {
   messages: Message[] | undefined;
   scope: MessageScope;
   onReply: (message: Message) => void;
+  emptyState?: React.ReactNode;
 }) {
   const userId = pb.authStore.record?.id;
 
@@ -91,46 +92,35 @@ export default function MessageList({
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
-      {messages && messages.length > 0 ? (
-        messages.map((message, index) => {
-          const prevMessage = index > 0 ? messages[index - 1] : undefined;
-          const showHeader = !isSameGroup(prevMessage, message);
+      {messages && messages.length > 0
+        ? messages.map((message, index) => {
+            const prevMessage = index > 0 ? messages[index - 1] : undefined;
+            const showHeader = !isSameGroup(prevMessage, message);
 
-          const showDivider = message.id === firstUnreadId;
+            const showDivider = message.id === firstUnreadId;
 
-          return (
-            <Fragment key={message.id}>
-              {showDivider && (
-                <div className="my-2 flex items-center gap-2 px-4">
-                  <div className="h-px flex-1 bg-red-500/60" />
-                  <span className="text-xs font-semibold text-red-500">
-                    New
-                  </span>
-                  <div className="h-px flex-1 bg-red-500/60" />
-                </div>
-              )}
+            return (
+              <Fragment key={message.id}>
+                {showDivider && (
+                  <div className="my-2 flex items-center gap-2 px-4">
+                    <div className="h-px flex-1 bg-red-500/60" />
+                    <span className="text-xs font-semibold text-red-500">
+                      New
+                    </span>
+                    <div className="h-px flex-1 bg-red-500/60" />
+                  </div>
+                )}
 
-              <MessageItem
-                message={message}
-                reactions={reactionsByMessage.get(message.id) ?? []}
-                showHeader={showHeader}
-                onReply={onReply}
-              />
-            </Fragment>
-          );
-        })
-      ) : (
-        <div className="flex flex-1 flex-col justify-end gap-2 pb-8">
-          <div className="flex size-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-700">
-            <Hash className="size-10 text-zinc-700 dark:text-zinc-200" />
-          </div>
-
-          <h1 className="text-3xl font-bold">Welcome to!</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            This is the start of the channel.
-          </p>
-        </div>
-      )}
+                <MessageItem
+                  message={message}
+                  reactions={reactionsByMessage.get(message.id) ?? []}
+                  showHeader={showHeader}
+                  onReply={onReply}
+                />
+              </Fragment>
+            );
+          })
+        : emptyState}
 
       <div ref={messagesEndRef} />
     </div>
