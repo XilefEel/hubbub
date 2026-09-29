@@ -61,6 +61,7 @@ func registerServerHooks(app core.App) {
 
 	app.OnRecordAfterCreateSuccess("messages").BindFunc(func(e *core.RecordEvent) error {
 		conversationId := e.Record.GetString("conversation")
+		userId := e.Record.GetString("user")
 
 		// if the message belongs to a conversation, update the last_message_at field of the conversation
 		if conversationId != "" {
@@ -73,6 +74,8 @@ func registerServerHooks(app core.App) {
 			if err := e.App.Save(conversation); err != nil {
 				return err
 			}
+
+			broadcastTyping(e.App, "conversation_"+conversationId, userId, "stop_typing")
 
 			// skip the rest of the hook
 			return e.Next()
@@ -96,8 +99,6 @@ func registerServerHooks(app core.App) {
 		if err != nil {
 			return err
 		}
-
-		userId := e.Record.GetString("user")
 
 		for _, id := range e.Record.GetStringSlice("mentions") {
 			if id == userId {
@@ -124,7 +125,7 @@ func registerServerHooks(app core.App) {
 		}
 
 		// broadcast typing stop event when a new message is created
-		broadcastTyping(e.App, channelId, userId, "stop_typing")
+		broadcastTyping(e.App, "channel_"+channelId, userId, "stop_typing")
 
 		return e.Next()
 	})

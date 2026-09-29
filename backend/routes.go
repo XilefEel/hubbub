@@ -20,7 +20,8 @@ import (
 
 func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/servers/join", joinServerHandler).Bind(apis.RequireAuth())
-	se.Router.POST("/api/channels/{channelId}/typing", typingHandler).Bind(apis.RequireAuth())
+	se.Router.POST("/api/channels/{channelId}/typing", channelTypingHandler).Bind(apis.RequireAuth())
+	se.Router.POST("/api/conversations/{conversationId}/typing", conversationTypingHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/presence/heartbeat", heartbeatHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/voice/token", voiceTokenHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/voice/webhook", voiceWebhookHandler)
@@ -86,15 +87,31 @@ func joinServerHandler(e *core.RequestEvent) error {
 }
 
 // endpoint to send typing events to a channel
-func typingHandler(e *core.RequestEvent) error {
+func channelTypingHandler(e *core.RequestEvent) error {
 	channelId := e.Request.PathValue("channelId")
-	broadcastTyping(e.App, channelId, e.Auth.Id, "typing")
+	broadcastTyping(e.App, "channel_"+channelId, e.Auth.Id, "typing")
 	return e.NoContent(http.StatusOK)
 }
 
-func broadcastTyping(app core.App, channelId string, userId string, eventType string) {
-	subscription := "channel_" + channelId
+// endpoint to send typing events to a conversation
+func conversationTypingHandler(e *core.RequestEvent) error {
+	conversationId := e.Request.PathValue("conversationId")
 
+	_, err := e.App.FindFirstRecordByFilter(
+		"conversation_members",
+		"conversation = {:c} && user = {:u}",
+		dbx.Params{"c": conversationId, "u": e.Auth.Id},
+	)
+
+	if err != nil {
+		return e.ForbiddenError("Not a member of this conversation", nil)
+	}
+
+	broadcastTyping(e.App, "conversation_"+conversationId, e.Auth.Id, "typing")
+	return e.NoContent(http.StatusOK)
+}
+
+func broadcastTyping(app core.App, subscription string, userId string, eventType string) {
 	// create a new payload for the typing event
 	payload, err := json.Marshal(map[string]any{
 		"type":   eventType,

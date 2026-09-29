@@ -45,7 +45,7 @@ function ChannelPage() {
     id: channelId,
   });
 
-  const { typingNames, sendTyping } = useTypingIndicator(channelId, members);
+  const { typingNames, sendTyping } = useTypingIndicator(scope, members);
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 

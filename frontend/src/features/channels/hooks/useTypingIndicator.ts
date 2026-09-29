@@ -1,10 +1,14 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { pb } from "@/lib/pocketbase";
-import type { ServerMember } from "@/lib/types";
+import type {
+  ConversationMember,
+  MessageScope,
+  ServerMember,
+} from "@/lib/types";
 
 export function useTypingIndicator(
-  channelId: string,
-  members: ServerMember[] | undefined,
+  scope: MessageScope,
+  members: ServerMember[] | ConversationMember[] | undefined,
 ) {
   const [typingUserIds, setTypingUserIds] = useState<string[]>([]);
 
@@ -12,10 +16,12 @@ export function useTypingIndicator(
   const lastEmittedRef = useRef<number>(0);
 
   useEffect(() => {
-    if (!channelId) return;
+    if (!scope.id) return;
+
+    const key = `${scope.type}_${scope.id}`;
 
     const unsubPromise = pb.realtime.subscribe(
-      `channel_${channelId}`,
+      key,
       (e: { type: string; userId: string }) => {
         if (!e.userId) return;
 
@@ -55,19 +61,19 @@ export function useTypingIndicator(
       timeoutsRef.current = {};
       setTypingUserIds([]);
     };
-  }, [channelId]);
+  }, [scope.type, scope.id]);
 
   const sendTyping = useCallback(() => {
-    if (!channelId) return;
+    if (!scope.id) return;
 
     const now = Date.now();
     if (now - lastEmittedRef.current < 2000) return;
     lastEmittedRef.current = now;
 
-    pb.send(`/api/channels/${channelId}/typing`, { method: "POST" }).catch(
+    pb.send(`/api/${scope.type}s/${scope.id}/typing`, { method: "POST" }).catch(
       (err) => console.error("typing POST failed:", err),
     );
-  }, [channelId]);
+  }, [scope.id, scope.type]);
 
   const typingNames = useMemo(
     () =>
