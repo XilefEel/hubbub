@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -9,9 +11,11 @@ import (
 
 	"github.com/livekit/protocol/auth"
 	"github.com/livekit/protocol/webhook"
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/subscriptions"
+	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 func registerRoutes(se *core.ServeEvent) {
@@ -20,6 +24,7 @@ func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/presence/heartbeat", heartbeatHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/voice/token", voiceTokenHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/voice/webhook", voiceWebhookHandler)
+	se.Router.POST("/api/dms/open", openDmsHandler).Bind(apis.RequireAuth())
 }
 
 // auto add the owner to server_members when a server is created
@@ -269,4 +274,80 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(http.StatusOK, map[string]bool{"ok": true})
+}
+
+func openDmsHandler(e *core.RequestEvent) error {
+	var body struct {
+		UserId string `json:"userId"`
+	}
+
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("Failed to read request data", err)
+	}
+
+	me := e.Auth.Id
+	if body.UserId == me {
+		return e.BadRequestError("You cannot open a DM with yourself", nil)
+	}
+
+	var convoId string
+
+	err := e.App.RunInTransaction(func(tx core.App) error {
+		// check if a conversation already exists between the two users
+		err := tx.DB().
+			Select("a.conversation").
+			From("conversation_members AS a").
+			InnerJoin("conversation_members AS b", dbx.NewExp("a.conversation = b.conversation")).
+			Where(dbx.HashExp{"a.user": me, "b.user": body.UserId}).
+			Limit(1).
+			Row(&convoId)
+
+		// if a conversation exists, return it
+		if err == nil {
+			return nil
+		}
+
+		// if the error is not "no rows", return the error
+		if !errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
+
+		convos, err := tx.FindCollectionByNameOrId("conversations")
+		if err != nil {
+			return err
+		}
+
+		// create a new conversation record
+		newConvo := core.NewRecord(convos)
+		newConvo.Set("lastMessageAt", types.NowDateTime())
+		if err := tx.Save(newConvo); err != nil {
+			return err
+		}
+
+		members, err := tx.FindCollectionByNameOrId("conversation_members")
+		if err != nil {
+			return err
+		}
+
+		// add both users as members of the new conversation
+		for _, userId := range []string{me, body.UserId} {
+			member := core.NewRecord(members)
+			member.Set("conversation", newConvo.Id)
+			member.Set("user", userId)
+			if err := tx.Save(member); err != nil {
+				return err
+			}
+		}
+
+		convoId = newConvo.Id
+		return nil
+	})
+
+	if err != nil {
+		return e.InternalServerError("Failed to open DM", err)
+	}
+
+	return e.JSON(http.StatusOK, map[string]string{
+		"conversationId": convoId,
+	})
 }

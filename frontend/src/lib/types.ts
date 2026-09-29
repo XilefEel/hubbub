@@ -48,7 +48,8 @@ export type Channel = BaseRecord & {
 
 export type Message = BaseRecord & {
   content: string;
-  channel: string; // channel id
+  channel?: string; // channel id
+  conversation?: string; // conversation id
   user: string; // user id
   replyTo?: string; // message id
   mentions?: string[]; // user ids
@@ -118,3 +119,16 @@ export type FriendshipRelation =
   | { kind: "outgoing_pending"; friendship: Friendship }
   | { kind: "incoming_pending"; friendship: Friendship }
   | { kind: "friends"; friendship: Friendship };
+
+export type Conversation = BaseRecord & {
+  lastMessageAt?: string;
+};
+
+export type ConversationMember = BaseRecord & {
+  user: string; // user id
+  conversation: string; // conversation id
+  expand?: {
+    user?: User;
+    conversation?: Conversation;
+  };
+};

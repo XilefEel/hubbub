@@ -4,7 +4,7 @@ import {
   useRespondToFriendRequest,
 } from "@/features/friends/hooks/useFriendships";
 import { pb } from "@/lib/pocketbase";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useRef } from "react";
 import {
   type PanelImperativeHandle,
@@ -50,6 +50,22 @@ function MePage() {
     id: "hubbub-dm-layout",
     storage: localStorage,
   });
+
+  const navigate = useNavigate();
+
+  const handleOpen = async (otherUserId: string) => {
+    const res = await pb.send<{ conversationId: string }>("/api/dms/open", {
+      method: "POST",
+      body: { userId: otherUserId },
+    });
+
+    const conversationId = res.conversationId;
+
+    navigate({
+      to: "/me/conversations/$conversationId",
+      params: { conversationId },
+    });
+  };
 
   return (
     <div className="flex h-full bg-white dark:bg-zinc-800">
@@ -117,7 +133,14 @@ function MePage() {
                       ? f.expand?.addressee
                       : f.expand?.requester;
 
-                  return <span key={f.id}>{friend?.name}</span>;
+                  return (
+                    <span
+                      onClick={() => friend && handleOpen(friend.id)}
+                      key={f.id}
+                    >
+                      {friend?.name}
+                    </span>
+                  );
                 })}
             </div>
           </aside>
