@@ -1,27 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
-import type { Reaction } from "@/lib/types";
+import type { MessageScope, Reaction } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
 import { useEffect } from "react";
 
-export function useReactions(channelId: string) {
+export function useReactions(scope: MessageScope) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: queryKeys.reactions.list(channelId),
+    queryKey: queryKeys.reactions.list(scope.id),
     queryFn: async () => {
       return await pb.collection("reactions").getFullList<Reaction>({
-        filter: pb.filter("message.channel = {:id}", { id: channelId }),
+        filter: pb.filter(`message.${scope.type} = {:id}`, { id: scope.id }),
         expand: "user",
       });
     },
-    enabled: !!channelId,
+    enabled: !!scope.id,
   });
 
   useEffect(() => {
-    if (!channelId) return;
+    if (!scope.id) return;
 
-    const key = queryKeys.reactions.list(channelId);
+    const key = queryKeys.reactions.list(scope.id);
     const unsubPromise = pb.collection("reactions").subscribe<Reaction>(
       "*",
       (e) => {
@@ -39,7 +39,7 @@ export function useReactions(channelId: string) {
         });
       },
       {
-        filter: pb.filter("message.channel = {:id}", { id: channelId }),
+        filter: pb.filter(`message.${scope.type} = {:id}`, { id: scope.id }),
         expand: "user",
       },
     );
@@ -51,7 +51,7 @@ export function useReactions(channelId: string) {
     return () => {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
-  }, [channelId, queryClient]);
+  }, [scope.id, scope.type, queryClient]);
 
   return query;
 }

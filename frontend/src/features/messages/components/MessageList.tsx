@@ -23,7 +23,7 @@ export default function MessageList({
 }) {
   const userId = pb.authStore.record?.id;
 
-  const { data: reactions } = useReactions(scope.id);
+  const { data: reactions } = useReactions(scope);
   const { data: reads } = useChannelReads();
 
   const readState = reads?.get(scope.id);
