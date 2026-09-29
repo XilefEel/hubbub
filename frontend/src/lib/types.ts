@@ -46,6 +46,9 @@ export type Channel = BaseRecord & {
   };
 };
 
+export type MessageScope =
+  { type: "channel"; id: string } | { type: "conversation"; id: string };
+
 export type Message = BaseRecord & {
   content: string;
   channel?: string; // channel id

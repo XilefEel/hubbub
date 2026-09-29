@@ -34,7 +34,10 @@ function ChannelPage() {
     isLoading: messagesLoading,
     isError: messagesIsError,
     error: messagesError,
-  } = useMessages(channelId);
+  } = useMessages({
+    type: "channel",
+    id: channelId,
+  });
 
   const { typingNames, sendTyping } = useTypingIndicator(channelId, members);
 

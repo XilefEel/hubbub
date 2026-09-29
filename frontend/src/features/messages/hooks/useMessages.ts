@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
-import type { Message } from "@/lib/types";
+import type { Message, MessageScope } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
 import { useMutation } from "@tanstack/react-query";
 
@@ -9,13 +9,13 @@ export function useSendMessage() {
   return useMutation({
     mutationFn: async ({
       content,
-      channelId,
+      scope,
       files,
       replyTo,
       mentions,
     }: {
       content: string;
-      channelId: string;
+      scope: MessageScope;
       files?: File[];
       replyTo?: string;
       mentions?: string[];
@@ -25,7 +25,7 @@ export function useSendMessage() {
 
       const formData = new FormData();
       formData.append("content", content);
-      formData.append("channel", channelId);
+      formData.append(scope.type, scope.id);
       formData.append("user", userId);
       if (replyTo) formData.append("replyTo", replyTo);
 
@@ -39,9 +39,11 @@ export function useSendMessage() {
 
       const message = await pb.collection("messages").create(formData);
 
-      await pb.collection("channels").update(channelId, {
-        lastMessageAt: message.created,
-      });
+      if (scope.type === "channel") {
+        await pb.collection("channels").update(scope.id, {
+          lastMessageAt: message.created,
+        });
+      }
 
       return message;
     },
@@ -68,25 +70,26 @@ export function useDeleteMessage() {
   });
 }
 
-export function useMessages(channelId: string) {
+export function useMessages(scope: MessageScope) {
   const queryClient = useQueryClient();
+  const { type, id } = scope;
 
   const query = useQuery<Message[]>({
-    queryKey: queryKeys.messages.list(channelId),
+    queryKey: queryKeys.messages.list(type, id),
     queryFn: async () => {
       return await pb.collection("messages").getFullList<Message>({
-        filter: pb.filter("channel = {:id}", { id: channelId }),
+        filter: pb.filter("channel = {:id}", { id }),
         sort: "created",
         expand: "user,replyTo,replyTo.user,mentions",
       });
     },
-    enabled: !!channelId,
+    enabled: !!id,
   });
 
   useEffect(() => {
-    if (!channelId) return;
+    if (!id) return;
 
-    const key = queryKeys.messages.list(channelId);
+    const key = queryKeys.messages.list(type, id);
     const unsubPromise = pb.collection("messages").subscribe<Message>(
       "*",
       (e) => {
@@ -106,7 +109,7 @@ export function useMessages(channelId: string) {
         });
       },
       {
-        filter: pb.filter("channel = {:id}", { id: channelId }),
+        filter: pb.filter("channel = {:id}", { id }),
         expand: "user,replyTo,replyTo.user,mentions",
       },
     );
@@ -118,7 +121,7 @@ export function useMessages(channelId: string) {
     return () => {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
-  }, [channelId, queryClient]);
+  }, [type, id, queryClient]);
 
   return query;
 }
@@ -129,5 +132,6 @@ export async function fetchLastMessage(channelId: string) {
     sort: "-created",
     skipTotal: true,
   });
+
   return res.items[0] ?? null;
 }

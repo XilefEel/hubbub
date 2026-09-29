@@ -158,7 +158,7 @@ export default function MessageInput({
     sendMessage.mutate(
       {
         content,
-        channelId,
+        source: { type: "channel", id: channelId },
         files,
         replyTo: replyingTo?.id,
         mentions: activeMentions,

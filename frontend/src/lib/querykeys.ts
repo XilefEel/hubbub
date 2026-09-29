@@ -11,7 +11,8 @@ export const queryKeys = {
     detail: (channelId: string) => ["channels", "detail", channelId] as const,
   },
   messages: {
-    list: (channelId: string) => ["messages", channelId] as const,
+    list: (type: "channel" | "conversation", id: string) =>
+      ["messages", type, id] as const,
   },
   reactions: {
     list: (channelId: string) => ["reactions", channelId] as const,
