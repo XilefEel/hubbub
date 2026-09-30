@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	_ "hubbub/backend/migrations"
+
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
@@ -10,9 +12,7 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	_ = godotenv.Load()
 
 	app := pocketbase.New()
 

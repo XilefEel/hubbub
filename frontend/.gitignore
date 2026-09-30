@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.test_pb_data/
+.test_pb_bin.exe
