@@ -1,8 +1,11 @@
 import Popover from "@/components/ui/Popover";
+import Tooltip from "@/components/ui/Tooltip";
+import { useOpenConversation } from "@/features/conversations/hooks/useOpenConversation";
 import FriendRequestButton from "@/features/friends/components/FriendRequestButton";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import { pb } from "@/lib/pocketbase";
 import type { User } from "@/lib/types";
+import { MessageCircle } from "lucide-react";
 
 export default function UserCard({
   user,
@@ -12,6 +15,7 @@ export default function UserCard({
   children: React.ReactNode;
 }) {
   const currentUserId = pb.authStore.record?.id;
+  const { open, isPending } = useOpenConversation();
 
   if (!user) return null;
 
@@ -26,8 +30,20 @@ export default function UserCard({
             style={{
               backgroundColor: user?.bannerColor ?? "#14B8A6",
             }}
-            className="flex h-20 w-full items-start justify-end rounded-t-lg p-3"
+            className="flex h-20 w-full items-start justify-end gap-2 rounded-t-lg p-3"
           >
+            {currentUserId !== user.id && (
+              <Tooltip content="Send Message">
+                <button
+                  onClick={() => open(user.id)}
+                  disabled={isPending}
+                  className="rounded-full bg-black/50 p-1.5 text-sm text-white transition-colors duration-100 hover:text-teal-400"
+                >
+                  <MessageCircle className="size-4 shrink-0" />
+                </button>
+              </Tooltip>
+            )}
+
             {currentUserId !== user.id && <FriendRequestButton user={user} />}
           </div>
 

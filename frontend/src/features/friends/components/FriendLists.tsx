@@ -1,13 +1,13 @@
 import { pb } from "@/lib/pocketbase";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import { useFriendships } from "../hooks/useFriendships";
-import { useOpenConversation } from "@/features/conversations/hooks/useConversationMembers";
+import { useOpenConversation } from "@/features/conversations/hooks/useOpenConversation";
 
 export default function FriendsList() {
   const userId = pb.authStore.record?.id;
   const { data: friendships } = useFriendships(userId);
 
-  const openConversation = useOpenConversation();
+  const { open, isPending } = useOpenConversation();
 
   const accepted = friendships?.filter((f) => f.status === "accepted") ?? [];
 
@@ -30,8 +30,8 @@ export default function FriendsList() {
         return (
           <button
             key={f.id}
-            onClick={() => friend && openConversation.mutate(friend.id)}
-            disabled={openConversation.isPending}
+            onClick={() => friend && open(friend.id)}
+            disabled={isPending}
             className="flex w-full items-center gap-2 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
           >
             <UserAvatar user={friend} size="size-10" />
