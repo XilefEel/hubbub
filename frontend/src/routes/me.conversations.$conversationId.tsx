@@ -14,13 +14,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
-  component: RouteComponent,
+  component: ConversationPage,
 });
 
-function RouteComponent() {
+function ConversationPage() {
   const { conversationId } = Route.useParams();
   const { data: members } = useConversationMembers(conversationId);
-  const { partner } = useConversationPartner(conversationId);
+  const partner = useConversationPartner(conversationId);
 
   const scope: MessageScope = {
     type: "conversation",

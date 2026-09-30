@@ -26,7 +26,7 @@ export function useConversationPartner(conversationId: string) {
     ?.map((m) => m.expand?.user)
     .find((u) => u && u.id !== me);
 
-  return { ...query, partner };
+  return partner;
 }
 
 export function useOpenConversation() {
