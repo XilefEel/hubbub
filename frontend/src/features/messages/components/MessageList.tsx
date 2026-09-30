@@ -91,7 +91,7 @@ export default function MessageList({
   }, [scope.id, newestMessage, atBottom]);
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto">
+    <div className="flex flex-1 flex-col overflow-y-auto pt-3">
       {messages && messages.length > 0
         ? messages.map((message, index) => {
             const prevMessage = index > 0 ? messages[index - 1] : undefined;

@@ -1,4 +1,4 @@
-import { Volume2, Hash, PanelLeft, PanelRight } from "lucide-react";
+import { Hash, PanelLeft, PanelRight } from "lucide-react";
 import type { Channel } from "@/lib/types";
 import Tooltip from "@/components/ui/Tooltip";
 import {
@@ -17,7 +17,7 @@ export default function ChannelHeader({
   const isMembersOpen = useIsMembersOpen();
 
   return (
-    <div className="flex items-center gap-4 border-b border-zinc-200 pb-4 dark:border-zinc-700">
+    <div className="mb-2 flex items-center gap-4 border-b border-zinc-200 pb-4 dark:border-zinc-700">
       {!isChannelsOpen && (
         <Tooltip content="Show Channels">
           <button
@@ -30,11 +30,7 @@ export default function ChannelHeader({
       )}
 
       <h2 className="flex items-center gap-2 text-xl font-bold">
-        {channel?.type === "voice" ? (
-          <Volume2 className="size-5 shrink-0" />
-        ) : (
-          <Hash className="size-5 shrink-0" />
-        )}
+        <Hash className="size-5 shrink-0" />
         {channel?.name}
       </h2>
 
