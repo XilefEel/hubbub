@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import AddFriendInput from "@/features/friends/components/AddFriendInput";
 import PendingRequests from "@/features/friends/components/PendingRequests";
-import FriendsList from "@/features/friends/components/FriendLists";
+import FriendsList from "@/features/friends/components/FriendList";
 import { cn } from "cn";
 
 const TABS = [

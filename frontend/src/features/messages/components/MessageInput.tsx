@@ -9,9 +9,7 @@ import { cn } from "cn";
 import { pb } from "@/lib/pocketbase";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import { EmojiPickerPopover } from "@/components/ui/EmojiPickerPopover";
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const MAX_FILES = 10;
+import { MAX_FILE_SIZE, MAX_FILES } from "@/lib/constants";
 
 export default function MessageInput({
   members,

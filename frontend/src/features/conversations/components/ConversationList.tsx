@@ -1,5 +1,5 @@
 import { useConversations } from "../hooks/useConversations";
-import ConversationListItem from "./ConversationListItem";
+import ConversationItem from "./ConversationItem";
 
 export default function ConversationList() {
   const { data: conversations } = useConversations();
@@ -11,7 +11,7 @@ export default function ConversationList() {
       </h2>
 
       {conversations?.map((c) => (
-        <ConversationListItem key={c.id} conversationId={c.id} />
+        <ConversationItem key={c.id} conversationId={c.id} />
       ))}
     </div>
   );

@@ -7,7 +7,7 @@ import {
   useChannelReads,
   useMarkChannelRead,
 } from "../../channels/hooks/useReadStates";
-import { useChannelFocus } from "../../channels/hooks/useChannelFocus";
+import { useMessageFocus } from "../hooks/useMessageFocus";
 import { pb } from "@/lib/pocketbase";
 
 export default function MessageList({
@@ -54,7 +54,7 @@ export default function MessageList({
   const scrollToBottom = () =>
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
 
-  const { atBottom } = useChannelFocus(messagesEndRef, scope.id);
+  const { atBottom } = useMessageFocus(messagesEndRef, scope.id);
 
   const markRead = useMarkChannelRead();
   const lastMessage = messages?.at(-1);

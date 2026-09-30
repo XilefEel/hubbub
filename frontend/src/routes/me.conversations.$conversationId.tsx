@@ -1,4 +1,4 @@
-import { useTypingIndicator } from "@/features/channels/hooks/useTypingIndicator";
+import { useTypingIndicator } from "@/features/messages/hooks/useTypingIndicator";
 import ConversationEmpty from "@/features/conversations/components/ConversationEmpty";
 import {
   useConversationMembers,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useChannelFocus(
+export function useMessageFocus(
   bottomRef: React.RefObject<HTMLDivElement | null>,
   channelId: string,
 ) {

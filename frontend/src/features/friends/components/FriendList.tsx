@@ -6,7 +6,6 @@ import { useOpenConversation } from "@/features/conversations/hooks/useOpenConve
 export default function FriendsList() {
   const userId = pb.authStore.record?.id;
   const { data: friendships } = useFriendships(userId);
-
   const { open, isPending } = useOpenConversation();
 
   const accepted = friendships?.filter((f) => f.status === "accepted") ?? [];

@@ -2,7 +2,7 @@ import ChannelEmpty from "@/features/channels/components/ChannelEmpty";
 import ChannelHeader from "@/features/channels/components/ChannelHeader";
 import ChannelPageSkeleton from "@/features/channels/components/ChannelPageSkeleton";
 import { useChannelDetail } from "@/features/channels/hooks/useChannels";
-import { useTypingIndicator } from "@/features/channels/hooks/useTypingIndicator";
+import { useTypingIndicator } from "@/features/messages/hooks/useTypingIndicator";
 import { useServerMembers } from "@/features/members/hooks/useServerMembers";
 import MessageInput from "@/features/messages/components/MessageInput";
 import MessageList from "@/features/messages/components/MessageList";

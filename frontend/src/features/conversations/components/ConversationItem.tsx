@@ -2,7 +2,7 @@ import UserAvatar from "@/features/users/components/UserAvatar";
 import { Link } from "@tanstack/react-router";
 import { useConversationPartner } from "../hooks/useConversationMembers";
 
-export default function ConversationListItem({
+export default function ConversationItem({
   conversationId,
 }: {
   conversationId: string;
@@ -17,7 +17,6 @@ export default function ConversationListItem({
       activeProps={{ className: "bg-zinc-100 dark:bg-zinc-700" }}
     >
       <UserAvatar user={partner} size="size-8" />
-
       <span className="truncate">{partner?.name ?? "Unknown User"}</span>
     </Link>
   );
