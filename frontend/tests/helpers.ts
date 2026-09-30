@@ -1,17 +1,23 @@
 import PocketBase from "pocketbase";
+import type {
+  Server,
+  Channel,
+  ServerMember,
+  ServerRole,
+} from "../src/lib/types.ts";
 
 export const url = "http://127.0.0.1:8091";
 
 export async function makeUser(name: string) {
   const pb = new PocketBase(url);
 
-  const unique = `${name}-${Math.random().toString(36).slice(2, 8)}`;
+  const uniqueName = `${name}-${Math.random().toString(36).slice(2, 8)}`;
 
-  const email = `${unique}@test.com`;
+  const email = `${uniqueName}@test.com`;
   const password = "password123";
 
   const user = await pb.collection("users").create({
-    name: unique,
+    name: uniqueName,
     email,
     password,
     passwordConfirm: password,
@@ -22,14 +28,14 @@ export async function makeUser(name: string) {
 }
 
 export async function makeServer(owner: { pb: PocketBase; id: string }) {
-  const server = await owner.pb.collection("servers").create({
+  const server = await owner.pb.collection<Server>("servers").create({
     name: "Test Server",
     owner: owner.id,
     inviteCode: Math.random().toString(36).slice(2, 10),
   });
 
   const channel = await owner.pb
-    .collection("channels")
+    .collection<Channel>("channels")
     .getFirstListItem(`server = "${server.id}"`);
 
   return { server, channel };
@@ -40,14 +46,20 @@ export async function admin() {
   await pb
     .collection("_superusers")
     .authWithPassword("admin@test.com", "adminpass123");
+
   return pb;
 }
 
-export async function addMember(serverId: string, userId: string) {
+export async function addMember(
+  serverId: string,
+  userId: string,
+  role: ServerRole = "member",
+) {
   const a = await admin();
-  await a.collection("server_members").create({
+
+  await a.collection<ServerMember>("server_members").create({
     server: serverId,
     user: userId,
-    role: "member",
+    role,
   });
 }
