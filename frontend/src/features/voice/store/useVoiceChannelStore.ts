@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import { Room } from "livekit-client";
+import type { VoiceScope } from "@/lib/types";
 
 type VoiceChannelStore = {
   room: Room | null;
-  activeChannelId: string | null;
+  activeScope: VoiceScope | null;
   presenceId: string | null;
 
   isMuted: boolean;
@@ -12,7 +13,7 @@ type VoiceChannelStore = {
   isVideoEnabled: boolean;
   isScreenSharing: boolean;
 
-  setRoom: (room: Room, channelId: string, presenceId: string) => void;
+  setRoom: (room: Room, activeScope: VoiceScope, presenceId: string) => void;
   clearRoom: () => void;
   setMuted: (muted: boolean) => void;
   setDeafened: (deafened: boolean) => void;
@@ -22,7 +23,7 @@ type VoiceChannelStore = {
 
 export const useVoiceChannelStore = create<VoiceChannelStore>((set) => ({
   room: null,
-  activeChannelId: null,
+  activeScope: null,
   presenceId: null,
 
   isMuted: false,
@@ -30,9 +31,9 @@ export const useVoiceChannelStore = create<VoiceChannelStore>((set) => ({
   isVideoEnabled: false,
   isScreenSharing: false,
 
-  setRoom: (room, channelId, presenceId) =>
-    set({ room, activeChannelId: channelId, presenceId }),
-  clearRoom: () => set({ room: null, activeChannelId: null, presenceId: null }),
+  setRoom: (room, activeScope, presenceId) =>
+    set({ room, activeScope, presenceId }),
+  clearRoom: () => set({ room: null, activeScope: null, presenceId: null }),
 
   setMuted: (isMuted) => set({ isMuted }),
   setDeafened: (isDeafened) => set({ isDeafened }),
@@ -54,8 +55,7 @@ export const useVoiceActions = () =>
 
 export const useVoiceRoom = () => useVoiceChannelStore((s) => s.room);
 
-export const useActiveChannelId = () =>
-  useVoiceChannelStore((s) => s.activeChannelId);
+export const useActiveScope = () => useVoiceChannelStore((s) => s.activeScope);
 
 export const usePresenceId = () => useVoiceChannelStore((s) => s.presenceId);
 

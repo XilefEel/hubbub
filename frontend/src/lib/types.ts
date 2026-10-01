@@ -73,6 +73,8 @@ export type Reaction = BaseRecord & {
   };
 };
 
+export type VoiceScope = MessageScope;
+
 export type VoiceTokenResponse = {
   token: string;
   url: string;

@@ -6,7 +6,11 @@ import {
 } from "@tanstack/react-query";
 import { Room } from "livekit-client";
 import { pb } from "@/lib/pocketbase";
-import type { VoiceParticipant, VoiceTokenResponse } from "@/lib/types";
+import type {
+  VoiceParticipant,
+  VoiceScope,
+  VoiceTokenResponse,
+} from "@/lib/types";
 import { useEffect } from "react";
 import { queryKeys } from "@/lib/querykeys";
 import { isUniqueConstraintError } from "@/lib/utils";
@@ -15,10 +19,10 @@ import {
   useVoiceChannelStore,
 } from "../store/useVoiceChannelStore";
 
-async function getVoiceToken(channelId: string): Promise<VoiceTokenResponse> {
+async function getVoiceToken(scope: VoiceScope): Promise<VoiceTokenResponse> {
   return pb.send("/api/voice/token", {
     method: "POST",
-    body: { channelId },
+    body: { type: scope.type, id: scope.id },
   });
 }
 
@@ -27,16 +31,17 @@ export function useJoinVoiceChannel() {
   const { setRoom } = useVoiceActions();
 
   return useMutation({
-    mutationFn: async (channelId: string) => {
+    mutationFn: async (scope: VoiceScope) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to join voice channels");
 
       const current = useVoiceChannelStore.getState();
-      if (
-        current.room &&
-        current.activeChannelId &&
-        current.activeChannelId !== channelId
-      ) {
+
+      const sameRoom =
+        current.activeScope?.type === scope.type &&
+        current.activeScope?.id === scope.id;
+
+      if (current.room && current.activeScope && !sameRoom) {
         current.room.disconnect();
         if (current.presenceId) {
           try {
@@ -51,7 +56,7 @@ export function useJoinVoiceChannel() {
         }
       }
 
-      const { token, url } = await getVoiceToken(channelId);
+      const { token, url } = await getVoiceToken(scope);
       const room = new Room();
 
       try {
@@ -62,7 +67,7 @@ export function useJoinVoiceChannel() {
         try {
           const participant = await pb
             .collection<VoiceParticipant>("voice_participants")
-            .create({ user: userId, channel: channelId });
+            .create({ user: userId, [scope.type]: scope.id });
 
           presenceId = participant.id;
         } catch (err) {
@@ -70,7 +75,10 @@ export function useJoinVoiceChannel() {
             const existing = await pb
               .collection<VoiceParticipant>("voice_participants")
               .getFirstListItem(
-                `user = "${userId}" && channel = "${channelId}"`,
+                pb.filter(`user = {:user} && ${scope.type} = {:id}`, {
+                  user: userId,
+                  id: scope.id,
+                }),
               );
 
             presenceId = existing.id;
@@ -79,16 +87,16 @@ export function useJoinVoiceChannel() {
           }
         }
 
-        return { room, channelId, presenceId };
+        return { room, scope, presenceId };
       } catch (err) {
         room.disconnect();
         throw err;
       }
     },
-    onSuccess: ({ room, channelId, presenceId }) => {
-      setRoom(room, channelId, presenceId);
+    onSuccess: ({ room, scope, presenceId }) => {
+      setRoom(room, scope, presenceId);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.voiceParticipants.list(channelId),
+        queryKey: queryKeys.voiceParticipants.list(scope.type, scope.id),
       });
     },
   });
@@ -113,10 +121,10 @@ export function useLeaveVoiceChannel() {
       }
     },
     onSuccess: () => {
-      const channelId = useVoiceChannelStore.getState().activeChannelId;
-      if (channelId) {
+      const scope = useVoiceChannelStore.getState().activeScope;
+      if (scope) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.voiceParticipants.list(channelId),
+          queryKey: queryKeys.voiceParticipants.list(scope.type, scope.id),
         });
       }
       clearRoom();
@@ -124,24 +132,24 @@ export function useLeaveVoiceChannel() {
   });
 }
 
-export function useVoiceParticipants(channelId: string) {
+export function useVoiceParticipants(scope: VoiceScope) {
   const queryClient = useQueryClient();
+  const { type, id } = scope;
 
   const query = useQuery<VoiceParticipant[]>({
-    queryKey: queryKeys.voiceParticipants.list(channelId),
+    queryKey: queryKeys.voiceParticipants.list(type, id),
     queryFn: () =>
       pb.collection("voice_participants").getFullList({
-        filter: pb.filter("channel = {:id}", { id: channelId }),
+        filter: pb.filter(`${type} = {:id}`, { id }),
         expand: "user",
       }),
-    enabled: !!channelId,
+    enabled: !!id,
   });
 
   useEffect(() => {
-    if (!channelId) return;
-    const release = getVoiceSubscription(channelId, queryClient);
-    return release;
-  }, [channelId, queryClient]);
+    if (!id) return;
+    return getVoiceSubscription(type, id, queryClient);
+  }, [type, id, queryClient]);
 
   return query;
 }
@@ -155,11 +163,14 @@ const registry = new Map<
 >();
 
 function getVoiceSubscription(
-  channelId: string,
+  type: VoiceScope["type"],
+  id: string,
   queryClient: QueryClient,
 ): () => void {
-  const queryKey = queryKeys.voiceParticipants.list(channelId);
-  let entry = registry.get(channelId);
+  const registryKey = `${type}_${id}`;
+
+  const queryKey = queryKeys.voiceParticipants.list(type, id);
+  let entry = registry.get(registryKey);
 
   if (!entry) {
     const unsubPromise = pb
@@ -183,19 +194,19 @@ function getVoiceSubscription(
           });
         },
         {
-          filter: pb.filter("channel = {:id}", { id: channelId }),
+          filter: pb.filter("channel = {:id}", { id }),
           expand: "user",
         },
       );
 
     const newEntry = { refCount: 0, unsubPromise };
     entry = newEntry;
-    registry.set(channelId, newEntry);
+    registry.set(registryKey, newEntry);
 
     unsubPromise.catch((err) => {
       console.warn("voice subscription failed:", err);
-      if (registry.get(channelId) === newEntry) {
-        registry.delete(channelId);
+      if (registry.get(registryKey) === newEntry) {
+        registry.delete(registryKey);
       }
     });
   }
@@ -208,12 +219,12 @@ function getVoiceSubscription(
     if (released) return;
     released = true;
 
-    const current = registry.get(channelId);
+    const current = registry.get(registryKey);
     if (!current) return;
 
     current.refCount -= 1;
     if (current.refCount <= 0) {
-      registry.delete(channelId);
+      registry.delete(registryKey);
       current.unsubPromise.then((unsub) => unsub()).catch(() => {});
     }
   };
