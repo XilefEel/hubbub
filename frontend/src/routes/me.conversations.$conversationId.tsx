@@ -60,7 +60,7 @@ function ConversationPage() {
       <TypingIndicator typingNames={typingNames} />
 
       <MessageInput
-        members={undefined}
+        members={members}
         replyingTo={replyingTo}
         scope={scope}
         onTyping={sendTyping}

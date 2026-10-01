@@ -2,7 +2,13 @@ import { useRef, useState, useCallback, useMemo } from "react";
 import { ArrowUp, FaceSlightlySmiling, Plus, Upload, X } from "lucide-react";
 import FilePreview from "./FilePreview";
 import { useFileDrop } from "../hooks/useFileDrop";
-import type { Message, MessageScope, ServerMember, User } from "@/lib/types";
+import type {
+  ConversationMember,
+  Message,
+  MessageScope,
+  ServerMember,
+  User,
+} from "@/lib/types";
 import Tooltip from "@/components/ui/Tooltip";
 import { useSendMessage } from "../hooks/useMessages";
 import { cn } from "cn";
@@ -18,7 +24,7 @@ export default function MessageInput({
   onTyping,
   onCancelReply,
 }: {
-  members: ServerMember[] | undefined;
+  members: ServerMember[] | ConversationMember[] | undefined;
   replyingTo: Message | null;
   scope: MessageScope;
   onTyping: () => void;

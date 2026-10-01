@@ -2,10 +2,11 @@ import { pb } from "@/lib/pocketbase";
 import { findPartner } from "../hooks/useConversationMembers";
 import { useConversations } from "../hooks/useConversations";
 import ConversationItem from "./ConversationItem";
+import ConversationListSkeleton from "./ConversationListSkeleton";
 
 export default function ConversationList() {
   const userId = pb.authStore.record?.id;
-  const { data: conversations } = useConversations();
+  const { data: conversations, isError, isLoading, error } = useConversations();
 
   return (
     <div className="flex flex-col gap-1">
@@ -13,16 +14,24 @@ export default function ConversationList() {
         Direct Messages
       </h2>
 
-      {conversations?.map((c) => (
-        <ConversationItem
-          key={c.id}
-          conversationId={c.id}
-          partner={findPartner(
-            c.expand?.conversation_members_via_conversation,
-            userId,
-          )}
-        />
-      ))}
+      {isError ? (
+        <p className="text-sm text-red-500">
+          Failed to load conversations: {error.message}
+        </p>
+      ) : isLoading ? (
+        <ConversationListSkeleton />
+      ) : (
+        conversations?.map((c) => (
+          <ConversationItem
+            key={c.id}
+            conversationId={c.id}
+            partner={findPartner(
+              c.expand?.conversation_members_via_conversation,
+              userId,
+            )}
+          />
+        ))
+      )}
     </div>
   );
 }
