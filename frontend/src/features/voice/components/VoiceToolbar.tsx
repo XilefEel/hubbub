@@ -12,15 +12,16 @@ import {
 import Tooltip from "@/components/ui/Tooltip";
 import { useVoiceControls } from "../hooks/useVoiceControls";
 import {
-  useActiveChannelId,
   useIsDeafened,
   useIsVideoEnabled,
   useIsScreenSharing,
   useIsMuted,
+  useActiveScope,
 } from "../store/useVoiceChannelStore";
 
 export default function VoiceToolbar() {
-  const activeChannelId = useActiveChannelId();
+  const activeScope = useActiveScope();
+
   const isMuted = useIsMuted();
   const isDeafened = useIsDeafened();
   const isVideoEnabled = useIsVideoEnabled();
@@ -34,7 +35,7 @@ export default function VoiceToolbar() {
     disconnect,
   } = useVoiceControls();
 
-  if (!activeChannelId) return null;
+  if (!activeScope) return null;
 
   return (
     <div className="mt-auto flex items-center justify-between rounded bg-zinc-50 px-2 py-1 dark:bg-zinc-700/50">

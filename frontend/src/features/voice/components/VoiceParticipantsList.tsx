@@ -1,12 +1,13 @@
 import UserAvatar from "@/features/users/components/UserAvatar";
 import { useVoiceParticipants } from "@/features/voice/hooks/useVoiceChannel";
+import type { VoiceScope } from "@/lib/types";
 
 export default function VoiceParticipantsList({
-  channelId,
+  scope,
 }: {
-  channelId: string;
+  scope: VoiceScope;
 }) {
-  const { data: participants } = useVoiceParticipants(channelId);
+  const { data: participants } = useVoiceParticipants(scope);
 
   if (!participants?.length) return null;
 

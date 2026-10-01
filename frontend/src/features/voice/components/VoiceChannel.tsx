@@ -1,20 +1,18 @@
-import type { Channel } from "@/lib/types";
-import { RoomContext, RoomAudioRenderer } from "@livekit/components-react";
+import type { Channel, VoiceScope } from "@/lib/types";
 import { useJoinVoiceChannel } from "../hooks/useVoiceChannel";
-import {
-  useVoiceRoom,
-  useActiveChannelId,
-} from "../store/useVoiceChannelStore";
-import VideoGrid from "./VideoGrid";
+import VoiceRoomView from "./VoiceRoomView";
+import { useIsInVoiceCall } from "../store/useVoiceChannelStore";
 
 export default function VoiceChannel({ channel }: { channel: Channel }) {
-  const room = useVoiceRoom();
-  const activeChannelId = useActiveChannelId();
+  const scope: VoiceScope = {
+    type: "channel",
+    id: channel.id,
+  };
+
+  const isInVoiceCall = useIsInVoiceCall(scope);
   const joinVoice = useJoinVoiceChannel();
 
-  const isConnected = activeChannelId === channel.id;
-
-  if (!room || !isConnected)
+  if (!isInVoiceCall)
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-900 dark:text-zinc-100">
         <h2 className="text-2xl font-semibold">{channel.name}</h2>
@@ -24,7 +22,7 @@ export default function VoiceChannel({ channel }: { channel: Channel }) {
         </p>
 
         <button
-          onClick={() => joinVoice.mutate(channel.id)}
+          onClick={() => joinVoice.mutate(scope)}
           className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
         >
           Join Voice
@@ -32,10 +30,5 @@ export default function VoiceChannel({ channel }: { channel: Channel }) {
       </div>
     );
 
-  return (
-    <RoomContext.Provider value={room!}>
-      <RoomAudioRenderer />
-      <VideoGrid channelId={channel.id} />
-    </RoomContext.Provider>
-  );
+  return <VoiceRoomView scope={scope} />;
 }

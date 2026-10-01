@@ -68,3 +68,9 @@ export const useIsVideoEnabled = () =>
 
 export const useIsScreenSharing = () =>
   useVoiceChannelStore((s) => s.isScreenSharing);
+
+export const useIsInVoiceCall = (scope: VoiceScope) =>
+  useVoiceChannelStore((s) => {
+    if (!s.activeScope) return false;
+    return s.activeScope.type === scope.type && s.activeScope.id === scope.id;
+  });

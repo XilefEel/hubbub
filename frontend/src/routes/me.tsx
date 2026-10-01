@@ -1,4 +1,5 @@
 import ConversationList from "@/features/conversations/components/ConversationList";
+import VoiceToolbar from "@/features/voice/components/VoiceToolbar";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { UsersRound } from "lucide-react";
 import { useRef } from "react";
@@ -30,7 +31,7 @@ function MePage() {
           minSize="15%"
           panelRef={sidebarRef}
           collapsible
-          className="p-4"
+          className="flex h-full flex-col p-4"
         >
           <Link
             to="/me"
@@ -43,6 +44,10 @@ function MePage() {
           <div className="my-3 shrink-0 border-t border-zinc-200 dark:border-zinc-700" />
 
           <ConversationList />
+
+          <div className="mt-auto">
+            <VoiceToolbar />
+          </div>
         </Panel>
 
         <Separator className="w-px cursor-col-resize border-l border-zinc-200 transition-colors duration-100 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />

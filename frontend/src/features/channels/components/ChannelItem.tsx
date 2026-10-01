@@ -1,11 +1,11 @@
 import { Volume2, Hash } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useJoinVoiceChannel } from "@/features/voice/hooks/useVoiceChannel";
-import { useActiveChannelId } from "@/features/voice/store/useVoiceChannelStore";
 import { useChannelReads } from "../hooks/useReadStates";
 import ChannelContextMenu from "./ChannelContextMenu";
-import type { Channel } from "@/lib/types";
+import type { Channel, VoiceScope } from "@/lib/types";
 import VoiceParticipantsList from "@/features/voice/components/VoiceParticipantsList";
+import { useActiveScope } from "@/features/voice/store/useVoiceChannelStore";
 
 export default function ChannelItem({
   channel,
@@ -16,10 +16,15 @@ export default function ChannelItem({
   serverId: string;
   isOwner: boolean;
 }) {
-  const activeChannelId = useActiveChannelId();
+  const activeScope = useActiveScope();
   const joinVoice = useJoinVoiceChannel();
 
-  const isThisChannelActive = activeChannelId === channel.id;
+  const scope: VoiceScope = {
+    type: "channel",
+    id: channel.id,
+  };
+
+  const isThisChannelActive = activeScope?.id === channel.id;
 
   const { data: reads, isPending } = useChannelReads();
   const read = reads?.get(channel.id);
@@ -35,7 +40,7 @@ export default function ChannelItem({
   const handleClick = () => {
     if (channel.type !== "voice") return;
     if (isThisChannelActive) return;
-    joinVoice.mutate(channel.id);
+    joinVoice.mutate(scope);
   };
 
   return (
@@ -77,9 +82,7 @@ export default function ChannelItem({
         </li>
       </ChannelContextMenu>
 
-      {channel.type === "voice" && (
-        <VoiceParticipantsList channelId={channel.id} />
-      )}
+      {channel.type === "voice" && <VoiceParticipantsList scope={scope} />}
     </div>
   );
 }

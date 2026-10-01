@@ -1,5 +1,5 @@
 import UserAvatar from "@/features/users/components/UserAvatar";
-import type { User } from "@/lib/types";
+import type { User, VoiceScope } from "@/lib/types";
 import {
   useTracks,
   GridLayout,
@@ -12,8 +12,9 @@ import { MicOff, HeadphoneOff } from "lucide-react";
 import { useVoiceParticipants } from "../hooks/useVoiceChannel";
 import { useIsDeafened } from "../store/useVoiceChannelStore";
 
-export default function VideoGrid({ channelId }: { channelId: string }) {
-  const { data: participants } = useVoiceParticipants(channelId);
+export default function VideoGrid({ scope }: { scope: VoiceScope }) {
+  const { data: participants } = useVoiceParticipants(scope);
+
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },
     { source: Track.Source.ScreenShare, withPlaceholder: false },
@@ -40,10 +41,9 @@ function VideoTile({ userByIdentity }: { userByIdentity: Map<string, User> }) {
         if (!trackRef) return null;
 
         const participant = trackRef.participant;
-
+        const isMicMuted = !participant.isMicrophoneEnabled;
         const hasVideo =
           !!trackRef.publication && !trackRef.publication.isMuted;
-        const isMicMuted = !participant.isMicrophoneEnabled;
 
         const user = userByIdentity.get(participant.identity);
 

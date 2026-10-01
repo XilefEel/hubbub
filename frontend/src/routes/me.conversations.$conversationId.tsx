@@ -14,6 +14,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { pb } from "@/lib/pocketbase";
 import ConversationHeader from "@/features/conversations/components/ConversationHeader";
+import { useIsInVoiceCall } from "@/features/voice/store/useVoiceChannelStore";
+import VoiceRoomView from "@/features/voice/components/VoiceRoomView";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
   component: ConversationPage,
@@ -30,6 +32,8 @@ function ConversationPage() {
     id: conversationId,
   };
 
+  const isInVoiceCall = useIsInVoiceCall(scope);
+
   const {
     data: messages,
     isLoading: messagesLoading,
@@ -43,7 +47,13 @@ function ConversationPage() {
 
   return (
     <div className="mx-auto flex h-full max-w-3xl flex-col p-4 text-zinc-900 dark:text-zinc-100">
-      <ConversationHeader partner={partner} />
+      <ConversationHeader partner={partner} conversationId={conversationId} />
+
+      {isInVoiceCall && (
+        <div className="h-1/2 min-h-0 border-b border-zinc-200 dark:border-zinc-700">
+          <VoiceRoomView scope={scope} />
+        </div>
+      )}
 
       {messagesIsError ? (
         <p className="text-red-500">
