@@ -13,6 +13,7 @@ import type { MessageScope, Message } from "@/lib/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { pb } from "@/lib/pocketbase";
+import ConversationHeader from "@/features/conversations/components/ConversationHeader";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
   component: ConversationPage,
@@ -42,6 +43,8 @@ function ConversationPage() {
 
   return (
     <div className="mx-auto flex h-full max-w-3xl flex-col p-4 text-zinc-900 dark:text-zinc-100">
+      <ConversationHeader partner={partner} />
+
       {messagesIsError ? (
         <p className="text-red-500">
           Error loading messages: {messagesError.message}
