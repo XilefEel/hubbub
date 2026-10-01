@@ -10,6 +10,7 @@ import {
 } from "@/app/modals/useModalStore";
 import { pb } from "@/lib/pocketbase";
 import ServerContextMenu from "./ServerContextMenu";
+import ServerSkeleton from "./ServerSkeleton";
 
 export default function ServerRail() {
   const { serverId } = useParams({ strict: false });
@@ -17,20 +18,6 @@ export default function ServerRail() {
   const { openModal: openCreate } = useCreateServerModal();
   const { openModal: openJoin } = useJoinServerModal();
   const { openModal: openSettings } = useSettingsModal();
-
-  if (isLoading)
-    return (
-      <div className="h-full w-16 bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
-        Loading...
-      </div>
-    );
-
-  if (isError)
-    return (
-      <p className="h-full w-16 bg-white text-red-500 dark:bg-zinc-800">
-        Failed to load servers: {error.message}
-      </p>
-    );
 
   return (
     <nav
@@ -56,38 +43,49 @@ export default function ServerRail() {
 
       <div className="w-12 border-t border-zinc-200 dark:border-zinc-700" />
 
-      <div className="flex flex-col items-center gap-2 overflow-y-auto">
-        {servers?.map((server) => (
-          <ServerContextMenu key={server.id} server={server}>
-            <div>
-              <Tooltip content={server.name} side="right">
-                <Link to="/servers/$serverId" params={{ serverId: server.id }}>
-                  {server.icon ? (
-                    <img
-                      src={pb.files.getURL(server, server.icon, {
-                        thumb: "100x100",
-                      })}
-                      alt={server.name}
-                      className="size-10 shrink-0 rounded-xl object-cover"
-                    />
-                  ) : (
-                    <span
-                      className={cn(
-                        "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                        serverId === server.id
-                          ? "bg-teal-500 text-white"
-                          : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
-                      )}
-                    >
-                      {server.name.slice(0, 2).toUpperCase()}
-                    </span>
-                  )}
-                </Link>
-              </Tooltip>
-            </div>
-          </ServerContextMenu>
-        ))}
-      </div>
+      {isError ? (
+        <p className="h-full w-16 bg-white text-red-500 dark:bg-zinc-800">
+          Failed to load servers: {error.message}
+        </p>
+      ) : isLoading ? (
+        <ServerSkeleton />
+      ) : (
+        <div className="flex flex-col items-center gap-2 overflow-y-auto">
+          {servers?.map((server) => (
+            <ServerContextMenu key={server.id} server={server}>
+              <div>
+                <Tooltip content={server.name} side="right">
+                  <Link
+                    to="/servers/$serverId"
+                    params={{ serverId: server.id }}
+                  >
+                    {server.icon ? (
+                      <img
+                        src={pb.files.getURL(server, server.icon, {
+                          thumb: "100x100",
+                        })}
+                        alt={server.name}
+                        className="size-10 shrink-0 rounded-xl object-cover"
+                      />
+                    ) : (
+                      <span
+                        className={cn(
+                          "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                          serverId === server.id
+                            ? "bg-teal-500 text-white"
+                            : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600",
+                        )}
+                      >
+                        {server.name.slice(0, 2).toUpperCase()}
+                      </span>
+                    )}
+                  </Link>
+                </Tooltip>
+              </div>
+            </ServerContextMenu>
+          ))}
+        </div>
+      )}
 
       <div className="mt-auto w-12 border-t border-zinc-200 dark:border-zinc-700" />
 
