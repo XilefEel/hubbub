@@ -125,6 +125,9 @@ export type FriendshipRelation =
 
 export type Conversation = BaseRecord & {
   lastMessageAt?: string;
+  expand?: {
+    conversation_members_via_conversation?: ConversationMember[];
+  };
 };
 
 export type ConversationMember = BaseRecord & {

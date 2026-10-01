@@ -1,14 +1,14 @@
 import UserAvatar from "@/features/users/components/UserAvatar";
 import { Link } from "@tanstack/react-router";
-import { useConversationPartner } from "../hooks/useConversationMembers";
+import type { User } from "@/lib/types";
 
 export default function ConversationItem({
   conversationId,
+  partner,
 }: {
   conversationId: string;
+  partner: User | undefined;
 }) {
-  const partner = useConversationPartner(conversationId);
-
   return (
     <Link
       to="/me/conversations/$conversationId"

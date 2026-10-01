@@ -1,8 +1,8 @@
 import { useTypingIndicator } from "@/features/messages/hooks/useTypingIndicator";
 import ConversationEmpty from "@/features/conversations/components/ConversationEmpty";
 import {
+  findPartner,
   useConversationMembers,
-  useConversationPartner,
 } from "@/features/conversations/hooks/useConversationMembers";
 import MessageInput from "@/features/messages/components/MessageInput";
 import MessageList from "@/features/messages/components/MessageList";
@@ -12,15 +12,17 @@ import { useMessages } from "@/features/messages/hooks/useMessages";
 import type { MessageScope, Message } from "@/lib/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { pb } from "@/lib/pocketbase";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
   component: ConversationPage,
 });
 
 function ConversationPage() {
+  const userId = pb.authStore.record?.id;
   const { conversationId } = Route.useParams();
   const { data: members } = useConversationMembers(conversationId);
-  const partner = useConversationPartner(conversationId);
+  const partner = findPartner(members, userId);
 
   const scope: MessageScope = {
     type: "conversation",

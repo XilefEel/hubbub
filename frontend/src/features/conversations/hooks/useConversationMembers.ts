@@ -17,13 +17,9 @@ export function useConversationMembers(conversationId: string) {
   });
 }
 
-export function useConversationPartner(conversationId: string) {
-  const me = pb.authStore.record?.id;
-  const query = useConversationMembers(conversationId);
-
-  const partner = query.data
-    ?.map((m) => m.expand?.user)
-    .find((u) => u && u.id !== me);
-
-  return partner;
+export function findPartner(
+  members: ConversationMember[] | undefined,
+  meId?: string,
+) {
+  return members?.map((m) => m.expand?.user).find((u) => u && u.id !== meId);
 }

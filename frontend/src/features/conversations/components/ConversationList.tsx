@@ -1,7 +1,10 @@
+import { pb } from "@/lib/pocketbase";
+import { findPartner } from "../hooks/useConversationMembers";
 import { useConversations } from "../hooks/useConversations";
 import ConversationItem from "./ConversationItem";
 
 export default function ConversationList() {
+  const userId = pb.authStore.record?.id;
   const { data: conversations } = useConversations();
 
   return (
@@ -11,7 +14,14 @@ export default function ConversationList() {
       </h2>
 
       {conversations?.map((c) => (
-        <ConversationItem key={c.id} conversationId={c.id} />
+        <ConversationItem
+          key={c.id}
+          conversationId={c.id}
+          partner={findPartner(
+            c.expand?.conversation_members_via_conversation,
+            userId,
+          )}
+        />
       ))}
     </div>
   );
