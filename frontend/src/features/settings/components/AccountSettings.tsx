@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
+import { useAuth } from "../../auth/hooks/useAuth";
 import {
-  useAuth,
   useRemoveAvatar,
   useUpdateAvatar,
   useUpdateBannerColor,
   useUpdateBio,
-} from "../../auth/hooks/useAuth";
+} from "../../users/hooks/useUserProfile";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import {
   useChangePasswordModal,

@@ -1,18 +1,8 @@
 import { useEffect, useState } from "react";
-
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { pb } from "../../../lib/pocketbase";
 import type { User } from "../../../lib/types";
-
-function invalidateUserDependents(queryClient: QueryClient) {
-  queryClient.invalidateQueries({ queryKey: ["server_members"] });
-  queryClient.invalidateQueries({ queryKey: ["messages"] });
-  queryClient.invalidateQueries({ queryKey: ["reactions"] });
-}
+import { DEFAULT_COLOR } from "@/lib/constants";
 
 export function useAuth() {
   const [isValid, setIsValid] = useState(pb.authStore.isValid);
@@ -66,55 +56,11 @@ export function useSignup() {
         email,
         password,
         passwordConfirm,
+        bannerColor: DEFAULT_COLOR,
       });
 
       await pb.collection("users").authWithPassword(email, password);
     },
-  });
-}
-
-export function useUpdateAvatar() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (file: File) => {
-      const userId = pb.authStore.record?.id;
-      if (!userId) throw new Error("Must be logged in to update avatar");
-
-      const formData = new FormData();
-      formData.append("avatar", file);
-
-      return await pb.collection("users").update(userId, formData);
-    },
-    onSuccess: () => invalidateUserDependents(queryClient),
-  });
-}
-
-export function useRemoveAvatar() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      const userId = pb.authStore.record?.id;
-      if (!userId) throw new Error("Must be logged in to remove avatar");
-
-      return await pb.collection("users").update(userId, { avatar: "" });
-    },
-    onSuccess: () => invalidateUserDependents(queryClient),
-  });
-}
-
-export function useUpdateUsername() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ name }: { name: string }) => {
-      const userId = pb.authStore.record?.id;
-      if (!userId) throw new Error("Must be logged in to update username");
-
-      return await pb.collection("users").update(userId, { name });
-    },
-    onSuccess: () => invalidateUserDependents(queryClient),
   });
 }
 
@@ -130,7 +76,7 @@ export function useChangePassword() {
       passwordConfirm: string;
     }) => {
       const userId = pb.authStore.record?.id;
-      if (!userId) throw new Error("Must be logged in to update username");
+      if (!userId) throw new Error("Must be logged in to change password");
 
       if (password !== passwordConfirm) {
         throw new Error("Passwords do not match");
@@ -142,31 +88,5 @@ export function useChangePassword() {
         passwordConfirm,
       });
     },
-  });
-}
-
-export function useUpdateBio() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (bio: string) => {
-      const userId = pb.authStore.record?.id;
-      if (!userId) throw new Error("Must be logged in to update bio");
-
-      return await pb.collection("users").update(userId, { bio });
-    },
-    onSuccess: () => invalidateUserDependents(queryClient),
-  });
-}
-
-export function useUpdateBannerColor() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (bannerColor: string) => {
-      const userId = pb.authStore.record?.id;
-      if (!userId) throw new Error("Must be logged in to update banner color");
-
-      return await pb.collection("users").update(userId, { bannerColor });
-    },
-    onSuccess: () => invalidateUserDependents(queryClient),
   });
 }
