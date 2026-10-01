@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 	"sync"
 	"time"
 
@@ -79,4 +80,17 @@ func startPresenceHeartbeat(app core.App) {
 			broadcastPresence(app)
 		}
 	}()
+}
+
+// endpoint to handle presence heartbeat
+func heartbeatHandler(e *core.RequestEvent) error {
+	_, wasOnline := presenceMap.Swap(e.Auth.Id, time.Now())
+
+	if !wasOnline {
+		broadcastPresence(e.App)
+	}
+
+	return e.JSON(http.StatusOK, map[string]any{
+		"online": onlineUserIds(),
+	})
 }
