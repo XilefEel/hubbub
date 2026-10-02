@@ -34,51 +34,53 @@ function ConversationPage() {
 
   const isInVoiceCall = useIsInVoiceCall(scope);
 
-  const {
-    data: messages,
-    isLoading: messagesLoading,
-    isError: messagesIsError,
-    error: messagesError,
-  } = useMessages(scope);
+  const { data: messages, isLoading, isError, error } = useMessages(scope);
 
   const { typingNames, sendTyping } = useTypingIndicator(scope, members);
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col p-4 text-zinc-900 dark:text-zinc-100">
-      <ConversationHeader partner={partner} conversationId={conversationId} />
-
+    <div className="flex h-full flex-col text-zinc-900 dark:text-zinc-100">
       {isInVoiceCall && (
-        <div className="h-1/2 min-h-0 border-b border-zinc-200 dark:border-zinc-700">
+        <div className="h-1/2 min-h-0 shrink-0">
           <VoiceRoomView scope={scope} />
         </div>
       )}
 
-      {messagesIsError ? (
-        <p className="text-red-500">
-          Error loading messages: {messagesError.message}
-        </p>
-      ) : messagesLoading ? (
-        <MessagesSkeleton />
-      ) : (
-        <MessageList
-          messages={messages}
+      <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col p-4">
+        {!isInVoiceCall && (
+          <ConversationHeader
+            partner={partner}
+            conversationId={conversationId}
+          />
+        )}
+
+        {isError ? (
+          <p className="text-red-500">
+            Error loading messages: {error.message}
+          </p>
+        ) : isLoading ? (
+          <MessagesSkeleton />
+        ) : (
+          <MessageList
+            messages={messages}
+            scope={scope}
+            onReply={setReplyingTo}
+            emptyState={<ConversationEmpty user={partner} />}
+          />
+        )}
+
+        <TypingIndicator typingNames={typingNames} />
+
+        <MessageInput
+          members={members}
+          replyingTo={replyingTo}
           scope={scope}
-          onReply={setReplyingTo}
-          emptyState={<ConversationEmpty user={partner} />}
+          onTyping={sendTyping}
+          onCancelReply={() => setReplyingTo(null)}
         />
-      )}
-
-      <TypingIndicator typingNames={typingNames} />
-
-      <MessageInput
-        members={members}
-        replyingTo={replyingTo}
-        scope={scope}
-        onTyping={sendTyping}
-        onCancelReply={() => setReplyingTo(null)}
-      />
+      </div>
     </div>
   );
 }
