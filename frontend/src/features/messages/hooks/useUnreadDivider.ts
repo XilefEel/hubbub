@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { pb } from "@/lib/pocketbase";
-import type { Message } from "@/lib/types";
+import type { DateTime, Message } from "@/lib/types";
+import { isAfter } from "@/lib/utils";
 
 export function useUnreadDivider({
   messages,
@@ -10,13 +11,13 @@ export function useUnreadDivider({
 }: {
   messages: Message[] | undefined;
   scopeId: string;
-  lastReadAt: string | undefined;
+  lastReadAt: DateTime | undefined;
   ready: boolean;
 }) {
   const userId = pb.authStore.record?.id;
   const [captured, setCaptured] = useState<{
     scopeId: string;
-    at: string | null;
+    at: DateTime | null;
   } | null>(null);
 
   if (ready && captured?.scopeId !== scopeId) {
@@ -28,13 +29,15 @@ export function useUnreadDivider({
   return useMemo(() => {
     if (dividerAt === null || !messages) return null;
 
-    if (messages.some((m) => m.created > dividerAt && m.user === userId)) {
+    if (
+      messages.some((m) => isAfter(m.created, dividerAt) && m.user === userId)
+    ) {
       return null;
     }
 
     return (
-      messages.find((m) => m.created > dividerAt && m.user !== userId)?.id ??
-      null
+      messages.find((m) => isAfter(m.created, dividerAt) && m.user !== userId)
+        ?.id ?? null
     );
   }, [messages, dividerAt, userId]);
 }

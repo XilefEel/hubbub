@@ -1,5 +1,5 @@
 import { pb } from "./pocketbase";
-import type { Message, Reaction } from "./types";
+import type { DateTime, Message, Reaction } from "./types";
 import { ClientResponseError } from "pocketbase";
 import { isToday, isYesterday } from "date-fns";
 
@@ -88,3 +88,5 @@ export function groupReactionsByEmoji(
     reactedByMe: list.some((r) => r.user === currentUserId),
   }));
 }
+
+export const isAfter = (a: DateTime, b: DateTime) => a > b;

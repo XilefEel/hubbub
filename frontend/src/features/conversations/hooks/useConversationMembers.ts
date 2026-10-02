@@ -1,5 +1,5 @@
 import { pb } from "@/lib/pocketbase";
-import type { ConversationMember } from "@/lib/types";
+import type { ConversationMember, DateTime } from "@/lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useConversationMembers(conversationId: string) {
@@ -33,7 +33,7 @@ export function useMarkConversationRead() {
       lastReadAt,
     }: {
       memberId: string;
-      lastReadAt: string;
+      lastReadAt: DateTime;
     }) => {
       return await pb
         .collection("conversation_members")

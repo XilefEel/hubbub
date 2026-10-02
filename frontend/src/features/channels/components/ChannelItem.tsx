@@ -6,6 +6,7 @@ import ChannelContextMenu from "./ChannelContextMenu";
 import type { Channel, VoiceScope } from "@/lib/types";
 import VoiceParticipantsList from "@/features/voice/components/VoiceParticipantsList";
 import { useActiveScope } from "@/features/voice/store/useVoiceChannelStore";
+import { isAfter } from "@/lib/utils";
 
 export default function ChannelItem({
   channel,
@@ -35,7 +36,7 @@ export default function ChannelItem({
     !isPending &&
     channel.type !== "voice" &&
     !!channel.lastMessageAt &&
-    (!read || channel.lastMessageAt > read.lastReadAt);
+    (!read || isAfter(channel.lastMessageAt, read.lastReadAt));
 
   const handleClick = () => {
     if (channel.type !== "voice") return;

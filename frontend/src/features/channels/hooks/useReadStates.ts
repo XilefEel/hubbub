@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import { useEffect } from "react";
 import { queryKeys } from "@/lib/querykeys";
-import type { ReadState } from "@/lib/types";
+import type { DateTime, ReadState } from "@/lib/types";
 
 export function useChannelReads() {
   const userId = pb.authStore.record?.id;
@@ -28,7 +28,7 @@ export function useMarkChannelRead() {
       lastReadAt,
     }: {
       channelId: string;
-      lastReadAt: string;
+      lastReadAt: DateTime;
     }) => {
       try {
         const existing = await pb

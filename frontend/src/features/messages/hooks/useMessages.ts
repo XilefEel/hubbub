@@ -37,7 +37,7 @@ export function useSendMessage() {
         formData.append("mentions", mention);
       }
 
-      const message = await pb.collection("messages").create(formData);
+      const message = await pb.collection<Message>("messages").create(formData);
 
       if (scope.type === "channel") {
         await pb.collection("channels").update(scope.id, {
@@ -58,15 +58,18 @@ export function useEditMessage(onSuccess?: () => void) {
     }: {
       messageId: string;
       content: string;
-    }) => await pb.collection("messages").update(messageId, { content }),
+    }) => {
+      return await pb.collection("messages").update(messageId, { content });
+    },
     onSuccess,
   });
 }
 
 export function useDeleteMessage() {
   return useMutation({
-    mutationFn: async (messageId: string) =>
-      await pb.collection("messages").delete(messageId),
+    mutationFn: async (messageId: string) => {
+      return await pb.collection("messages").delete(messageId);
+    },
   });
 }
 

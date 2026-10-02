@@ -4,6 +4,7 @@ import type { Conversation } from "@/lib/types";
 import { pb } from "@/lib/pocketbase";
 import { findPartner } from "../hooks/useConversationMembers";
 import { cn } from "cn";
+import { isAfter } from "@/lib/utils";
 
 export default function ConversationItem({
   conversation,
@@ -19,7 +20,7 @@ export default function ConversationItem({
   const unread =
     !!me &&
     !!conversation.lastMessageAt &&
-    (!me.lastReadAt || conversation.lastMessageAt > me.lastReadAt);
+    (!me.lastReadAt || isAfter(conversation.lastMessageAt, me.lastReadAt));
 
   const partner = findPartner(
     conversation.expand?.conversation_members_via_conversation,

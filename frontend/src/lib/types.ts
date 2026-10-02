@@ -1,8 +1,10 @@
 import type { RecordModel } from "pocketbase";
 
+export type DateTime = string & { readonly __type: "DateTime" };
+
 type BaseRecord = RecordModel & {
-  created: string;
-  updated: string;
+  created: DateTime;
+  updated: DateTime;
 };
 
 export type User = BaseRecord & {
@@ -40,7 +42,7 @@ export type Channel = BaseRecord & {
   name: string;
   server: string; // server id
   type: ChannelType;
-  lastMessageAt?: string;
+  lastMessageAt?: DateTime;
   expand?: {
     server?: Server;
   };
@@ -92,7 +94,7 @@ export type VoiceParticipant = BaseRecord & {
 export type ReadState = BaseRecord & {
   user: string; // user id
   channel: string; // channel id
-  lastReadAt: string;
+  lastReadAt: DateTime;
   mentionCount?: number;
   expand?: {
     user?: User;
@@ -126,7 +128,7 @@ export type FriendshipRelation =
   | { kind: "friends"; friendship: Friendship };
 
 export type Conversation = BaseRecord & {
-  lastMessageAt?: string;
+  lastMessageAt?: DateTime;
   expand?: {
     conversation_members_via_conversation?: ConversationMember[];
   };
@@ -135,7 +137,7 @@ export type Conversation = BaseRecord & {
 export type ConversationMember = BaseRecord & {
   user: string; // user id
   conversation: string; // conversation id
-  lastReadAt?: string;
+  lastReadAt?: DateTime;
   expand?: {
     user?: User;
     conversation?: Conversation;
