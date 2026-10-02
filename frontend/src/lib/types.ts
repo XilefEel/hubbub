@@ -135,6 +135,7 @@ export type Conversation = BaseRecord & {
 export type ConversationMember = BaseRecord & {
   user: string; // user id
   conversation: string; // conversation id
+  lastReadAt?: string;
   expand?: {
     user?: User;
     conversation?: Conversation;

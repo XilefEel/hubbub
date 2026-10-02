@@ -9,6 +9,10 @@ import {
 } from "../../channels/hooks/useReadStates";
 import { useMessageFocus } from "../hooks/useMessageFocus";
 import { pb } from "@/lib/pocketbase";
+import {
+  useConversationMembers,
+  useMarkConversationRead,
+} from "@/features/conversations/hooks/useConversationMembers";
 
 export default function MessageList({
   messages,
@@ -22,6 +26,9 @@ export default function MessageList({
   emptyState?: React.ReactNode;
 }) {
   const userId = pb.authStore.record?.id;
+  const members = useConversationMembers(scope.id);
+
+  const myMemberId = members.data?.find((m) => m.user === userId)?.id;
 
   const { data: reactions } = useReactions(scope);
   const { data: reads } = useChannelReads();
@@ -57,6 +64,8 @@ export default function MessageList({
   const { atBottom } = useMessageFocus(messagesEndRef, scope.id);
 
   const markRead = useMarkChannelRead();
+  const markConversationRead = useMarkConversationRead();
+
   const lastMessage = messages?.at(-1);
   const lastId = lastMessage?.id;
   const newestMessage = lastMessage?.created;
@@ -84,8 +93,17 @@ export default function MessageList({
   }, [lastId]);
 
   useEffect(() => {
-    if (scope.type !== "channel") return;
     if (!newestMessage || !atBottom) return;
+
+    if (scope.type === "conversation") {
+      if (myMemberId)
+        markConversationRead.mutate({
+          memberId: myMemberId,
+          lastReadAt: newestMessage,
+        });
+      return;
+    }
+
     markRead.mutate({ channelId: scope.id, lastReadAt: newestMessage });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scope.id, newestMessage, atBottom]);

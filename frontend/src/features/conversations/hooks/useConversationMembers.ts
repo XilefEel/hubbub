@@ -1,6 +1,6 @@
 import { pb } from "@/lib/pocketbase";
 import type { ConversationMember } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useConversationMembers(conversationId: string) {
   return useQuery({
@@ -22,4 +22,24 @@ export function findPartner(
   meId?: string,
 ) {
   return members?.map((m) => m.expand?.user).find((u) => u && u.id !== meId);
+}
+
+export function useMarkConversationRead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      memberId,
+      lastReadAt,
+    }: {
+      memberId: string;
+      lastReadAt: string;
+    }) => {
+      return await pb
+        .collection("conversation_members")
+        .update(memberId, { lastReadAt });
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["conversations"] }),
+  });
 }
