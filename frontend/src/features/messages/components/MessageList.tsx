@@ -1,18 +1,12 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 import MessageItem from "./MessageItem";
 import type { Message, MessageScope } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
 import { useReactions } from "../hooks/useReactions";
-import {
-  useChannelReads,
-  useMarkChannelRead,
-} from "../../channels/hooks/useReadStates";
 import { useMessageFocus } from "../hooks/useMessageFocus";
-import { pb } from "@/lib/pocketbase";
-import {
-  useConversationMembers,
-  useMarkConversationRead,
-} from "@/features/conversations/hooks/useConversationMembers";
+import { useReadState } from "../hooks/useReadState";
+import { useStickyScroll } from "../hooks/useStickyScroll";
+import { useUnreadDivider } from "../hooks/useUnreadDivider";
 
 export default function MessageList({
   messages,
@@ -25,88 +19,33 @@ export default function MessageList({
   onReply: (message: Message) => void;
   emptyState?: React.ReactNode;
 }) {
-  const userId = pb.authStore.record?.id;
-  const members = useConversationMembers(scope.id);
+  const last = messages?.at(-1);
+  const newestMessage = last?.created;
+  const endRef = useRef<HTMLDivElement>(null);
 
-  const myMemberId = members.data?.find((m) => m.user === userId)?.id;
+  const { atBottom } = useMessageFocus(endRef, scope.id);
 
   const { data: reactions } = useReactions(scope);
-  const { data: reads } = useChannelReads();
-
-  const readState = reads?.get(scope.id);
-  const [dividerAt, setDividerAt] = useState<string | null>(null);
-  const capturedFor = useRef<string | null>(null);
-
-  const firstUnreadId = useMemo(() => {
-    if (dividerAt === null || !messages) return null;
-
-    const sentSince = messages.some(
-      (m) => m.created > dividerAt && m.user === userId,
-    );
-    if (sentSince) return null;
-
-    return (
-      messages.find((m) => m.created > dividerAt && m.user !== userId)?.id ??
-      null
-    );
-  }, [messages, dividerAt, userId]);
-
   const reactionsByMessage = useMemo(
     () => groupReactionsByMessage(reactions),
     [reactions],
   );
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { lastReadAt, markRead, ready } = useReadState(scope);
 
-  const scrollToBottom = () =>
-    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+  const firstUnreadId = useUnreadDivider({
+    messages,
+    lastReadAt,
+    ready,
+    scopeId: scope.id,
+  });
 
-  const { atBottom } = useMessageFocus(messagesEndRef, scope.id);
-
-  const markRead = useMarkChannelRead();
-  const markConversationRead = useMarkConversationRead();
-
-  const lastMessage = messages?.at(-1);
-  const lastId = lastMessage?.id;
-  const newestMessage = lastMessage?.created;
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [scope.id]);
-
-  useEffect(() => {
-    if (!reads) return;
-    if (capturedFor.current === scope.id) return;
-
-    capturedFor.current = scope.id;
-    setDividerAt(readState?.lastReadAt ?? null);
-  }, [scope.id, reads, readState]);
-
-  useEffect(() => {
-    if (!lastId) return;
-
-    const isOwn = lastMessage?.user === userId;
-    if (!atBottom && !isOwn) return;
-
-    scrollToBottom();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastId]);
+  useStickyScroll(endRef, scope.id, last, atBottom);
 
   useEffect(() => {
     if (!newestMessage || !atBottom) return;
-
-    if (scope.type === "conversation") {
-      if (myMemberId)
-        markConversationRead.mutate({
-          memberId: myMemberId,
-          lastReadAt: newestMessage,
-        });
-      return;
-    }
-
-    markRead.mutate({ channelId: scope.id, lastReadAt: newestMessage });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scope.id, newestMessage, atBottom]);
+    markRead(newestMessage);
+  }, [newestMessage, atBottom, markRead]);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto pt-3">
@@ -140,7 +79,7 @@ export default function MessageList({
           })
         : emptyState}
 
-      <div ref={messagesEndRef} />
+      <div ref={endRef} />
     </div>
   );
 }
