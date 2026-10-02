@@ -19,6 +19,7 @@ export default function MessagesSkeleton() {
       {ROWS.map((row, i) => (
         <div key={i} className="flex animate-pulse items-start gap-4 px-2 py-1">
           <Skeleton className="size-10 shrink-0 rounded-full" />
+
           <div className="flex flex-1 flex-col gap-2">
             <Skeleton className={cn("h-3", row.name)} />
 

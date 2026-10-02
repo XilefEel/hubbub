@@ -51,17 +51,6 @@ export function isSameGroup(
   return diffInMinutes <= minutesWindow;
 }
 
-export function renderTypingText(typingNames: string[]) {
-  if (typingNames.length === 0) return "";
-  if (typingNames.length === 1) return `${typingNames[0]} is typing...`;
-  if (typingNames.length === 2)
-    return `${typingNames[0]} and ${typingNames[1]} are typing...`;
-
-  return `${typingNames[0]}, ${typingNames[1]}, and ${
-    typingNames.length - 2
-  } others are typing...`;
-}
-
 export function getMessageImageUrl(message: Message) {
   if (!message.attachment) return null;
   return pb.files.getURL(message, message.attachment);
@@ -84,11 +73,7 @@ export function groupReactionsByMessage(
 export function groupReactionsByEmoji(
   reactions: Reaction[],
   currentUserId: string | undefined,
-): {
-  emoji: string;
-  count: number;
-  reactedByMe: boolean;
-}[] {
+) {
   const map = new Map<string, Reaction[]>();
 
   for (const r of reactions) {

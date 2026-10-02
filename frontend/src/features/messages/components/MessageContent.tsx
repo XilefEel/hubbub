@@ -4,11 +4,11 @@ import type { User } from "@/lib/types";
 export default function MessageContent({
   content,
   mentions,
-  currentUserId,
+  userId,
 }: {
   content: string;
   mentions: User[] | undefined;
-  currentUserId: string | undefined;
+  userId: string | undefined;
 }) {
   if (!mentions || mentions.length === 0) {
     return (
@@ -24,7 +24,7 @@ export default function MessageContent({
     <p className="text-sm wrap-anywhere whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
       {parts.map((part, i) => {
         const mention = mentions.find((u) => `@${u.name}` === part);
-        const isMe = mention?.id === currentUserId;
+        const isMe = mention?.id === userId;
 
         return mention ? (
           <span

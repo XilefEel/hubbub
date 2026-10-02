@@ -7,6 +7,7 @@ import { useMessageFocus } from "../hooks/useMessageFocus";
 import { useReadMarker } from "../hooks/useReadMarker";
 import { useStickyScroll } from "../hooks/useStickyScroll";
 import { useUnreadDivider } from "../hooks/useUnreadDivider";
+import UnreadDivider from "./UnreadDivider";
 
 export default function MessageList({
   messages,
@@ -53,20 +54,11 @@ export default function MessageList({
         ? messages.map((message, index) => {
             const prevMessage = index > 0 ? messages[index - 1] : undefined;
             const showHeader = !isSameGroup(prevMessage, message);
-
             const showDivider = message.id === firstUnreadId;
 
             return (
               <Fragment key={message.id}>
-                {showDivider && (
-                  <div className="my-2 flex items-center gap-2 px-4">
-                    <div className="h-px flex-1 bg-red-500/60" />
-                    <span className="text-xs font-semibold text-red-500">
-                      New
-                    </span>
-                    <div className="h-px flex-1 bg-red-500/60" />
-                  </div>
-                )}
+                {showDivider && <UnreadDivider />}
 
                 <MessageItem
                   message={message}

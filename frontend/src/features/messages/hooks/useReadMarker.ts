@@ -18,10 +18,11 @@ export function useReadMarker(scope: MessageScope) {
   const { data: members } = useConversationMembers(isChannel ? "" : scope.id);
 
   const me = members?.find((m) => m.user === userId);
+  const myId = me?.id;
 
+  // extract the mutate functions from the hooks to prevent unnecessary re-renders
   const markChannel = useMarkChannelRead().mutate;
   const markConversation = useMarkConversationRead().mutate;
-  const myId = me?.id;
 
   const ready = isChannel ? !!reads : !!members;
 

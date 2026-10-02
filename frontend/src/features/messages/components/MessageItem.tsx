@@ -24,11 +24,11 @@ export default function MessageItem({
   showHeader?: boolean;
   onReply: (message: Message) => void;
 }) {
-  const currentUserId = pb.authStore.record?.id;
+  const userId = pb.authStore.record?.id;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
-  const editContainerRef = useRef<HTMLDivElement>(null);
+  const editRef = useRef<HTMLDivElement>(null);
 
   const editMutation = useEditMessage(() => setIsEditing(false));
 
@@ -63,21 +63,18 @@ export default function MessageItem({
   };
 
   const groupedReactions = useMemo(
-    () => groupReactionsByEmoji(reactions, currentUserId),
-    [reactions, currentUserId],
+    () => groupReactionsByEmoji(reactions, userId),
+    [reactions, userId],
   );
 
-  const isOwner = message.user === currentUserId;
+  const isOwner = message.user === userId;
   const isPending = editMutation.isPending;
 
   useEffect(() => {
     if (!isEditing) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        editContainerRef.current &&
-        !editContainerRef.current.contains(e.target as Node)
-      ) {
+      if (editRef.current && !editRef.current.contains(e.target as Node)) {
         setIsEditing(false);
         setEditContent(message.content);
       }
@@ -130,7 +127,7 @@ export default function MessageItem({
           )}
 
           {isEditing ? (
-            <div ref={editContainerRef}>
+            <div ref={editRef}>
               <MessageEditForm
                 value={editContent}
                 onChange={setEditContent}
@@ -143,7 +140,7 @@ export default function MessageItem({
             <MessageContent
               content={message.content}
               mentions={message.expand?.mentions}
-              currentUserId={currentUserId}
+              userId={userId}
             />
           )}
 
