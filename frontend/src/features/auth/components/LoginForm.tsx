@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useLogin } from "../hooks/useAuth";
+import Input from "@/components/ui/Input";
+import SubmitButton from "@/components/ui/SubmitButton";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -24,32 +26,25 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-80 flex-col gap-3">
-      <input
+      <Input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
-        className="rounded border px-3 py-2"
       />
 
-      <input
+      <Input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
-        className="rounded border px-3 py-2"
       />
 
       {login.isError && (
         <p className="text-sm text-red-500">{login.error.message}</p>
       )}
 
-      <button
-        type="submit"
-        className="rounded bg-teal-500 px-4 py-2 text-white"
-      >
-        Log in
-      </button>
+      <SubmitButton>Login</SubmitButton>
     </form>
   );
 }

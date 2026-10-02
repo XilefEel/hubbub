@@ -16,7 +16,7 @@ function LoginPage() {
 
       <button
         onClick={() => setShowSignup(!showSignup)}
-        className="mt-4 text-sm text-teal-500 underline"
+        className="mt-4 text-sm text-teal-500 underline transition-colors duration-100 hover:text-teal-600"
       >
         {showSignup
           ? "Already have an account? Log in"
