@@ -37,15 +37,7 @@ export function useSendMessage() {
         formData.append("mentions", mention);
       }
 
-      const message = await pb.collection<Message>("messages").create(formData);
-
-      if (scope.type === "channel") {
-        await pb.collection("channels").update(scope.id, {
-          lastMessageAt: message.created,
-        });
-      }
-
-      return message;
+      return await pb.collection<Message>("messages").create(formData);
     },
   });
 }
