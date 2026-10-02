@@ -29,7 +29,19 @@ export function useLogin() {
       email: string;
       password: string;
     }) => {
-      return await pb.collection("users").authWithPassword(email, password);
+      const cleanEmail = email.trim().toLowerCase();
+
+      if (!cleanEmail) throw new Error("Email or username is required");
+      if (!password) throw new Error("Password is required");
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        throw new Error("Invalid email address");
+      }
+
+      return await pb
+        .collection("users")
+        .authWithPassword(cleanEmail, password);
     },
   });
 }
@@ -47,19 +59,37 @@ export function useSignup() {
       password: string;
       passwordConfirm: string;
     }) => {
+      const cleanName = username.trim();
+      const cleanEmail = email.trim().toLowerCase();
+
+      if (!cleanName) throw new Error("Username is required");
+      if (!cleanEmail) throw new Error("Email address is required");
+      if (!password) throw new Error("Password is required");
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        throw new Error("Invalid email address");
+      }
+
+      if (password.length < 8) {
+        throw new Error("Password must be at least 8 characters long");
+      }
+
       if (password !== passwordConfirm) {
         throw new Error("Passwords do not match");
       }
 
       await pb.collection("users").create({
-        name: username,
-        email,
+        name: cleanName,
+        email: cleanEmail,
         password,
         passwordConfirm,
         bannerColor: DEFAULT_COLOR,
       });
 
-      await pb.collection("users").authWithPassword(email, password);
+      return await pb
+        .collection("users")
+        .authWithPassword(cleanEmail, password);
     },
   });
 }
