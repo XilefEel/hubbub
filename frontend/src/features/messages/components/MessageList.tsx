@@ -31,7 +31,7 @@ export default function MessageList({
     [reactions],
   );
 
-  const { lastReadAt, markRead, ready } = useReadState(scope);
+  const { lastReadAt, markAsRead, ready } = useReadState(scope);
 
   const firstUnreadId = useUnreadDivider({
     messages,
@@ -44,8 +44,8 @@ export default function MessageList({
 
   useEffect(() => {
     if (!newestMessage || !atBottom) return;
-    markRead(newestMessage);
-  }, [newestMessage, atBottom, markRead]);
+    markAsRead(newestMessage);
+  }, [newestMessage, atBottom, markAsRead]);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto pt-3">

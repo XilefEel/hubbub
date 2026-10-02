@@ -19,8 +19,9 @@ export function useReadState(scope: MessageScope) {
 
   const me = members?.find((m) => m.user === userId);
 
-  const markChannel = useMarkChannelRead();
-  const markConversation = useMarkConversationRead();
+  const markChannel = useMarkChannelRead().mutate;
+  const markConversation = useMarkConversationRead().mutate;
+  const myId = me?.id;
 
   const ready = isChannel ? !!reads : !!members;
 
@@ -28,16 +29,16 @@ export function useReadState(scope: MessageScope) {
     ? reads?.get(scope.id)?.lastReadAt
     : members?.find((m) => m.user === userId)?.lastReadAt;
 
-  const markRead = useCallback(
+  const markAsRead = useCallback(
     (newest: string) => {
       if (isChannel) {
-        markChannel.mutate({ channelId: scope.id, lastReadAt: newest });
-      } else if (me) {
-        markConversation.mutate({ memberId: me?.id, lastReadAt: newest });
+        markChannel({ channelId: scope.id, lastReadAt: newest });
+      } else if (myId) {
+        markConversation({ memberId: myId, lastReadAt: newest });
       }
     },
-    [isChannel, scope.id, me, markChannel, markConversation],
+    [isChannel, scope.id, myId, markChannel, markConversation],
   );
 
-  return { lastReadAt, markRead, ready };
+  return { lastReadAt, markAsRead, ready };
 }
