@@ -10,7 +10,7 @@ import {
   useMarkConversationRead,
 } from "@/features/conversations/hooks/useConversationMembers";
 
-export function useReadState(scope: MessageScope) {
+export function useReadMarker(scope: MessageScope) {
   const userId = pb.authStore.record?.id;
   const isChannel = scope.type === "channel";
 

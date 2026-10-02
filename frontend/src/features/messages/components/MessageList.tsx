@@ -4,7 +4,7 @@ import type { Message, MessageScope } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
 import { useReactions } from "../hooks/useReactions";
 import { useMessageFocus } from "../hooks/useMessageFocus";
-import { useReadState } from "../hooks/useReadState";
+import { useReadMarker } from "../hooks/useReadMarker";
 import { useStickyScroll } from "../hooks/useStickyScroll";
 import { useUnreadDivider } from "../hooks/useUnreadDivider";
 
@@ -31,7 +31,7 @@ export default function MessageList({
     [reactions],
   );
 
-  const { lastReadAt, markAsRead, ready } = useReadState(scope);
+  const { lastReadAt, markAsRead, ready } = useReadMarker(scope);
 
   const firstUnreadId = useUnreadDivider({
     messages,
