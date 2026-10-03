@@ -31,7 +31,7 @@ function ChannelPage() {
     isLoading: channelLoading,
     isError: channelIsError,
     error: channelError,
-  } = useChannelDetail(channelId);
+  } = useChannelDetail(channelId, serverId);
 
   const { data: members } = useServerMembers(serverId);
 

@@ -58,10 +58,16 @@ export function useChannels(serverId: string) {
   return query;
 }
 
-export function useChannelDetail(channelId: string) {
+export function useChannelDetail(channelId: string, serverId: string) {
+  const queryClient = useQueryClient();
+
   return useQuery<Channel>({
     queryKey: queryKeys.channels.detail(channelId),
     queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
+    initialData: () =>
+      queryClient
+        .getQueryData<Channel[]>(queryKeys.channels.list(serverId))
+        ?.find((c) => c.id === channelId),
     enabled: !!channelId,
   });
 }

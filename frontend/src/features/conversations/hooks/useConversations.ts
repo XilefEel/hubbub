@@ -19,9 +19,29 @@ export function useConversations() {
   useEffect(() => {
     const key = ["conversations"];
     const unsubPromise = pb
-      .collection("messages")
-      .subscribe<Conversation>("*", () => {
-        queryClient.invalidateQueries({ queryKey: key });
+      .collection("conversations")
+      .subscribe<Conversation>("*", (e) => {
+        if (e.action === "create") {
+          queryClient.invalidateQueries({ queryKey: key });
+          return;
+        }
+
+        queryClient.setQueryData<Conversation[]>(key, (old = []) => {
+          switch (e.action) {
+            case "update":
+              return old
+                .map((c) =>
+                  c.id === e.record.id ? { ...e.record, expand: c.expand } : c,
+                )
+                .sort((a, b) =>
+                  (b.lastMessageAt ?? "").localeCompare(a.lastMessageAt ?? ""),
+                );
+            case "delete":
+              return old.filter((c) => c.id !== e.record.id);
+            default:
+              return old;
+          }
+        });
       });
 
     unsubPromise.catch((err) =>
@@ -35,3 +55,5 @@ export function useConversations() {
 
   return query;
 }
+
+export function useConversationsSubscription() {}
