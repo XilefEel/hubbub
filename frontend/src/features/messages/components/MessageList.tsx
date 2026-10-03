@@ -44,9 +44,10 @@ export default function MessageList({
   useStickyScroll(endRef, scope.id, last, atBottom);
 
   useEffect(() => {
-    if (!newestMessage || !atBottom) return;
+    if (!ready || !newestMessage || !atBottom) return;
+    if (lastReadAt && newestMessage <= lastReadAt) return;
     markAsRead(newestMessage);
-  }, [newestMessage, atBottom, markAsRead]);
+  }, [ready, newestMessage, atBottom, lastReadAt, markAsRead]);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto pt-3">

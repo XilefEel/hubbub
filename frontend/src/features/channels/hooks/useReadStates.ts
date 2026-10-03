@@ -3,6 +3,7 @@ import { pb } from "@/lib/pocketbase";
 import { useEffect } from "react";
 import { queryKeys } from "@/lib/querykeys";
 import type { DateTime, ReadState } from "@/lib/types";
+import { ClientResponseError } from "pocketbase";
 
 export function useChannelReads() {
   const userId = pb.authStore.record?.id;
@@ -19,7 +20,6 @@ export function useChannelReads() {
 }
 
 export function useMarkChannelRead() {
-  const queryClient = useQueryClient();
   const userId = pb.authStore.record?.id;
 
   return useMutation({
@@ -30,25 +30,38 @@ export function useMarkChannelRead() {
       channelId: string;
       lastReadAt: DateTime;
     }) => {
-      try {
-        const existing = await pb
-          .collection("read_states")
-          .getFirstListItem(`user = "${userId}" && channel = "${channelId}"`);
+      const filter = pb.filter("user = {:userId} && channel = {:channelId}", {
+        userId,
+        channelId,
+      });
 
+      let existing: ReadState | null = null;
+
+      try {
+        existing = await pb
+          .collection("read_states")
+          .getFirstListItem(filter, { requestKey: null });
+      } catch (err) {
+        if (!(err instanceof ClientResponseError && err.status === 404))
+          throw err;
+      }
+
+      if (existing) {
         return await pb
           .collection("read_states")
           .update(existing.id, { lastReadAt, mentionCount: 0 });
-      } catch {
-        return await pb.collection("read_states").create({
+      }
+
+      return await pb.collection("read_states").create(
+        {
           user: userId,
           channel: channelId,
           lastReadAt,
           mentionCount: 0,
-        });
-      }
+        },
+        { requestKey: null },
+      );
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.readStates.list() }),
   });
 }
 

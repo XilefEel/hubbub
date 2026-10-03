@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { pb } from "@/lib/pocketbase";
 import type { DateTime, MessageScope } from "@/lib/types";
 import {
@@ -30,8 +30,14 @@ export function useReadMarker(scope: MessageScope) {
     ? reads?.get(scope.id)?.lastReadAt
     : members?.find((m) => m.user === userId)?.lastReadAt;
 
+  const lastMarked = useRef<string | null>(null);
+
   const markAsRead = useCallback(
     (newest: DateTime) => {
+      const key = `${scope.id}:${newest}`;
+      if (lastMarked.current === key) return;
+      lastMarked.current = key;
+
       if (isChannel) {
         markChannel({ channelId: scope.id, lastReadAt: newest });
       } else if (myId) {
