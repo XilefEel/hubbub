@@ -1,11 +1,11 @@
 import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "@/lib/querykeys";
 import type { QueryClient } from "@tanstack/react-query";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 function invalidateUserDependents(queryClient: QueryClient) {
-  queryClient.invalidateQueries({ queryKey: ["server_members"] });
-  queryClient.invalidateQueries({ queryKey: ["messages"] });
-  queryClient.invalidateQueries({ queryKey: ["reactions"] });
+  queryClient.invalidateQueries({ queryKey: queryKeys.serverMembers.all() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.messages.all() });
 }
 
 export function useUpdateAvatar() {

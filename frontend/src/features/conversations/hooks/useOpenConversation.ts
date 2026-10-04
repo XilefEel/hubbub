@@ -1,4 +1,5 @@
 import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "@/lib/querykeys";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -15,7 +16,9 @@ export function useOpenConversation() {
       return res.conversationId;
     },
     onSuccess: (conversationId) => {
-      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.list(),
+      });
       navigate({
         to: "/me/conversations/$conversationId",
         params: { conversationId },

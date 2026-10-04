@@ -203,7 +203,7 @@ export function useServerVoiceParticipants(serverId: string) {
     Error,
     Map<string, VoiceParticipant[]>
   >({
-    queryKey: ["voice-participants", "server", serverId],
+    queryKey: queryKeys.voiceParticipants.byServer(serverId),
     queryFn: () =>
       pb.collection("voice_participants").getFullList<VoiceParticipant>({
         filter: pb.filter("channel.server = {:id}", { id: serverId }),
@@ -223,16 +223,23 @@ export function useServerVoiceParticipants(serverId: string) {
         "*",
         (e) => {
           queryClient.setQueryData<VoiceParticipant[]>(
-            ["voice-participants", "server", serverId],
+            queryKeys.voiceParticipants.byServer(serverId),
             (old) => {
               if (!old) return old;
-              if (e.action === "delete") {
-                return old.filter((p) => p.id !== e.record.id);
+              switch (e.action) {
+                case "create":
+                  return old.some((vp) => vp.id === e.record.id)
+                    ? old
+                    : [...old, e.record];
+                case "update":
+                  return old.map((vp) =>
+                    vp.id === e.record.id ? e.record : vp,
+                  );
+                case "delete":
+                  return old.filter((vp) => vp.id !== e.record.id);
+                default:
+                  return old;
               }
-              const exists = old.some((p) => p.id === e.record.id);
-              return exists
-                ? old.map((p) => (p.id === e.record.id ? e.record : p))
-                : [...old, e.record];
             },
           );
         },

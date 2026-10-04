@@ -1,4 +1,5 @@
 import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "@/lib/querykeys";
 import type { Conversation } from "@/lib/types";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -7,7 +8,7 @@ export function useConversations() {
   const queryClient = useQueryClient();
 
   const query = useQuery<Conversation[]>({
-    queryKey: ["conversations"],
+    queryKey: queryKeys.conversations.list(),
     queryFn: async () => {
       return await pb.collection("conversations").getFullList<Conversation>({
         sort: "-lastMessageAt",
@@ -17,7 +18,7 @@ export function useConversations() {
   });
 
   useEffect(() => {
-    const key = ["conversations"];
+    const key = queryKeys.conversations.list();
     const unsubPromise = pb
       .collection("conversations")
       .subscribe<Conversation>("*", (e) => {
@@ -26,7 +27,8 @@ export function useConversations() {
           return;
         }
 
-        queryClient.setQueryData<Conversation[]>(key, (old = []) => {
+        queryClient.setQueryData<Conversation[]>(key, (old) => {
+          if (!old) return old;
           switch (e.action) {
             case "update":
               return old
@@ -55,5 +57,3 @@ export function useConversations() {
 
   return query;
 }
-
-export function useConversationsSubscription() {}

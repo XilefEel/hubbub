@@ -86,12 +86,8 @@ export function useUpdateServer() {
 
       return await pb.collection("servers").update(serverId, formData);
     },
-    onSuccess: (_, { serverId }) => {
-      queryClient.invalidateQueries({ queryKey: ["servers"] });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.servers.detail(serverId),
-      });
-      queryClient.invalidateQueries({ queryKey: ["server_members"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.servers.all() });
     },
   });
 }

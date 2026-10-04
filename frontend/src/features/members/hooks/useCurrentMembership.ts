@@ -1,11 +1,12 @@
 import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "@/lib/querykeys";
 import { useQuery } from "@tanstack/react-query";
 
 function useMyMemberships() {
   const userId = pb.authStore.record?.id;
 
   return useQuery({
-    queryKey: ["my-memberships", userId],
+    queryKey: queryKeys.serverMembers.mine(userId),
     queryFn: async () => {
       return await pb.collection("server_members").getFullList({
         filter: pb.filter("user = {:id}", { id: userId }),
