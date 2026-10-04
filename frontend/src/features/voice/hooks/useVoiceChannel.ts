@@ -1,9 +1,4 @@
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Room } from "livekit-client";
 import { pb } from "@/lib/pocketbase";
 import type {
@@ -139,7 +134,7 @@ export function useVoiceParticipants(scope: VoiceScope) {
   const query = useQuery<VoiceParticipant[]>({
     queryKey: queryKeys.voiceParticipants.list(type, id),
     queryFn: () =>
-      pb.collection("voice_participants").getFullList({
+      pb.collection("voice_participants").getFullList<VoiceParticipant>({
         filter: pb.filter(`${type} = {:id}`, { id }),
         expand: "user",
         requestKey: null,
@@ -149,37 +144,15 @@ export function useVoiceParticipants(scope: VoiceScope) {
 
   useEffect(() => {
     if (!id) return;
-    return getVoiceSubscription(type, id, queryClient);
-  }, [type, id, queryClient]);
 
-  return query;
-}
-
-const registry = new Map<
-  string,
-  {
-    refCount: number;
-    unsubPromise: Promise<() => void>;
-  }
->();
-
-function getVoiceSubscription(
-  type: VoiceScope["type"],
-  id: string,
-  queryClient: QueryClient,
-): () => void {
-  const registryKey = `${type}_${id}`;
-
-  const queryKey = queryKeys.voiceParticipants.list(type, id);
-  let entry = registry.get(registryKey);
-
-  if (!entry) {
+    const key = queryKeys.voiceParticipants.list(type, id);
     const unsubPromise = pb
       .collection("voice_participants")
       .subscribe<VoiceParticipant>(
         "*",
         (e) => {
-          queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old = []) => {
+          queryClient.setQueryData<VoiceParticipant[]>(key, (old) => {
+            if (!old) return old;
             switch (e.action) {
               case "create":
                 return old.some((vp) => vp.id === e.record.id)
@@ -200,35 +173,16 @@ function getVoiceSubscription(
         },
       );
 
-    const newEntry = { refCount: 0, unsubPromise };
-    entry = newEntry;
-    registry.set(registryKey, newEntry);
+    unsubPromise.catch((err) =>
+      console.warn("voice subscription failed:", err),
+    );
 
-    unsubPromise.catch((err) => {
-      console.warn("voice subscription failed:", err);
-      if (registry.get(registryKey) === newEntry) {
-        registry.delete(registryKey);
-      }
-    });
-  }
+    return () => {
+      unsubPromise.then((unsub) => unsub()).catch(() => {});
+    };
+  }, [type, id, queryClient]);
 
-  entry.refCount += 1;
-
-  let released = false;
-
-  return () => {
-    if (released) return;
-    released = true;
-
-    const current = registry.get(registryKey);
-    if (!current) return;
-
-    current.refCount -= 1;
-    if (current.refCount <= 0) {
-      registry.delete(registryKey);
-      current.unsubPromise.then((unsub) => unsub()).catch(() => {});
-    }
-  };
+  return query;
 }
 
 function groupByChannel(rows: VoiceParticipant[]) {
