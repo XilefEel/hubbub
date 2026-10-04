@@ -1,6 +1,9 @@
 import { Volume2, Hash } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useJoinVoiceChannel } from "@/features/voice/hooks/useVoiceChannel";
+import {
+  useJoinVoiceChannel,
+  useServerVoiceParticipants,
+} from "@/features/voice/hooks/useVoiceChannel";
 import { useChannelReads } from "../hooks/useReadStates";
 import ChannelContextMenu from "./ChannelContextMenu";
 import type { Channel, VoiceScope } from "@/lib/types";
@@ -44,6 +47,8 @@ export default function ChannelItem({
     joinVoice.mutate(scope);
   };
 
+  const { data: voiceByChannel } = useServerVoiceParticipants(serverId);
+
   return (
     <div>
       <ChannelContextMenu
@@ -83,7 +88,11 @@ export default function ChannelItem({
         </li>
       </ChannelContextMenu>
 
-      {channel.type === "voice" && <VoiceParticipantsList scope={scope} />}
+      {channel.type === "voice" && (
+        <VoiceParticipantsList
+          participants={voiceByChannel?.get(channel.id) ?? []}
+        />
+      )}
     </div>
   );
 }

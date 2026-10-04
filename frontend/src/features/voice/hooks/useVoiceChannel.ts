@@ -142,6 +142,7 @@ export function useVoiceParticipants(scope: VoiceScope) {
       pb.collection("voice_participants").getFullList({
         filter: pb.filter(`${type} = {:id}`, { id }),
         expand: "user",
+        requestKey: null,
       }),
     enabled: !!id,
   });
@@ -194,7 +195,7 @@ function getVoiceSubscription(
           });
         },
         {
-          filter: pb.filter("channel = {:id}", { id }),
+          filter: pb.filter(`${type} = {:id}`, { id }),
           expand: "user",
         },
       );
@@ -228,4 +229,72 @@ function getVoiceSubscription(
       current.unsubPromise.then((unsub) => unsub()).catch(() => {});
     }
   };
+}
+
+function groupByChannel(rows: VoiceParticipant[]) {
+  const map = new Map<string, VoiceParticipant[]>();
+  for (const r of rows) {
+    const list = map.get(r.channel);
+    if (list) list.push(r);
+    else map.set(r.channel, [r]);
+  }
+  return map;
+}
+
+export function useServerVoiceParticipants(serverId: string) {
+  const queryClient = useQueryClient();
+
+  const query = useQuery<
+    VoiceParticipant[],
+    Error,
+    Map<string, VoiceParticipant[]>
+  >({
+    queryKey: ["voice-participants", "server", serverId],
+    queryFn: () =>
+      pb.collection("voice_participants").getFullList<VoiceParticipant>({
+        filter: pb.filter("channel.server = {:id}", { id: serverId }),
+        expand: "user",
+        requestKey: null,
+      }),
+    select: groupByChannel,
+    enabled: !!serverId,
+  });
+
+  useEffect(() => {
+    if (!serverId) return;
+
+    const unsubPromise = pb
+      .collection("voice_participants")
+      .subscribe<VoiceParticipant>(
+        "*",
+        (e) => {
+          queryClient.setQueryData<VoiceParticipant[]>(
+            ["voice-participants", "server", serverId],
+            (old) => {
+              if (!old) return old;
+              if (e.action === "delete") {
+                return old.filter((p) => p.id !== e.record.id);
+              }
+              const exists = old.some((p) => p.id === e.record.id);
+              return exists
+                ? old.map((p) => (p.id === e.record.id ? e.record : p))
+                : [...old, e.record];
+            },
+          );
+        },
+        {
+          filter: pb.filter("channel.server = {:id}", { id: serverId }),
+          expand: "user",
+        },
+      );
+
+    unsubPromise.catch((err) =>
+      console.warn("voice subscription failed:", err),
+    );
+    return () => {
+      unsubPromise.then((unsub) => unsub()).catch(() => {});
+    };
+  }, [serverId, queryClient]);
+
+  return query;
 }
