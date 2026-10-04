@@ -12,7 +12,6 @@ export async function makeUser(name: string) {
   const pb = new PocketBase(url);
 
   const uniqueName = `${name}-${Math.random().toString(36).slice(2, 8)}`;
-
   const email = `${uniqueName}@test.com`;
   const password = "password123";
 
@@ -29,7 +28,7 @@ export async function makeUser(name: string) {
 
 export async function makeServer(owner: { pb: PocketBase; id: string }) {
   const server = await owner.pb.collection<Server>("servers").create({
-    name: "Test Server",
+    name: `${owner.id}'s Server`,
     owner: owner.id,
     inviteCode: Math.random().toString(36).slice(2, 10),
   });
@@ -62,4 +61,14 @@ export async function addMember(
     user: userId,
     role,
   });
+}
+
+export async function makeServerWithMember() {
+  const alice = await makeUser("alice");
+  const bob = await makeUser("bob");
+
+  const { server, channel } = await makeServer(alice);
+  await addMember(server.id, bob.id);
+
+  return { alice, bob, server, channel };
 }
