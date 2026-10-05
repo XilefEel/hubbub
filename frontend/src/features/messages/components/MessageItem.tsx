@@ -92,7 +92,7 @@ export default function MessageItem({
       onReply={handleReply}
       onEdit={startEditing}
     >
-      <div className="group relative flex items-start gap-4 rounded-lg px-2 py-1.5 transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50">
+      <div className="group dark:hover:bg-zinc-750 relative flex items-start gap-4 rounded-lg px-2 py-1.5 transition-colors duration-100 hover:bg-zinc-50">
         {showHeader ? (
           <UserAvatar user={message.expand?.user} />
         ) : (

@@ -3,6 +3,22 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-zinc-850: color-mix(
+    in oklch,
+    var(--color-zinc-900),
+    var(--color-zinc-800)
+  );
+}
+
+@theme {
+  --color-zinc-750: color-mix(
+    in oklch,
+    var(--color-zinc-800),
+    var(--color-zinc-700)
+  );
+}
+
 @layer base {
   @font-face {
     font-family: "Manrope";

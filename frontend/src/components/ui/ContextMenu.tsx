@@ -64,7 +64,7 @@ export function ContextMenuItem({
       className={cn(
         "flex items-center gap-3 rounded px-2 py-1.5 text-sm transition-colors duration-100 outline-none",
         "text-zinc-900 dark:text-zinc-100",
-        "hover:bg-zinc-50 dark:hover:bg-zinc-700/50",
+        "dark:hover:bg-zinc-750",
         isDelete &&
           "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30",
         disabled && "pointer-events-none opacity-50",

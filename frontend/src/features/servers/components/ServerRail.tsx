@@ -23,8 +23,8 @@ export default function ServerRail() {
     <nav
       className={cn(
         "flex h-full w-16 shrink-0 flex-col items-center gap-2 overflow-y-auto py-3",
-        "border-r border-zinc-200 dark:border-transparent",
-        "bg-white dark:bg-zinc-900",
+        "border-r border-zinc-200 dark:border-zinc-700",
+        "dark:bg-zinc-850 bg-white",
       )}
     >
       <div className="group relative flex w-full justify-center">
@@ -43,7 +43,7 @@ export default function ServerRail() {
               "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
               serverId === undefined
                 ? "rounded-xl bg-teal-500 text-white"
-                : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700",
+                : "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
             )}
           >
             <Home className="size-5 shrink-0" />
@@ -81,7 +81,7 @@ export default function ServerRail() {
                       "transition-[border-radius,background-color] duration-100",
                       serverId === server.id
                         ? "rounded-xl bg-teal-500 text-white"
-                        : "rounded-[50%] bg-zinc-100 hover:rounded-xl hover:bg-zinc-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700",
+                        : "dark:bg-zinc-750 rounded-[50%] bg-zinc-100 hover:rounded-xl hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
                     )}
                   >
                     {server.icon ? (
@@ -111,7 +111,7 @@ export default function ServerRail() {
           className={cn(
             "flex size-10 shrink-0 items-center justify-center",
             "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
-            "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700",
+            "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
           )}
         >
           <Plus className="size-5 shrink-0" />
@@ -124,7 +124,7 @@ export default function ServerRail() {
           className={cn(
             "flex size-10 shrink-0 items-center justify-center",
             "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
-            "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700",
+            "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
           )}
         >
           <Compass className="size-5 shrink-0" />
@@ -137,7 +137,7 @@ export default function ServerRail() {
           className={cn(
             "flex size-10 shrink-0 items-center justify-center",
             "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
-            "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700",
+            "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
           )}
         >
           <Settings className="size-5 shrink-0" />

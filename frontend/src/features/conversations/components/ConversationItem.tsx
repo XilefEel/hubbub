@@ -31,8 +31,11 @@ export default function ConversationItem({
     <Link
       to="/me/conversations/$conversationId"
       params={{ conversationId: conversation.id }}
-      className="flex items-center gap-2 rounded px-2 py-1 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
-      activeProps={{ className: "bg-zinc-100 dark:bg-zinc-700" }}
+      className={cn(
+        "flex w-full items-center gap-2 rounded px-2 py-1 text-sm transition-colors duration-100",
+        "not-data-[status=active]:hover:bg-zinc-50 dark:not-data-[status=active]:hover:bg-zinc-800",
+        "dark:data-[status=active]:bg-zinc-750 data-[status=active]:bg-zinc-100 data-[status=active]:font-semibold",
+      )}
     >
       <UserAvatar user={partner} size="size-8" />
       <span className={cn("truncate", unread && "font-semibold")}>

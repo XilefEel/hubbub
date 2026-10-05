@@ -93,7 +93,7 @@ export default function AccountSettings() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isPending}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+              className="dark:hover:bg-zinc-750 rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700"
             >
               {updateAvatar.isPending ? "Uploading..." : "Change avatar"}
             </button>
@@ -102,7 +102,7 @@ export default function AccountSettings() {
               <button
                 onClick={() => removeAvatar.mutate()}
                 disabled={isPending}
-                className="rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+                className="dark:hover:bg-zinc-750 rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700"
               >
                 {removeAvatar.isPending ? "Removing..." : "Remove"}
               </button>
@@ -127,7 +127,7 @@ export default function AccountSettings() {
 
         <button
           onClick={openUpdateUsername}
-          className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+          className="dark:hover:bg-zinc-750 w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700"
         >
           Edit
         </button>
@@ -143,7 +143,7 @@ export default function AccountSettings() {
           {user?.email}
         </div>
 
-        <button className="w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50">
+        <button className="dark:hover:bg-zinc-750 w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700">
           Edit
         </button>
       </div>
@@ -156,7 +156,7 @@ export default function AccountSettings() {
 
         <button
           onClick={openChangePassword}
-          className="ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+          className="dark:hover:bg-zinc-750 ml-auto w-18 rounded-md border border-zinc-200 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 dark:border-zinc-700"
         >
           Edit
         </button>

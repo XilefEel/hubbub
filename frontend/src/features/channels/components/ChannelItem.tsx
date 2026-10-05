@@ -10,6 +10,7 @@ import type { Channel, VoiceScope } from "@/lib/types";
 import VoiceParticipantsList from "@/features/voice/components/VoiceParticipantsList";
 import { useActiveScope } from "@/features/voice/store/useVoiceChannelStore";
 import { isAfter } from "@/lib/utils";
+import { cn } from "cn";
 
 export default function ChannelItem({
   channel,
@@ -56,36 +57,34 @@ export default function ChannelItem({
         serverId={serverId}
         isOwner={isOwner}
       >
-        <li className="flex items-center justify-between text-sm">
-          <Link
-            to="/servers/$serverId/channels/$channelId"
-            params={{ serverId, channelId: channel.id }}
-            onClick={handleClick}
-            className="flex w-full items-center gap-1 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
-            activeProps={{
-              className:
-                "bg-zinc-100 hover:bg-zinc-100 font-semibold dark:bg-zinc-700 dark:hover:bg-zinc-700",
-            }}
-          >
-            {channel.type === "voice" ? (
-              <Volume2 className="size-4 shrink-0" />
-            ) : (
-              <Hash className="size-4 shrink-0" />
-            )}
+        <Link
+          to="/servers/$serverId/channels/$channelId"
+          params={{ serverId, channelId: channel.id }}
+          onClick={handleClick}
+          className={cn(
+            "flex w-full items-center gap-1 rounded px-2 py-1 text-sm transition-colors duration-100",
+            "not-data-[status=active]:hover:bg-zinc-50 dark:not-data-[status=active]:hover:bg-zinc-800",
+            "dark:data-[status=active]:bg-zinc-750 data-[status=active]:bg-zinc-100 data-[status=active]:font-semibold",
+          )}
+        >
+          {channel.type === "voice" ? (
+            <Volume2 className="size-4 shrink-0" />
+          ) : (
+            <Hash className="size-4 shrink-0" />
+          )}
 
-            <span className="truncate">{channel.name}</span>
+          <span className="truncate">{channel.name}</span>
 
-            {mentionCount > 0 ? (
-              <span className="ml-auto rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                {mentionCount}
-              </span>
-            ) : (
-              isUnread && (
-                <span className="ml-auto size-1.5 rounded-full bg-teal-500" />
-              )
-            )}
-          </Link>
-        </li>
+          {mentionCount > 0 ? (
+            <span className="ml-auto rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+              {mentionCount}
+            </span>
+          ) : (
+            isUnread && (
+              <span className="ml-auto size-1.5 rounded-full bg-teal-500" />
+            )
+          )}
+        </Link>
       </ChannelContextMenu>
 
       {channel.type === "voice" && (

@@ -24,18 +24,18 @@ function MePage() {
   });
 
   return (
-    <div className="flex h-full bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
+    <div className="flex h-full bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel
           id="dm-sidebar"
           minSize="15%"
           panelRef={sidebarRef}
           collapsible
-          className="flex h-full flex-col p-4"
+          className="dark:bg-zinc-850 flex h-full flex-col bg-white p-4"
         >
           <Link
             to="/me"
-            className="flex w-full items-center gap-2 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
+            className="dark:hover:bg-zinc-750 flex w-full items-center gap-2 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50"
           >
             <UsersRound className="size-4" />
             Friends
@@ -50,10 +50,10 @@ function MePage() {
           </div>
         </Panel>
 
-        <Separator className="w-px cursor-col-resize border-l border-zinc-200 transition-colors duration-100 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
+        <Separator className="w-px cursor-col-resize border-l border-zinc-200 transition-colors duration-100 hover:border-teal-400 dark:border-transparent dark:hover:border-teal-500" />
 
         <Panel id="main-content" minSize="50%">
-          <main className="h-full">
+          <main className="h-full bg-white dark:bg-zinc-800">
             <Outlet />
           </main>
         </Panel>

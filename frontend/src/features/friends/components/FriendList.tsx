@@ -31,7 +31,7 @@ export default function FriendsList() {
             key={f.id}
             onClick={() => friend && open(friend.id)}
             disabled={isPending}
-            className="flex w-full items-center gap-2 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
+            className="dark:hover:bg-zinc-750 flex w-full items-center gap-2 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50"
           >
             <UserAvatar user={friend} size="size-10" />
             <span>{friend?.name || "Unknown User"}</span>

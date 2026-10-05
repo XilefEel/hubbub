@@ -45,7 +45,7 @@ export default function ConfirmDialog({
           <div className="mt-5 flex justify-end gap-2">
             <AlertDialog.Cancel
               disabled={isPending}
-              className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-700/50"
+              className="dark:hover:bg-zinc-750 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700"
             >
               Cancel
             </AlertDialog.Cancel>

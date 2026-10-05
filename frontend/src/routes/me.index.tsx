@@ -29,7 +29,7 @@ function FriendsPage() {
               "flex items-center gap-1.5 rounded px-3 py-1 text-sm font-medium transition-colors duration-100",
               tab === id
                 ? "dark:bg-zinc-700 dark:text-zinc-100"
-                : "text-zinc-500 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-700/50",
+                : "dark:hover:bg-zinc-750 text-zinc-500 hover:bg-zinc-50 dark:text-zinc-400",
             )}
           >
             {label}

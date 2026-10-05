@@ -63,7 +63,7 @@ function ServerPage() {
           onResize={handleChannelsResize}
           collapsible
         >
-          <aside className="flex h-full flex-col p-4 text-zinc-900 dark:text-zinc-100">
+          <aside className="dark:bg-zinc-850 flex h-full flex-col bg-white p-4 text-zinc-900 dark:text-zinc-100">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-bold">{server?.name}</h1>
 
@@ -87,10 +87,10 @@ function ServerPage() {
           </aside>
         </Panel>
 
-        <Separator className="w-px cursor-col-resize border-l border-zinc-200 transition-colors duration-100 hover:border-teal-400 dark:border-zinc-700 dark:hover:border-teal-500" />
+        <Separator className="w-px cursor-col-resize border-l border-zinc-200 transition-colors duration-100 hover:border-teal-400 dark:border-transparent dark:hover:border-teal-500" />
 
         <Panel id="main-content" minSize="50%">
-          <main className="h-full">
+          <main className="h-full bg-white dark:bg-zinc-800">
             <Outlet />
           </main>
         </Panel>
@@ -104,7 +104,7 @@ function ServerPage() {
           onResize={handleMembersResize}
           collapsible
         >
-          <aside className="flex h-full flex-col gap-2 p-4">
+          <aside className="flex h-full flex-col gap-2 bg-white p-4 dark:bg-zinc-800">
             <MemberList serverId={serverId} />
           </aside>
         </Panel>
