@@ -1,4 +1,3 @@
-import UserAvatar from "@/features/users/components/UserAvatar";
 import { Link } from "@tanstack/react-router";
 import type { Conversation } from "@/lib/types";
 import { pb } from "@/lib/pocketbase";
@@ -8,6 +7,7 @@ import {
 } from "../hooks/useConversationMembers";
 import { cn } from "cn";
 import { isAfter } from "@/lib/utils";
+import ConversationAvatar from "./ConversationAvatar";
 
 export default function ConversationItem({
   conversation,
@@ -38,7 +38,12 @@ export default function ConversationItem({
         "dark:data-[status=active]:bg-zinc-750 data-[status=active]:bg-zinc-100 data-[status=active]:font-semibold",
       )}
     >
-      <UserAvatar user={others[0]} size="size-8" />
+      <ConversationAvatar
+        users={others}
+        isGroup={conversation.isGroup}
+        size="size-8"
+      />
+
       <span className={cn("truncate", unread && "font-semibold")}>{title}</span>
 
       {unread && <div className="ml-auto size-1.5 rounded-full bg-teal-500" />}

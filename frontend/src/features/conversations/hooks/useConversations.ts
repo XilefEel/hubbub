@@ -5,9 +5,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export function useConversations() {
-  const queryClient = useQueryClient();
-
-  const query = useQuery<Conversation[]>({
+  return useQuery<Conversation[]>({
     queryKey: queryKeys.conversations.list(),
     queryFn: async () => {
       return await pb.collection("conversations").getFullList<Conversation>({
@@ -16,6 +14,10 @@ export function useConversations() {
       });
     },
   });
+}
+
+export function useConversationSubscription() {
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const key = queryKeys.conversations.list();
@@ -54,6 +56,4 @@ export function useConversations() {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
   }, [queryClient]);
-
-  return query;
 }

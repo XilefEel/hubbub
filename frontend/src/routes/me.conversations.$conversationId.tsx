@@ -1,9 +1,6 @@
 import { useTypingIndicator } from "@/features/messages/hooks/useTypingIndicator";
 import ConversationEmpty from "@/features/conversations/components/ConversationEmpty";
-import {
-  findPartner,
-  useConversationMembers,
-} from "@/features/conversations/hooks/useConversationMembers";
+import { useConversationMembers } from "@/features/conversations/hooks/useConversationMembers";
 import MessageInput from "@/features/messages/components/MessageInput";
 import MessageList from "@/features/messages/components/MessageList";
 import MessagesSkeleton from "@/features/messages/components/MessagesSkeleton";
@@ -12,20 +9,19 @@ import { useMessages } from "@/features/messages/hooks/useMessages";
 import type { MessageScope, Message } from "@/lib/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { pb } from "@/lib/pocketbase";
 import ConversationHeader from "@/features/conversations/components/ConversationHeader";
 import { useIsInVoiceCall } from "@/features/voice/store/useVoiceChannelStore";
 import VoiceRoomView from "@/features/voice/components/VoiceRoomView";
+import { useConversations } from "@/features/conversations/hooks/useConversations";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
   component: ConversationPage,
 });
 
 function ConversationPage() {
-  const userId = pb.authStore.record?.id;
   const { conversationId } = Route.useParams();
-  const { data: members } = useConversationMembers(conversationId);
-  const partner = findPartner(members, userId);
+  const { data: conversations } = useConversations();
+  const conversation = conversations?.find((c) => c.id === conversationId);
 
   const scope: MessageScope = {
     type: "conversation",
@@ -36,6 +32,7 @@ function ConversationPage() {
 
   const { data: messages, isLoading, isError, error } = useMessages(scope);
 
+  const { data: members } = useConversationMembers(conversationId);
   const { typingNames, sendTyping } = useTypingIndicator(scope, members);
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
@@ -49,11 +46,8 @@ function ConversationPage() {
       )}
 
       <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col p-4">
-        {!isInVoiceCall && (
-          <ConversationHeader
-            partner={partner}
-            conversationId={conversationId}
-          />
+        {!isInVoiceCall && conversation && (
+          <ConversationHeader conversation={conversation} />
         )}
 
         {isError ? (
@@ -67,7 +61,9 @@ function ConversationPage() {
             messages={messages}
             scope={scope}
             onReply={setReplyingTo}
-            emptyState={<ConversationEmpty user={partner} />}
+            emptyState={
+              conversation && <ConversationEmpty conversation={conversation} />
+            }
           />
         )}
 

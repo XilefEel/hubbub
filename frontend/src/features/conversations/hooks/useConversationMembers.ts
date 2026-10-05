@@ -23,37 +23,6 @@ export function useConversationMembers(conversationId: string) {
   });
 }
 
-export function findPartner(
-  members: ConversationMember[] | undefined,
-  meId?: string,
-) {
-  return members?.map((m) => m.expand?.user).find((u) => u && u.id !== meId);
-}
-
-export function getOtherUsers(
-  convo: Conversation,
-  myId: string | undefined,
-): User[] {
-  const members = convo.expand?.conversation_members_via_conversation ?? [];
-
-  return members.flatMap((m) => {
-    const user = m.expand?.user;
-    return user && user.id !== myId ? [user] : [];
-  });
-}
-
-export function getConversationTitle(
-  convo: Conversation,
-  myId: string | undefined,
-) {
-  if (convo.name) return convo.name;
-
-  const others = getOtherUsers(convo, myId);
-  if (convo.isGroup) return others.map((u) => u.name).join(", ") || "Group";
-
-  return others[0]?.name ?? "Unknown User";
-}
-
 export function useMarkConversationRead() {
   const queryClient = useQueryClient();
 
@@ -74,4 +43,30 @@ export function useMarkConversationRead() {
         queryKey: queryKeys.conversations.list(),
       }),
   });
+}
+
+export function getOtherUsers(
+  conversation: Conversation,
+  myId: string | undefined,
+): User[] {
+  const members =
+    conversation.expand?.conversation_members_via_conversation ?? [];
+
+  return members.flatMap((m) => {
+    const user = m.expand?.user;
+    return user && user.id !== myId ? [user] : [];
+  });
+}
+
+export function getConversationTitle(
+  conversation: Conversation,
+  myId: string | undefined,
+) {
+  if (conversation.name) return conversation.name;
+
+  const others = getOtherUsers(conversation, myId);
+  if (conversation.isGroup)
+    return others.map((u) => u.name).join(", ") || "Group";
+
+  return others[0]?.name ?? "Unknown User";
 }
