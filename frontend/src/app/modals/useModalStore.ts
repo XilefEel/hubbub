@@ -1,17 +1,18 @@
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import type { ModalStore } from "./types";
-import { createChannelSlice } from "../../features/channels/store/createChannelSlice";
-import { editChannelSlice } from "../../features/channels/store/editChannelSlice";
-import { deleteMessageSlice } from "../../features/messages/store/deleteMessageSlice";
-import { deleteChannelSlice } from "../../features/channels/store/deleteChannelSlice";
-import { deleteServerSlice } from "../../features/servers/store/deleteServerSlice";
-import { createServerSlice } from "../../features/servers/store/createServerSlice";
-import { joinServerSlice } from "../../features/servers/store/joinServerSlice";
-import { settingsSlice } from "../../features/settings/store/settingsSlice";
-import { updateUsernameSlice } from "../../features/settings/store/updateUsernameSlice";
-import { changePasswordSlice } from "../../features/settings/store/changePasswordSlice";
-import { editServerSlice } from "../../features/servers/store/editServerSlice";
+import { createChannelSlice } from "@/features/channels/store/createChannelSlice";
+import { editChannelSlice } from "@/features/channels/store/editChannelSlice";
+import { deleteMessageSlice } from "@/features/messages/store/deleteMessageSlice";
+import { deleteChannelSlice } from "@/features/channels/store/deleteChannelSlice";
+import { deleteServerSlice } from "@/features/servers/store/deleteServerSlice";
+import { createServerSlice } from "@/features/servers/store/createServerSlice";
+import { joinServerSlice } from "@/features/servers/store/joinServerSlice";
+import { settingsSlice } from "@/features/settings/store/settingsSlice";
+import { updateUsernameSlice } from "@/features/settings/store/updateUsernameSlice";
+import { changePasswordSlice } from "@/features/settings/store/changePasswordSlice";
+import { editServerSlice } from "@/features/servers/store/editServerSlice";
+import { createGroupSlice } from "@/features/conversations/store/createGroupSlice";
 
 export const useModalStore = create<ModalStore>((...a) => ({
   ...createServerSlice(...a),
@@ -25,6 +26,7 @@ export const useModalStore = create<ModalStore>((...a) => ({
   ...settingsSlice(...a),
   ...updateUsernameSlice(...a),
   ...changePasswordSlice(...a),
+  ...createGroupSlice(...a),
 }));
 
 export const useCreateServerModal = () =>
@@ -142,5 +144,15 @@ export const useChangePasswordModal = () =>
       setIsOpen: s.setChangePasswordOpen,
       openModal: s.openChangePasswordModal,
       closeModal: s.closeChangePasswordModal,
+    })),
+  );
+
+export const useCreateGroupModal = () =>
+  useModalStore(
+    useShallow((s) => ({
+      isOpen: s.isCreateGroupOpen,
+      setIsOpen: s.setCreateGroupOpen,
+      openModal: s.openCreateGroupModal,
+      closeModal: s.closeCreateGroupModal,
     })),
   );

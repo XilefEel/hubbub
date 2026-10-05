@@ -128,6 +128,9 @@ export type FriendshipRelation =
   | { kind: "friends"; friendship: Friendship };
 
 export type Conversation = BaseRecord & {
+  isGroup: boolean;
+  name?: string;
+  owner?: string; // owner id
   lastMessageAt?: DateTime;
   expand?: {
     conversation_members_via_conversation?: ConversationMember[];

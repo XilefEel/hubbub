@@ -86,6 +86,13 @@ export type ChangePasswordSlice = {
   closeChangePasswordModal: () => void;
 };
 
+export type CreateGroupSlice = {
+  isCreateGroupOpen: boolean;
+  setCreateGroupOpen: (isOpen: boolean) => void;
+  openCreateGroupModal: () => void;
+  closeCreateGroupModal: () => void;
+};
+
 export type ModalStore = CreateServerSlice &
   JoinServerSlice &
   CreateChannelSlice &
@@ -96,6 +103,7 @@ export type ModalStore = CreateServerSlice &
   DeleteServerSlice &
   SettingsSlice &
   UpdateUsernameSlice &
-  ChangePasswordSlice;
+  ChangePasswordSlice &
+  CreateGroupSlice;
 
 export type Slice<T> = StateCreator<ModalStore, [], [], T>;
