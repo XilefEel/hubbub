@@ -8,6 +8,7 @@ import { useCreateGroup } from "../hooks/useCreateGroup";
 import SubmitButton from "@/components/ui/SubmitButton";
 import Input from "@/components/ui/Input";
 import { useNavigate } from "@tanstack/react-router";
+import Checkbox from "@/components/ui/Checkbox";
 
 export default function CreateGroupModal() {
   const { isOpen, closeModal, setIsOpen } = useCreateGroupModal();
@@ -43,9 +44,7 @@ function CreateGroupForm({ onDone }: { onDone: () => void }) {
           .map((id) => friends.find((f) => f.id === id)?.name)
           .filter(Boolean)
           .join(", ")
-      : selected.length
-        ? "A group must have at least 3 members"
-        : "Select Friends";
+      : "Group name (optional)";
 
   const toggle = (id: string) =>
     setSelected((prev) =>
@@ -80,36 +79,37 @@ function CreateGroupForm({ onDone }: { onDone: () => void }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
       <Input
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder={placeholderName}
       />
 
-      <ul className="flex max-h-64 flex-col overflow-y-auto">
+      <ul className="flex max-h-64 flex-col gap-1 overflow-y-auto">
         {friends.map((u) => (
           <li key={u.id}>
             <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700/50">
-              <input
-                type="checkbox"
-                checked={selected.includes(u.id)}
-                onChange={() => toggle(u.id)}
-              />
               <UserAvatar user={u} size="size-6" />
-              {u.name}
+              <span className="flex-1 truncate">{u.name}</span>
+              <Checkbox
+                checked={selected.includes(u.id)}
+                onCheckedChange={() => toggle(u.id)}
+              />
             </label>
           </li>
         ))}
       </ul>
 
-      <SubmitButton
-        disabled={
-          selected.length < 2 || selected.length > 9 || createGroup.isPending
-        }
-      >
-        Create Group
-      </SubmitButton>
+      <div className="flex justify-end">
+        <SubmitButton
+          disabled={
+            selected.length < 2 || selected.length > 9 || createGroup.isPending
+          }
+        >
+          Create Group
+        </SubmitButton>
+      </div>
     </form>
   );
 }
