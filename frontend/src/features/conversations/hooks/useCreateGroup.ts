@@ -11,7 +11,7 @@ export function useCreateGroup() {
       name,
     }: {
       userIds: string[];
-      name: string;
+      name?: string;
     }) => {
       const res = await pb.send<{ conversationId: string }>("/api/dms/group", {
         method: "POST",

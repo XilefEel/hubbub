@@ -63,14 +63,12 @@ function CreateGroupForm({ onDone }: { onDone: () => void }) {
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-
     if (selected.length < 2 || selected.length > 9) return;
-    const groupName = name.trim() || placeholderName;
 
     createGroup.mutate(
       {
         userIds: selected,
-        name: groupName,
+        name: name.trim() || undefined,
       },
       {
         onSuccess,

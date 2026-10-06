@@ -130,6 +130,11 @@ func createGroupHandler(e *core.RequestEvent) error {
 		}
 	}
 
+	name := strings.TrimSpace(body.Name)
+	if len([]rune(name)) > 100 {
+		return e.BadRequestError("Group name is too long", nil)
+	}
+
 	var convoId string
 
 	err := e.App.RunInTransaction(func(tx core.App) error {
@@ -144,6 +149,7 @@ func createGroupHandler(e *core.RequestEvent) error {
 		convo.Set("isGroup", true)
 		convo.Set("owner", me)
 		convo.Set("lastMessageAt", now)
+
 		name := strings.TrimSpace(body.Name)
 		if name != "" {
 			convo.Set("name", name)
@@ -157,7 +163,8 @@ func createGroupHandler(e *core.RequestEvent) error {
 			return err
 		}
 
-		for _, userId := range append(others, me) {
+		allIds := append([]string{me}, others...)
+		for _, userId := range allIds {
 			member := core.NewRecord(members)
 			member.Set("conversation", convo.Id)
 			member.Set("user", userId)
