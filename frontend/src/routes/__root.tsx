@@ -8,6 +8,7 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { pb } from "../lib/pocketbase";
 import ServerRail from "@/features/servers/components/ServerRail";
 import { useFriendshipsSubscription } from "@/features/friends/hooks/useFriendships";
+import GlobalModals from "@/app/modals/GlobalModals";
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {
@@ -46,6 +47,7 @@ function RootLayout() {
         <ServerRail />
         <div className="flex-1 overflow-hidden">
           <Outlet />
+          <GlobalModals />
         </div>
       </div>
       <TanStackRouterDevtools position="bottom-right" />

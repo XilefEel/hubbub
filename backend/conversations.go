@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
@@ -100,6 +101,7 @@ func openDmsHandler(e *core.RequestEvent) error {
 func createGroupHandler(e *core.RequestEvent) error {
 	var body struct {
 		UserIds []string `json:"userIds"`
+		Name    string   `json:"name"`
 	}
 
 	if err := e.BindBody(&body); err != nil {
@@ -142,6 +144,10 @@ func createGroupHandler(e *core.RequestEvent) error {
 		convo.Set("isGroup", true)
 		convo.Set("owner", me)
 		convo.Set("lastMessageAt", now)
+		name := strings.TrimSpace(body.Name)
+		if name != "" {
+			convo.Set("name", name)
+		}
 		if err := tx.Save(convo); err != nil {
 			return err
 		}
