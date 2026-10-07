@@ -19,7 +19,10 @@ export const Route = createRootRoute({
       throw redirect({ to: "/login" });
     }
     if (isLoggedIn && isLoginPage) {
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/me" });
+    }
+    if (isLoggedIn && location.pathname === "/") {
+      throw redirect({ to: "/me" });
     }
   },
   component: RootLayout,
