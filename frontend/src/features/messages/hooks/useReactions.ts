@@ -25,7 +25,8 @@ export function useReactions(scope: MessageScope) {
     const unsubPromise = pb.collection("reactions").subscribe<Reaction>(
       "*",
       (e) => {
-        queryClient.setQueryData<Reaction[]>(key, (old = []) => {
+        queryClient.setQueryData<Reaction[]>(key, (old) => {
+          if (!old) return old;
           switch (e.action) {
             case "create":
               return old.some((r) => r.id === e.record.id)

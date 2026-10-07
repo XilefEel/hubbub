@@ -34,7 +34,8 @@ export function useFriendshipsSubscription(userId: string | undefined) {
     const unsubPromise = pb.collection("friendships").subscribe<Friendship>(
       "*",
       (e) => {
-        queryClient.setQueryData<Friendship[]>(key, (old = []) => {
+        queryClient.setQueryData<Friendship[]>(key, (old) => {
+          if (!old) return old;
           switch (e.action) {
             case "create":
               return old.some((f) => f.id === e.record.id)

@@ -25,7 +25,8 @@ export function useChannels(serverId: string) {
     const unsubPromise = pb.collection("channels").subscribe<Channel>(
       "*",
       (e) => {
-        queryClient.setQueryData<Channel[]>(key, (old = []) => {
+        queryClient.setQueryData<Channel[]>(key, (old) => {
+          if (!old) return old;
           switch (e.action) {
             case "create":
               return old.some((c) => c.id === e.record.id)

@@ -88,7 +88,8 @@ export function useMessages(scope: MessageScope) {
     const unsubPromise = pb.collection("messages").subscribe<Message>(
       "*",
       (e) => {
-        queryClient.setQueryData<Message[]>(key, (old = []) => {
+        queryClient.setQueryData<Message[]>(key, (old) => {
+          if (!old) return old;
           switch (e.action) {
             case "create":
               return old.some((m) => m.id === e.record.id)

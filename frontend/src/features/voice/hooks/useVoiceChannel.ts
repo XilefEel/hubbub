@@ -137,7 +137,6 @@ export function useVoiceParticipants(scope: VoiceScope) {
       pb.collection("voice_participants").getFullList<VoiceParticipant>({
         filter: pb.filter(`${type} = {:id}`, { id }),
         expand: "user",
-        requestKey: null,
       }),
     enabled: !!id,
   });
@@ -208,7 +207,6 @@ export function useServerVoiceParticipants(serverId: string) {
       pb.collection("voice_participants").getFullList<VoiceParticipant>({
         filter: pb.filter("channel.server = {:id}", { id: serverId }),
         expand: "user",
-        requestKey: null,
       }),
     select: groupByChannel,
     enabled: !!serverId,

@@ -20,6 +20,7 @@ export function useConversationMembers(conversationId: string) {
         });
     },
     enabled: !!conversationId,
+    staleTime: 1000 * 15, // 15 seconds
   });
 }
 

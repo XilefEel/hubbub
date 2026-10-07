@@ -38,9 +38,7 @@ export function useMarkChannelRead() {
       let existing: ReadState | null = null;
 
       try {
-        existing = await pb
-          .collection("read_states")
-          .getFirstListItem(filter, { requestKey: null });
+        existing = await pb.collection("read_states").getFirstListItem(filter);
       } catch (err) {
         if (!(err instanceof ClientResponseError && err.status === 404))
           throw err;
@@ -52,15 +50,12 @@ export function useMarkChannelRead() {
           .update(existing.id, { lastReadAt, mentionCount: 0 });
       }
 
-      return await pb.collection("read_states").create(
-        {
-          user: userId,
-          channel: channelId,
-          lastReadAt,
-          mentionCount: 0,
-        },
-        { requestKey: null },
-      );
+      return await pb.collection("read_states").create({
+        user: userId,
+        channel: channelId,
+        lastReadAt,
+        mentionCount: 0,
+      });
     },
   });
 }
@@ -76,7 +71,8 @@ export function useReadStatesSubscription() {
     const unsubPromise = pb.collection("read_states").subscribe<ReadState>(
       "*",
       (e) => {
-        queryClient.setQueryData<ReadState[]>(key, (old = []) => {
+        queryClient.setQueryData<ReadState[]>(key, (old) => {
+          if (!old) return old;
           switch (e.action) {
             case "create":
               return old.some((r) => r.id === e.record.id)
