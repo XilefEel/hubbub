@@ -19,22 +19,19 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 		return e.ForbiddenError("You must be logged in to join a voice channel", nil)
 	}
 
-	// read the request body
-	data := struct {
+	var body struct {
 		Type string `json:"type"` // "channel" or "conversation"
 		Id   string `json:"id"`
-	}{}
-
-	// validate the request body
-	if err := e.BindBody(&data); err != nil || data.Id == "" {
+	}
+	if err := e.BindBody(&body); err != nil || body.Id == "" {
 		return e.BadRequestError("Id is required", err)
 	}
 
 	var room string
 
-	switch data.Type {
+	switch body.Type {
 	case "channel":
-		channel, err := e.App.FindRecordById("channels", data.Id)
+		channel, err := e.App.FindRecordById("channels", body.Id)
 		if err != nil {
 			return e.NotFoundError("Channel not found", err)
 		}
@@ -45,14 +42,14 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 			return e.ForbiddenError("You are not allowed to join this channel", nil)
 		}
 
-		room = data.Id
+		room = body.Id
 
 	case "conversation":
-		if !userInConversation(e.App, e.Auth.Id, data.Id) {
+		if !userInConversation(e.App, e.Auth.Id, body.Id) {
 			return e.ForbiddenError("You are not part of this conversation", nil)
 		}
 
-		room = "conversation_" + data.Id
+		room = "conversation_" + body.Id
 
 	default:
 		return e.BadRequestError("invalid type", nil)
@@ -156,7 +153,6 @@ func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Rec
 		return false
 	}
 
-	// check if the user is a member of the server
 	membership, err := app.FindFirstRecordByFilter(
 		"server_members",
 		"server = {:server} && user = {:user}",

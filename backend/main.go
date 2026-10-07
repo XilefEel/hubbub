@@ -16,7 +16,6 @@ func main() {
 
 	app := pocketbase.New()
 
-	// migration handler
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: true,
 	})
@@ -29,7 +28,6 @@ func main() {
 		return se.Next()
 	})
 
-	// start the app
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}

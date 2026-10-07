@@ -48,7 +48,6 @@ func broadcastPresence(app core.App) {
 		Type:   "presence_update",
 		Online: onlineUserIds(),
 	})
-
 	if err != nil {
 		log.Println("Failed to marshal presence payload:", err)
 		return
@@ -85,7 +84,6 @@ func startPresenceHeartbeat(app core.App) {
 // endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
 	_, wasOnline := presenceMap.Swap(e.Auth.Id, time.Now())
-
 	if !wasOnline {
 		broadcastPresence(e.App)
 	}

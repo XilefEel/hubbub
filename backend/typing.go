@@ -18,12 +18,16 @@ func channelTypingHandler(e *core.RequestEvent) error {
 	if err != nil {
 		return e.NotFoundError("Channel not found", err)
 	}
+	if channel.GetString("type") != "text" {
+		return e.BadRequestError("This channel is not a text channel", nil)
+	}
 
 	if !userCanJoinChannel(e.App, e.Auth, channel) {
 		return e.ForbiddenError("Not a member of this channel", nil)
 	}
 
-	broadcastTyping(e.App, "channel_"+channelId, e.Auth.Id, "typing")
+	subscription := "channel_" + channelId
+	broadcastTyping(e.App, subscription, e.Auth.Id, "typing")
 	return e.NoContent(http.StatusOK)
 }
 
@@ -35,7 +39,8 @@ func conversationTypingHandler(e *core.RequestEvent) error {
 		return e.ForbiddenError("Not a member of this conversation", nil)
 	}
 
-	broadcastTyping(e.App, "conversation_"+conversationId, e.Auth.Id, "typing")
+	subscription := "conversation_" + conversationId
+	broadcastTyping(e.App, subscription, e.Auth.Id, "typing")
 	return e.NoContent(http.StatusOK)
 }
 

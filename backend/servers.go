@@ -10,12 +10,10 @@ import (
 
 // auto add the owner to server_members when a server is created
 func joinServerHandler(e *core.RequestEvent) error {
-	data := struct {
+	var body struct {
 		InviteCode string `json:"inviteCode"`
-	}{}
-
-	// read the request body
-	if err := e.BindBody(&data); err != nil || strings.TrimSpace(data.InviteCode) == "" {
+	}
+	if err := e.BindBody(&body); err != nil || strings.TrimSpace(body.InviteCode) == "" {
 		return e.BadRequestError("inviteCode is required", err)
 	}
 
@@ -23,7 +21,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 	server, err := e.App.FindFirstRecordByFilter(
 		"servers",
 		"inviteCode = {:code}",
-		dbx.Params{"code": strings.TrimSpace(data.InviteCode)},
+		dbx.Params{"code": strings.TrimSpace(body.InviteCode)},
 	)
 	if err != nil {
 		return e.NotFoundError("Server not found", err)

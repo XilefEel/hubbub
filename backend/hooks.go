@@ -51,7 +51,6 @@ func registerServerHooks(app core.App) {
 		if hasChannel == "" && hasConversation == "" {
 			return apis.NewBadRequestError("A message must belong to either a channel or a conversation", nil)
 		}
-
 		if hasChannel != "" && hasConversation != "" {
 			return apis.NewBadRequestError("A message cannot belong to both a channel and a conversation", nil)
 		}
@@ -75,7 +74,8 @@ func registerServerHooks(app core.App) {
 				return err
 			}
 
-			broadcastTyping(e.App, "conversation_"+conversationId, userId, "stop_typing")
+			subscription := "conversation_" + conversationId
+			broadcastTyping(e.App, subscription, userId, "stop_typing")
 
 			// skip the rest of the hook
 			return e.Next()
@@ -90,7 +90,6 @@ func registerServerHooks(app core.App) {
 		}
 
 		channel.Set("lastMessageAt", e.Record.GetString("created"))
-
 		if err := e.App.Save(channel); err != nil {
 			return err
 		}
@@ -110,7 +109,6 @@ func registerServerHooks(app core.App) {
 				"user = {:user} && channel = {:channel}",
 				dbx.Params{"user": id, "channel": channelId},
 			)
-
 			if err != nil {
 				state = core.NewRecord(readStates)
 				state.Set("user", id)
@@ -125,7 +123,8 @@ func registerServerHooks(app core.App) {
 		}
 
 		// broadcast typing stop event when a new message is created
-		broadcastTyping(e.App, "channel_"+channelId, userId, "stop_typing")
+		subscription := "channel_" + channelId
+		broadcastTyping(e.App, subscription, userId, "stop_typing")
 
 		return e.Next()
 	})
@@ -147,11 +146,9 @@ func registerServerHooks(app core.App) {
 			0,
 			dbx.Params{"requester": requester, "addressee": addressee},
 		)
-
 		if err != nil {
 			return err
 		}
-
 		if len(existing) > 0 {
 			return apis.NewBadRequestError("A friendship or request already exists between these users", nil)
 		}

@@ -11,13 +11,18 @@ import (
 	"github.com/pocketbase/pocketbase/tools/types"
 )
 
+var errNotAllowed = errors.New("not allowed")
+
 func openDmsHandler(e *core.RequestEvent) error {
 	var body struct {
 		UserId string `json:"userId"`
 	}
 
-	if err := e.BindBody(&body); err != nil || body.UserId == "" {
-		return e.BadRequestError("userId is required", err)
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("invalid body", err)
+	}
+	if body.UserId == "" {
+		return e.BadRequestError("userId is required", nil)
 	}
 
 	me := e.Auth.Id
@@ -30,27 +35,24 @@ func openDmsHandler(e *core.RequestEvent) error {
 	}
 
 	var convoId string
-	var errNotAllowed = errors.New("not allowed")
+	err := e.App.DB().
+		Select("a.conversation").
+		From("conversation_members AS a").
+		InnerJoin("conversation_members AS b", dbx.NewExp("a.conversation = b.conversation")).
+		InnerJoin("conversations AS c", dbx.NewExp("c.id = a.conversation")).
+		Where(dbx.HashExp{"a.user": me, "b.user": body.UserId, "c.isGroup": false}).
+		Limit(1).
+		Row(&convoId)
+	if err == nil {
+		return e.JSON(http.StatusOK, map[string]string{"conversationId": convoId})
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return e.InternalServerError("Failed to open DM", err)
+	}
 
-	err := e.App.RunInTransaction(func(tx core.App) error {
+	err = e.App.RunInTransaction(func(tx core.App) error {
 		if !canStartDM(tx, me, body.UserId) {
 			return errNotAllowed
-		}
-
-		// check if a conversation already exists between the two users
-		err := tx.DB().
-			Select("a.conversation").
-			From("conversation_members AS a").
-			InnerJoin("conversation_members AS b", dbx.NewExp("a.conversation = b.conversation")).
-			InnerJoin("conversations AS c", dbx.NewExp("c.id = a.conversation")).
-			Where(dbx.HashExp{"a.user": me, "b.user": body.UserId, "c.isGroup": false}).
-			Limit(1).
-			Row(&convoId)
-		if err == nil {
-			return nil
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
 		}
 
 		convos, err := tx.FindCollectionByNameOrId("conversations")
@@ -149,8 +151,6 @@ func createGroupHandler(e *core.RequestEvent) error {
 		convo.Set("isGroup", true)
 		convo.Set("owner", me)
 		convo.Set("lastMessageAt", now)
-
-		name := strings.TrimSpace(body.Name)
 		if name != "" {
 			convo.Set("name", name)
 		}
