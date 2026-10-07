@@ -4,19 +4,21 @@ import type { Message, MessageScope } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
 import { useReactions } from "../hooks/useReactions";
 import { useMessageFocus } from "../hooks/useMessageFocus";
-import { useReadMarker } from "../hooks/useReadMarker";
 import { useStickyScroll } from "../hooks/useStickyScroll";
 import { useUnreadDivider } from "../hooks/useUnreadDivider";
 import UnreadDivider from "./UnreadDivider";
+import type { ReadMarker } from "../hooks/useReadMarker";
 
 export default function MessageList({
   messages,
   scope,
+  readMarker,
   onReply,
   emptyState,
 }: {
   messages: Message[] | undefined;
   scope: MessageScope;
+  readMarker: ReadMarker;
   onReply: (message: Message) => void;
   emptyState?: React.ReactNode;
 }) {
@@ -32,7 +34,7 @@ export default function MessageList({
     [reactions],
   );
 
-  const { lastReadAt, markAsRead, ready } = useReadMarker(scope);
+  const { lastReadAt, markAsRead, ready } = readMarker;
 
   const firstUnreadId = useUnreadDivider({
     messages,

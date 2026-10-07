@@ -13,6 +13,7 @@ import ConversationHeader from "@/features/conversations/components/Conversation
 import { useIsInVoiceCall } from "@/features/voice/store/useVoiceChannelStore";
 import VoiceRoomView from "@/features/voice/components/VoiceRoomView";
 import { useConversations } from "@/features/conversations/hooks/useConversations";
+import { useConversationReadMarker } from "@/features/messages/hooks/useReadMarker";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
   component: ConversationPage,
@@ -37,6 +38,8 @@ function ConversationPage() {
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
+  const readMarker = useConversationReadMarker(members);
+
   return (
     <div className="flex h-full flex-col text-zinc-900 dark:text-zinc-100">
       {isInVoiceCall && (
@@ -60,6 +63,7 @@ function ConversationPage() {
           <MessageList
             messages={messages}
             scope={scope}
+            readMarker={readMarker}
             onReply={setReplyingTo}
             emptyState={
               conversation && <ConversationEmpty conversation={conversation} />

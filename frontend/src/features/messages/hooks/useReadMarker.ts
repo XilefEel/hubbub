@@ -1,51 +1,53 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { pb } from "@/lib/pocketbase";
-import type { DateTime, MessageScope } from "@/lib/types";
+import type { ConversationMember, DateTime } from "@/lib/types";
 import {
   useChannelReads,
   useMarkChannelRead,
 } from "@/features/channels/hooks/useReadStates";
-import {
-  useConversationMembers,
-  useMarkConversationRead,
-} from "@/features/conversations/hooks/useConversationMembers";
+import { useMarkConversationRead } from "@/features/conversations/hooks/useConversationMembers";
 
-export function useReadMarker(scope: MessageScope) {
-  const userId = pb.authStore.record?.id;
-  const isChannel = scope.type === "channel";
+export type ReadMarker = {
+  lastReadAt: DateTime | undefined;
+  markAsRead: (newest: DateTime) => void;
+  ready: boolean;
+};
 
+export function useChannelReadMarker(channelId: string): ReadMarker {
   const { data: reads } = useChannelReads();
-  const { data: members } = useConversationMembers(isChannel ? "" : scope.id);
+  const { mutate } = useMarkChannelRead();
+
+  const markAsRead = useCallback(
+    (newest: DateTime) => mutate({ channelId, lastReadAt: newest }),
+    [channelId, mutate],
+  );
+
+  return {
+    lastReadAt: reads?.get(channelId)?.lastReadAt,
+    markAsRead,
+    ready: !!reads,
+  };
+}
+
+export function useConversationReadMarker(
+  members: ConversationMember[] | undefined,
+): ReadMarker {
+  const userId = pb.authStore.record?.id;
+  const { mutate } = useMarkConversationRead();
 
   const me = members?.find((m) => m.user === userId);
   const myId = me?.id;
 
-  // extract the mutate functions from the hooks to prevent unnecessary re-renders
-  const markChannel = useMarkChannelRead().mutate;
-  const markConversation = useMarkConversationRead().mutate;
-
-  const ready = isChannel ? !!reads : !!members;
-
-  const lastReadAt = isChannel
-    ? reads?.get(scope.id)?.lastReadAt
-    : members?.find((m) => m.user === userId)?.lastReadAt;
-
-  const lastMarked = useRef<string | null>(null);
-
   const markAsRead = useCallback(
     (newest: DateTime) => {
-      const key = `${scope.id}:${newest}`;
-      if (lastMarked.current === key) return;
-      lastMarked.current = key;
-
-      if (isChannel) {
-        markChannel({ channelId: scope.id, lastReadAt: newest });
-      } else if (myId) {
-        markConversation({ memberId: myId, lastReadAt: newest });
-      }
+      if (myId) mutate({ memberId: myId, lastReadAt: newest });
     },
-    [isChannel, scope.id, myId, markChannel, markConversation],
+    [myId, mutate],
   );
 
-  return { lastReadAt, markAsRead, ready };
+  return {
+    lastReadAt: me?.lastReadAt,
+    markAsRead,
+    ready: !!members,
+  };
 }

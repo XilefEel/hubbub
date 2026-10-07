@@ -13,6 +13,7 @@ import VoiceChannel from "@/features/voice/components/VoiceChannel";
 import type { Message, MessageScope } from "@/lib/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useChannelReadMarker } from "@/features/messages/hooks/useReadMarker";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -49,6 +50,8 @@ function ChannelPage() {
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
+  const readMarker = useChannelReadMarker(channelId);
+
   if (channelLoading) return <ChannelPageSkeleton />;
 
   if (channelIsError)
@@ -75,6 +78,7 @@ function ChannelPage() {
           <MessageList
             messages={messages}
             scope={scope}
+            readMarker={readMarker}
             onReply={setReplyingTo}
             emptyState={<ChannelEmpty channelName={channel.name} />}
           />
