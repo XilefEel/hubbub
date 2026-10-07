@@ -14,4 +14,5 @@ func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/voice/webhook", voiceWebhookHandler)
 	se.Router.POST("/api/dms/open", openDmsHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/dms/group", createGroupHandler).Bind(apis.RequireAuth())
+	se.Router.PATCH("/api/dms/group/{id}", editGroupHandler).Bind(apis.RequireAuth())
 }

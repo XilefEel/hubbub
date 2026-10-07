@@ -187,6 +187,117 @@ func createGroupHandler(e *core.RequestEvent) error {
 	})
 }
 
+func editGroupHandler(e *core.RequestEvent) error {
+	var body struct {
+		UserIds []string `json:"userIds"`
+		Name    *string  `json:"name"`
+	}
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("invalid body", err)
+	}
+
+	me := e.Auth.Id
+	convoId := e.Request.PathValue("id")
+
+	var name string
+	if body.Name != nil {
+		name = strings.TrimSpace(*body.Name)
+		if len([]rune(name)) > 100 {
+			return e.BadRequestError("Group name is too long", nil)
+		}
+	}
+
+	// dedupe the users to add
+	seen := map[string]bool{}
+	toAdd := []string{}
+	for _, id := range body.UserIds {
+		if id != "" && !seen[id] {
+			seen[id] = true
+			toAdd = append(toAdd, id)
+		}
+	}
+
+	err := e.App.RunInTransaction(func(tx core.App) error {
+		convo, err := tx.FindRecordById("conversations", convoId)
+		if err != nil {
+			return e.NotFoundError("Conversation not found", err)
+		}
+		if !convo.GetBool("isGroup") {
+			return e.BadRequestError("Not a group conversation", nil)
+		}
+		if convo.GetString("owner") != me {
+			return e.ForbiddenError("You are not the owner of this group", nil)
+		}
+
+		if body.Name != nil && name != convo.GetString("name") {
+			convo.Set("name", name)
+			if err := tx.Save(convo); err != nil {
+				return err
+			}
+		}
+
+		if len(toAdd) == 0 {
+			return nil
+		}
+
+		members, err := tx.FindRecordsByFilter(
+			"conversation_members",
+			"conversation = {:convo}",
+			"", 0, 0,
+			dbx.Params{"convo": convoId},
+		)
+		if err != nil {
+			return err
+		}
+
+		alreadyInGroup := map[string]bool{}
+		for _, m := range members {
+			alreadyInGroup[m.GetString("user")] = true
+		}
+
+		usersToAdd := []string{}
+		for _, id := range toAdd {
+			if !alreadyInGroup[id] {
+				usersToAdd = append(usersToAdd, id)
+			}
+		}
+
+		if len(members)+len(usersToAdd) > 10 {
+			return e.BadRequestError("a group can have at most 10 people", nil)
+		}
+
+		membersCol, err := tx.FindCollectionByNameOrId("conversation_members")
+		if err != nil {
+			return err
+		}
+		now := types.NowDateTime()
+
+		for _, userId := range usersToAdd {
+			if !usersAreFriends(tx, me, userId) {
+				return e.ForbiddenError("You can only add friends to a group", nil)
+			}
+
+			member := core.NewRecord(membersCol)
+			member.Set("conversation", convoId)
+			member.Set("user", userId)
+			member.Set("lastReadAt", now)
+			if err := tx.Save(member); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return e.InternalServerError("Failed to update group", err)
+	}
+
+	return e.JSON(http.StatusOK, map[string]string{
+		"conversationId": convoId,
+	})
+}
+
 func usersAreFriends(app core.App, a string, b string) bool {
 	_, err := app.FindFirstRecordByFilter(
 		"friendships",
