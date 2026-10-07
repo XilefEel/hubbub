@@ -1,7 +1,7 @@
 import { Pencil, Reply, SmilePlus, Trash } from "lucide-react";
 import Tooltip from "@/components/ui/Tooltip";
 import { EmojiPickerPopover } from "@/components/ui/EmojiPickerPopover";
-import { useDeleteMessageModal } from "@/app/modals/useModalStore";
+import { useDeleteMessageModal } from "../modals/useDeleteMessageModal";
 
 export default function MessageActions({
   messageId,

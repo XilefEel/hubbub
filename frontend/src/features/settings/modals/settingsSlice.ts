@@ -1,4 +1,11 @@
-import type { SettingsSlice, Slice } from "@/app/modals/types";
+import type { Slice } from "@/app/modals/types";
+
+export type SettingsSlice = {
+  isSettingsOpen: boolean;
+  setSettingsOpen: (isOpen: boolean) => void;
+  openSettingsModal: () => void;
+  closeSettingsModal: () => void;
+};
 
 export const settingsSlice: Slice<SettingsSlice> = (set) => ({
   isSettingsOpen: false,

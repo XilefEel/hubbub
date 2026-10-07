@@ -1,4 +1,12 @@
-import type { DeleteServerSlice, Slice } from "@/app/modals/types";
+import type { Slice } from "@/app/modals/types";
+
+export type DeleteServerSlice = {
+  isDeleteServerOpen: boolean;
+  deleteServerId: string | null;
+  setDeleteServerOpen: (isOpen: boolean) => void;
+  openDeleteServerModal: (serverId: string) => void;
+  closeDeleteServerModal: () => void;
+};
 
 export const deleteServerSlice: Slice<DeleteServerSlice> = (set) => ({
   isDeleteServerOpen: false,

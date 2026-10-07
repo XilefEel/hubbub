@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useSettingsModal } from "@/app/modals/useModalStore";
 import Dialog from "@/components/ui/Dialog";
 import { User, Palette } from "lucide-react";
 import { cn } from "cn";
 import AccountSettings from "../components/AccountSettings";
 import AppearanceSettings from "../components/AppearanceSettings";
+import { useSettingsModal } from "./useSettingsModal";
 
 type TabId = "account" | "appearance";
 

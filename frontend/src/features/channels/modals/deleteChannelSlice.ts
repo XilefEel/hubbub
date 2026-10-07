@@ -1,4 +1,13 @@
-import type { DeleteChannelSlice, Slice } from "@/app/modals/types";
+import type { Slice } from "@/app/modals/types";
+
+export type DeleteChannelSlice = {
+  isDeleteChannelOpen: boolean;
+  deleteChannelId: string | null;
+  deleteChannelServerId: string | null;
+  setDeleteChannelOpen: (isOpen: boolean) => void;
+  openDeleteChannelModal: (serverId: string, channelId: string) => void;
+  closeDeleteChannelModal: () => void;
+};
 
 export const deleteChannelSlice: Slice<DeleteChannelSlice> = (set) => ({
   isDeleteChannelOpen: false,

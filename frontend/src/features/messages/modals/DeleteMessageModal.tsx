@@ -1,6 +1,6 @@
-import { useDeleteMessageModal } from "@/app/modals/useModalStore";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useDeleteMessage } from "../hooks/useMessages";
+import { useDeleteMessageModal } from "./useDeleteMessageModal";
 
 export default function DeleteMessageModal() {
   const { isOpen, messageId, closeModal, setIsOpen } = useDeleteMessageModal();

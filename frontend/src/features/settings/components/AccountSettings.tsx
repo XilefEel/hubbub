@@ -7,13 +7,11 @@ import {
   useUpdateBio,
 } from "../../users/hooks/useUserProfile";
 import UserAvatar from "@/features/users/components/UserAvatar";
-import {
-  useChangePasswordModal,
-  useUpdateUsernameModal,
-} from "@/app/modals/useModalStore";
 import { cn } from "cn";
 import { AtSign, KeyRound, Mail, Palette, Quote, Trash2 } from "lucide-react";
 import ColorPicker from "@/components/ui/ColorPicker";
+import { useChangePasswordModal } from "../modals/useChangePasswordModal";
+import { useUpdateUsernameModal } from "../modals/useUpdateUsernameModal";
 
 export default function AccountSettings() {
   const { user } = useAuth();

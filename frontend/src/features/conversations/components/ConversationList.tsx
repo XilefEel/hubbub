@@ -2,8 +2,8 @@ import { Plus } from "lucide-react";
 import { useConversations } from "../hooks/useConversations";
 import ConversationItem from "./ConversationItem";
 import ConversationListSkeleton from "./ConversationListSkeleton";
-import { useCreateGroupModal } from "@/app/modals/useModalStore";
 import Tooltip from "@/components/ui/Tooltip";
+import { useCreateGroupModal } from "../modals/useCreateGroupModal";
 
 export default function ConversationList() {
   const { data: conversations, isError, isLoading, error } = useConversations();

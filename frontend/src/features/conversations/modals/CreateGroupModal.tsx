@@ -1,6 +1,5 @@
 import Dialog from "../../../components/ui/Dialog";
 import { useState } from "react";
-import { useCreateGroupModal } from "@/app/modals/useModalStore";
 import { useFriendships } from "@/features/friends/hooks/useFriendships";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import { pb } from "@/lib/pocketbase";
@@ -9,6 +8,7 @@ import SubmitButton from "@/components/ui/SubmitButton";
 import Input from "@/components/ui/Input";
 import { useNavigate } from "@tanstack/react-router";
 import Checkbox from "@/components/ui/Checkbox";
+import { useCreateGroupModal } from "./useCreateGroupModal";
 
 export default function CreateGroupModal() {
   const { isOpen, closeModal, setIsOpen } = useCreateGroupModal();

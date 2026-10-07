@@ -4,7 +4,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/ContextMenu";
-import { useDeleteMessageModal } from "@/app/modals/useModalStore";
+import { useDeleteMessageModal } from "../modals/useDeleteMessageModal";
 
 export default function MessageContextMenu({
   messageId,

@@ -1,6 +1,6 @@
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { useDeleteChannel } from "../hooks/useChannels";
-import { useDeleteChannelModal } from "../../../app/modals/useModalStore";
+import { useDeleteChannelModal } from "./useDeleteChannelModal";
 
 export default function DeleteChannelModal() {
   const { isOpen, serverId, channelId, closeModal, setIsOpen } =

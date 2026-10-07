@@ -1,4 +1,11 @@
-import type { CreateGroupSlice, Slice } from "@/app/modals/types";
+import type { Slice } from "@/app/modals/types";
+
+export type CreateGroupSlice = {
+  isCreateGroupOpen: boolean;
+  setCreateGroupOpen: (isOpen: boolean) => void;
+  openCreateGroupModal: () => void;
+  closeCreateGroupModal: () => void;
+};
 
 export const createGroupSlice: Slice<CreateGroupSlice> = (set) => ({
   isCreateGroupOpen: false,

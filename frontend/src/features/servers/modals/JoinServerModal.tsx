@@ -1,9 +1,9 @@
-import { useJoinServerModal } from "@/app/modals/useModalStore";
 import Dialog from "@/components/ui/Dialog";
 import { useState } from "react";
 import { useJoinServer } from "../hooks/useServers";
 import Input from "@/components/ui/Input";
 import SubmitButton from "@/components/ui/SubmitButton";
+import { useJoinServerModal } from "./useJoinServerModal";
 
 export default function JoinServerModal() {
   const { isOpen, closeModal, setIsOpen } = useJoinServerModal();

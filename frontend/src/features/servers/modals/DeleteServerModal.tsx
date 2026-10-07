@@ -1,6 +1,6 @@
-import { useDeleteServerModal } from "@/app/modals/useModalStore";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useDeleteServer } from "../hooks/useServers";
+import { useDeleteServerModal } from "./useDeleteServerModal";
 
 export default function DeleteServerModal() {
   const { isOpen, serverId, closeModal, setIsOpen } = useDeleteServerModal();

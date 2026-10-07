@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useEditServerModal } from "@/app/modals/useModalStore";
 import Dialog from "@/components/ui/Dialog";
 import { useUpdateServer } from "../hooks/useServers";
 import { pb } from "@/lib/pocketbase";
 import type { Server } from "@/lib/types";
 import Input from "@/components/ui/Input";
 import SubmitButton from "@/components/ui/SubmitButton";
+import { useEditServerModal } from "./useEditServerModal";
 
 export default function EditServerModal() {
   const { isOpen, server, closeModal, setIsOpen } = useEditServerModal();

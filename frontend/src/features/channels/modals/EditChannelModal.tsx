@@ -1,9 +1,9 @@
-import { useEditChannelModal } from "../../../app/modals/useModalStore";
-import Dialog from "../../../components/ui/Dialog";
+import Dialog from "@/components/ui/Dialog";
 import { useState } from "react";
 import { useUpdateChannel } from "../hooks/useChannels";
-import SubmitButton from "../../../components/ui/SubmitButton";
-import Input from "../../../components/ui/Input";
+import SubmitButton from "@/components/ui/SubmitButton";
+import Input from "@/components/ui/Input";
+import { useEditChannelModal } from "./useEditChannelModal";
 
 export default function EditChannelModal() {
   const { isOpen, channelId, channelName, closeModal, setIsOpen } =

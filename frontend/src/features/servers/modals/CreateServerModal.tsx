@@ -1,9 +1,9 @@
-import { useCreateServerModal } from "@/app/modals/useModalStore";
 import Dialog from "@/components/ui/Dialog";
 import { useState } from "react";
 import { useCreateServer } from "../hooks/useServers";
 import Input from "@/components/ui/Input";
 import SubmitButton from "@/components/ui/SubmitButton";
+import { useCreateServerModal } from "./useCreateServerModal";
 
 export default function CreateServerModal() {
   const { isOpen, closeModal, setIsOpen } = useCreateServerModal();

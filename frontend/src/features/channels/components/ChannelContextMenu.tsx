@@ -5,12 +5,10 @@ import {
   ContextMenuSeparator,
 } from "@/components/ui/ContextMenu";
 import type { Channel } from "@/lib/types";
-import {
-  useEditChannelModal,
-  useDeleteChannelModal,
-} from "@/app/modals/useModalStore";
 import { useMarkChannelRead } from "../hooks/useReadStates";
 import { fetchLastMessage } from "@/features/messages/hooks/useMessages";
+import { useDeleteChannelModal } from "../modals/useDeleteChannelModal";
+import { useEditChannelModal } from "../modals/useEditChannelModal";
 
 export default function ChannelContextMenu({
   channel,

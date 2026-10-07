@@ -1,4 +1,13 @@
-import type { EditChannelSlice, Slice } from "@/app/modals/types";
+import type { Slice } from "@/app/modals/types";
+
+export type EditChannelSlice = {
+  isEditChannelOpen: boolean;
+  editChannelId: string | null;
+  editChannelName: string | null;
+  setEditChannelOpen: (isOpen: boolean) => void;
+  openEditChannelModal: (channelId: string, currentName: string) => void;
+  closeEditChannelModal: () => void;
+};
 
 export const editChannelSlice: Slice<EditChannelSlice> = (set) => ({
   isEditChannelOpen: false,

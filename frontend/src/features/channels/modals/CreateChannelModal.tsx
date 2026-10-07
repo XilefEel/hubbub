@@ -1,4 +1,3 @@
-import { useCreateChannelModal } from "@/app/modals/useModalStore";
 import { useState } from "react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Hash, Volume2 } from "lucide-react";
@@ -8,6 +7,7 @@ import Input from "@/components/ui/Input";
 import Dialog from "@/components/ui/Dialog";
 import { useCurrentMembership } from "@/features/members/hooks/useCurrentMembership";
 import { useCreateChannel } from "../hooks/useChannels";
+import { useCreateChannelModal } from "./useCreateChannelModal";
 
 export default function CreateChannelModal() {
   const { isOpen, serverId, closeModal, setIsOpen } = useCreateChannelModal();

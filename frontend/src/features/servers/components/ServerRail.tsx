@@ -3,14 +3,12 @@ import { useServers } from "../hooks/useServers";
 import { Compass, Home, Plus, Settings } from "lucide-react";
 import { cn } from "cn";
 import Tooltip from "@/components/ui/Tooltip";
-import {
-  useCreateServerModal,
-  useJoinServerModal,
-  useSettingsModal,
-} from "@/app/modals/useModalStore";
 import { pb } from "@/lib/pocketbase";
 import ServerContextMenu from "./ServerContextMenu";
 import ServerSkeleton from "./ServerSkeleton";
+import { useSettingsModal } from "@/features/settings/modals/useSettingsModal";
+import { useCreateServerModal } from "../modals/useCreateServerModal";
+import { useJoinServerModal } from "../modals/useJoinServerModal";
 
 export default function ServerRail() {
   const { serverId } = useParams({ strict: false });

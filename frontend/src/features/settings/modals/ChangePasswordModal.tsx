@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useChangePasswordModal } from "@/app/modals/useModalStore";
 import { useChangePassword } from "../../auth/hooks/useAuth";
 import Dialog from "@/components/ui/Dialog";
 import SubmitButton from "@/components/ui/SubmitButton";
 import Input from "@/components/ui/Input";
+import { useChangePasswordModal } from "./useChangePasswordModal";
 
 export default function ChangePasswordModal() {
   const { isOpen, setIsOpen, closeModal } = useChangePasswordModal();

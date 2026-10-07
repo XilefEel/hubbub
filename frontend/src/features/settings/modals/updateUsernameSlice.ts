@@ -1,4 +1,11 @@
-import type { UpdateUsernameSlice, Slice } from "@/app/modals/types";
+import type { Slice } from "@/app/modals/types";
+
+export type UpdateUsernameSlice = {
+  isUpdateUsernameOpen: boolean;
+  setUpdateUsernameOpen: (isOpen: boolean) => void;
+  openUpdateUsernameModal: () => void;
+  closeUpdateUsernameModal: () => void;
+};
 
 export const updateUsernameSlice: Slice<UpdateUsernameSlice> = (set) => ({
   isUpdateUsernameOpen: false,

@@ -1,4 +1,3 @@
-import { useCreateChannelModal } from "@/app/modals/useModalStore";
 import { useCurrentMembership } from "@/features/members/hooks/useCurrentMembership";
 import { Plus } from "lucide-react";
 import { useChannels } from "../hooks/useChannels";
@@ -6,6 +5,7 @@ import { useReadStatesSubscription } from "../hooks/useReadStates";
 import ChannelItem from "./ChannelItem";
 import Tooltip from "@/components/ui/Tooltip";
 import ChannelListSkeleton from "./ChannelListSkeleton";
+import { useCreateChannelModal } from "../modals/useCreateChannelModal";
 
 export default function ChannelList({ serverId }: { serverId: string }) {
   const { data: channels, isLoading, isError, error } = useChannels(serverId);

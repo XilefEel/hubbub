@@ -1,4 +1,3 @@
-import { useEditServerModal } from "@/app/modals/useModalStore";
 import {
   BaseContextMenu,
   ContextMenuItem,
@@ -8,6 +7,7 @@ import { useCurrentMembership } from "@/features/members/hooks/useCurrentMembers
 import type { Server } from "@/lib/types";
 import { Copy, Settings, Trash2, LogOut } from "lucide-react";
 import { useLeaveServer, useDeleteServer } from "../hooks/useServers";
+import { useEditServerModal } from "../modals/useEditServerModal";
 
 export default function ServerContextMenu({
   server,
