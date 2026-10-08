@@ -21,6 +21,7 @@ export function useFriendships(userId: string | undefined) {
         expand: "requester,addressee",
       }),
     enabled: !!userId,
+    staleTime: 1000 * 60,
   });
 }
 
