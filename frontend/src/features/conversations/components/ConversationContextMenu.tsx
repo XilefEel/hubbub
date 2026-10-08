@@ -1,7 +1,7 @@
 import { BaseContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
 import type { Conversation } from "@/lib/types";
 import { CheckCheck, Edit, LogOut } from "lucide-react";
-import { useCreateGroupModal } from "../modals/useCreateGroupModal";
+import { useGroupModal } from "../modals/useGroupModal";
 
 export default function ConversationContextMenu({
   conversation,
@@ -12,7 +12,7 @@ export default function ConversationContextMenu({
   isOwner: boolean;
   children: React.ReactNode;
 }) {
-  const { openModal } = useCreateGroupModal();
+  const { openModal } = useGroupModal();
 
   return (
     <BaseContextMenu

@@ -3,7 +3,7 @@ import SubmitButton from "@/components/ui/SubmitButton";
 import { pb } from "@/lib/pocketbase";
 import type { Conversation } from "@/lib/types";
 import { useState } from "react";
-import { useEditGroup } from "../hooks/useCreateGroup";
+import { useEditGroup } from "../hooks/useGroups";
 import FriendPicker from "./FriendPicker";
 import { useAcceptedFriends } from "@/features/friends/hooks/useAcceptedFriends";
 

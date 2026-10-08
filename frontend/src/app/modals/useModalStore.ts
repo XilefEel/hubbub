@@ -3,7 +3,7 @@ import type { ModalStore } from "./types";
 import { createChannelSlice } from "@/features/channels/modals/createChannelSlice";
 import { deleteChannelSlice } from "@/features/channels/modals/deleteChannelSlice";
 import { editChannelSlice } from "@/features/channels/modals/editChannelSlice";
-import { createGroupSlice } from "@/features/conversations/modals/createGroupSlice";
+import { groupSlice } from "@/features/conversations/modals/groupSlice";
 import { deleteMessageSlice } from "@/features/messages/modals/deleteMessageSlice";
 import { createServerSlice } from "@/features/servers/modals/createServerSlice";
 import { deleteServerSlice } from "@/features/servers/modals/deleteServerSlice";
@@ -25,5 +25,5 @@ export const useModalStore = create<ModalStore>((...a) => ({
   ...settingsSlice(...a),
   ...updateUsernameSlice(...a),
   ...changePasswordSlice(...a),
-  ...createGroupSlice(...a),
+  ...groupSlice(...a),
 }));

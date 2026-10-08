@@ -1,10 +1,10 @@
-import { useCreateGroupModal } from "./useCreateGroupModal";
+import { useGroupModal } from "./useGroupModal";
 import CreateGroupForm from "../components/CreateGroupForm";
 import EditGroupForm from "../components/EditGroupForm";
 import Dialog from "@/components/ui/Dialog";
 
-export default function CreateGroupModal() {
-  const { isOpen, closeModal, setIsOpen, conversation } = useCreateGroupModal();
+export default function GroupModal() {
+  const { isOpen, closeModal, setIsOpen, conversation } = useGroupModal();
   const isEdit = conversation?.isGroup === true;
 
   return (

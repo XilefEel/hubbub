@@ -3,7 +3,7 @@ import SubmitButton from "@/components/ui/SubmitButton";
 import { pb } from "@/lib/pocketbase";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useCreateGroup } from "../hooks/useCreateGroup";
+import { useCreateGroup } from "../hooks/useGroups";
 import FriendPicker from "./FriendPicker";
 import { useAcceptedFriends } from "@/features/friends/hooks/useAcceptedFriends";
 

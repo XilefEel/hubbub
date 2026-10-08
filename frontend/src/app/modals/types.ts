@@ -2,7 +2,7 @@ import type { StateCreator } from "zustand";
 import type { CreateChannelSlice } from "@/features/channels/modals/createChannelSlice";
 import type { DeleteChannelSlice } from "@/features/channels/modals/deleteChannelSlice";
 import type { EditChannelSlice } from "@/features/channels/modals/editChannelSlice";
-import type { CreateGroupSlice } from "@/features/conversations/modals/createGroupSlice";
+import type { GroupSlice } from "@/features/conversations/modals/groupSlice";
 import type { DeleteMessageSlice } from "@/features/messages/modals/deleteMessageSlice";
 import type { CreateServerSlice } from "@/features/servers/modals/createServerSlice";
 import type { DeleteServerSlice } from "@/features/servers/modals/deleteServerSlice";
@@ -23,6 +23,6 @@ export type ModalStore = CreateServerSlice &
   SettingsSlice &
   UpdateUsernameSlice &
   ChangePasswordSlice &
-  CreateGroupSlice;
+  GroupSlice;
 
 export type Slice<T> = StateCreator<ModalStore, [], [], T>;

@@ -3,11 +3,11 @@ import { useConversations } from "../hooks/useConversations";
 import ConversationItem from "./ConversationItem";
 import ConversationListSkeleton from "./ConversationListSkeleton";
 import Tooltip from "@/components/ui/Tooltip";
-import { useCreateGroupModal } from "../modals/useCreateGroupModal";
+import { useGroupModal } from "../modals/useGroupModal";
 
 export default function ConversationList() {
   const { data: conversations, isError, isLoading, error } = useConversations();
-  const { openModal } = useCreateGroupModal();
+  const { openModal } = useGroupModal();
 
   return (
     <div className="flex flex-col gap-1">
