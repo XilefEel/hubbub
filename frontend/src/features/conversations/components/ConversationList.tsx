@@ -15,7 +15,7 @@ export default function ConversationList() {
         <span>Direct Messages</span>
 
         <Tooltip content="Create Group">
-          <button className="ml-auto" onClick={openModal}>
+          <button className="ml-auto" onClick={() => openModal(null)}>
             <Plus className="size-4 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200" />
           </button>
         </Tooltip>

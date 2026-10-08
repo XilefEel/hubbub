@@ -1,6 +1,7 @@
 import { BaseContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
 import type { Conversation } from "@/lib/types";
 import { CheckCheck, Edit, LogOut } from "lucide-react";
+import { useCreateGroupModal } from "../modals/useCreateGroupModal";
 
 export default function ConversationContextMenu({
   conversation,
@@ -11,13 +12,15 @@ export default function ConversationContextMenu({
   isOwner: boolean;
   children: React.ReactNode;
 }) {
+  const { openModal } = useCreateGroupModal();
+
   return (
     <BaseContextMenu
       disabled={!conversation.isGroup}
       content={
         <>
           <ContextMenuItem
-            action={() => {}}
+            action={() => openModal(conversation)}
             Icon={Edit}
             label="Edit Conversation"
             show={isOwner}

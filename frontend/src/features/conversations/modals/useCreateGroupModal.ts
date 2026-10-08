@@ -5,6 +5,7 @@ export const useCreateGroupModal = () =>
   useModalStore(
     useShallow((s) => ({
       isOpen: s.isCreateGroupOpen,
+      conversation: s.conversation,
       setIsOpen: s.setCreateGroupOpen,
       openModal: s.openCreateGroupModal,
       closeModal: s.closeCreateGroupModal,

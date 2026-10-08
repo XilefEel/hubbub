@@ -26,3 +26,33 @@ export function useCreateGroup() {
     },
   });
 }
+
+export function useEditGroup() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      conversationId,
+      userIds,
+      name,
+    }: {
+      conversationId: string;
+      userIds: string[];
+      name?: string;
+    }) => {
+      const res = await pb.send<{ conversationId: string }>(
+        `/api/dms/group/${conversationId}`,
+        {
+          method: "PATCH",
+          body: { userIds, name },
+        },
+      );
+      return res.conversationId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.list(),
+      });
+    },
+  });
+}
