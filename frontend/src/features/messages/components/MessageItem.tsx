@@ -12,6 +12,7 @@ import { useToggleReaction } from "../hooks/useReactions";
 import ReactionRow from "./ReactionRow";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import MessageContent from "./MessageContent";
+import { cn } from "cn";
 
 export default function MessageItem({
   message,
@@ -70,6 +71,14 @@ export default function MessageItem({
   const isOwner = message.user === userId;
   const isPending = editMutation.isPending;
 
+  const isMentioned =
+    !!userId && !!message.expand?.mentions?.some((u) => u.id === userId);
+
+  const isReplyToMe =
+    !!userId && message.expand?.replyTo?.user === userId && !isOwner;
+
+  const isHighlighted = isMentioned || isReplyToMe;
+
   useEffect(() => {
     if (!isEditing) return;
 
@@ -92,7 +101,14 @@ export default function MessageItem({
       onReply={handleReply}
       onEdit={startEditing}
     >
-      <div className="group dark:hover:bg-zinc-750 relative flex items-start gap-4 rounded-lg px-2 py-1.5 transition-colors duration-100 hover:bg-zinc-50">
+      <div
+        className={cn(
+          "group relative flex items-start gap-4 px-2 py-1.5 transition-colors duration-100",
+          isHighlighted
+            ? "border-l-2 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 dark:border-yellow-500 dark:bg-yellow-900/20 dark:hover:bg-yellow-900/40"
+            : "dark:hover:bg-zinc-750 rounded-lg hover:bg-zinc-50",
+        )}
+      >
         {showHeader ? (
           <UserAvatar user={message.expand?.user} />
         ) : (
@@ -140,7 +156,6 @@ export default function MessageItem({
             <MessageContent
               content={message.content}
               mentions={message.expand?.mentions}
-              userId={userId}
             />
           )}
 
