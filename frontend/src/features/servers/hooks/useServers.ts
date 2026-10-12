@@ -17,6 +17,7 @@ export function useServers() {
       return await pb.collection("servers").getFullList<Server>();
     },
     enabled: !!userId,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -126,4 +127,21 @@ export function useDeleteServer() {
       });
     },
   });
+}
+
+export function useMutualServers(targetId?: string) {
+  const currentUserId = pb.authStore.record?.id;
+
+  const { data } = useQuery({
+    queryKey: queryKeys.mutualServers.list(targetId || ""),
+    queryFn: () =>
+      pb.send<{ servers: string[] }>(`/api/mutual/${targetId}`, {}),
+    enabled: !!targetId && targetId !== currentUserId,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: myServers } = useServers();
+  const serverIds = new Set(data?.servers ?? []);
+
+  return myServers?.filter((s) => serverIds.has(s.id)) ?? [];
 }

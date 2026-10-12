@@ -6,6 +6,7 @@ import UserAvatar from "@/features/users/components/UserAvatar";
 import { pb } from "@/lib/pocketbase";
 import type { User } from "@/lib/types";
 import { MessageCircle } from "lucide-react";
+import MutualServers from "./MutualServers";
 
 export default function UserCard({
   user,
@@ -63,6 +64,8 @@ export default function UserCard({
                 {user.bio}
               </p>
             )}
+
+            {currentUserId !== user.id && <MutualServers userId={user.id} />}
           </div>
         </>
       }
