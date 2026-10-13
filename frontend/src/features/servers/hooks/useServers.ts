@@ -134,8 +134,12 @@ export function useMutualServers(targetId?: string) {
 
   const { data } = useQuery({
     queryKey: queryKeys.mutualServers.list(targetId || ""),
-    queryFn: () =>
-      pb.send<{ servers: string[] }>(`/api/mutual/${targetId}`, {}),
+    queryFn: async () => {
+      return await pb.send<{ servers: string[] }>(
+        `/api/mutual/${targetId}`,
+        {},
+      );
+    },
     enabled: !!targetId && targetId !== currentUserId,
     staleTime: 1000 * 60 * 5,
   });

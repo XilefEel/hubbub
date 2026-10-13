@@ -21,7 +21,7 @@ export function useFriendships(userId: string | undefined) {
         expand: "requester,addressee",
       }),
     enabled: !!userId,
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -181,4 +181,39 @@ export function useFriendshipStatus(
   return row.requester === currentUserId
     ? { kind: "outgoing_pending", friendship: row }
     : { kind: "incoming_pending", friendship: row };
+}
+
+export function useMutualFriends(targetId?: string) {
+  const currentUserId = pb.authStore.record?.id;
+
+  const { data } = useQuery({
+    queryKey: queryKeys.mutualFriends.list(targetId || ""),
+    queryFn: async () => {
+      return await pb.send<{ friends: string[] }>(
+        `/api/mutual/${targetId}`,
+        {},
+      );
+    },
+    enabled: !!targetId && targetId !== currentUserId,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: friendships } = useFriendships(currentUserId);
+  const ids = new Set(data?.friends ?? []);
+  const mutuals: User[] = [];
+
+  for (const f of friendships ?? []) {
+    if (f.status === "accepted") {
+      const friend =
+        f.requester === currentUserId
+          ? f.expand?.addressee
+          : f.expand?.requester;
+
+      if (friend && ids.has(friend.id)) {
+        mutuals.push(friend);
+      }
+    }
+  }
+
+  return mutuals;
 }

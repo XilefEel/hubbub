@@ -45,4 +45,7 @@ export const queryKeys = {
   mutualServers: {
     list: (userId: string) => ["mutual_servers", userId] as const,
   },
+  mutualFriends: {
+    list: (userId: string) => ["mutual_friends", userId] as const,
+  },
 };

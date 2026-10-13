@@ -7,6 +7,7 @@ import { pb } from "@/lib/pocketbase";
 import type { User } from "@/lib/types";
 import { MessageCircle } from "lucide-react";
 import MutualServers from "./MutualServers";
+import MutualFriends from "./MutualFriends";
 
 export default function UserCard({
   user,
@@ -65,7 +66,12 @@ export default function UserCard({
               </p>
             )}
 
-            {currentUserId !== user.id && <MutualServers userId={user.id} />}
+            {currentUserId !== user.id && (
+              <>
+                <MutualServers userId={user.id} />
+                <MutualFriends userId={user.id} />
+              </>
+            )}
           </div>
         </>
       }
