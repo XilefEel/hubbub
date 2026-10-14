@@ -6,7 +6,9 @@ import type {
   DateTime,
   User,
 } from "@/lib/types";
+import { isAfter } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useParams } from "@tanstack/react-router";
 
 export function useConversationMembers(conversationId: string) {
   return useQuery({
@@ -70,4 +72,39 @@ export function getConversationTitle(
     return others.map((u) => u.name).join(", ") || "Group";
 
   return others[0]?.name ?? "Unknown User";
+}
+
+export function isConversationHidden(
+  conversation: Conversation,
+  userId?: string,
+) {
+  const me = conversation.expand?.conversation_members_via_conversation?.find(
+    (m) => m.user === userId,
+  );
+  if (!me?.hiddenAt) return false;
+  if (!conversation.lastMessageAt) return true;
+  return !isAfter(conversation.lastMessageAt, me.hiddenAt);
+}
+
+export function useHideConversation() {
+  const navigate = useNavigate();
+  const { conversationId } = useParams({ strict: false });
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ memberId }: { memberId: string; conversationId: string }) =>
+      pb
+        .collection("conversation_members")
+        .update(memberId, { hiddenAt: new Date().toISOString() }),
+
+    onSuccess: async (_data, args) => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
+
+      if (conversationId === args.conversationId) {
+        navigate({ to: "/me" });
+      }
+    },
+  });
 }

@@ -4,9 +4,16 @@ import ConversationItem from "./ConversationItem";
 import ConversationListSkeleton from "./ConversationListSkeleton";
 import Tooltip from "@/components/ui/Tooltip";
 import { useGroupModal } from "../modals/useGroupModal";
+import { isConversationHidden } from "../hooks/useConversationMembers";
+import { pb } from "@/lib/pocketbase";
 
 export default function ConversationList() {
+  const userId = pb.authStore.record?.id;
   const { data: conversations, isError, isLoading, error } = useConversations();
+
+  const visible = conversations?.filter(
+    (c) => !isConversationHidden(c, userId),
+  );
   const { openModal } = useGroupModal();
 
   return (
@@ -28,9 +35,7 @@ export default function ConversationList() {
       ) : isLoading ? (
         <ConversationListSkeleton />
       ) : (
-        conversations?.map((c) => (
-          <ConversationItem key={c.id} conversation={c} />
-        ))
+        visible?.map((c) => <ConversationItem key={c.id} conversation={c} />)
       )}
     </div>
   );
