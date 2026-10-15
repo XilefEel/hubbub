@@ -1,6 +1,6 @@
 import * as RadixPopover from "@radix-ui/react-popover";
 import { cn } from "cn";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Popover({
   trigger,
@@ -9,6 +9,7 @@ export default function Popover({
   side = "bottom",
   width = "w-80",
   padding = "p-4",
+  lockScrollSelector,
 }: {
   trigger: React.ReactNode;
   content: React.ReactNode;
@@ -16,12 +17,34 @@ export default function Popover({
   side?: "top" | "right" | "bottom" | "left";
   width?: string;
   padding?: string;
+  lockScrollSelector?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen || !lockScrollSelector || !triggerRef.current) return;
+
+    const scrollContainer = triggerRef.current.closest(
+      lockScrollSelector,
+    ) as HTMLElement | null;
+
+    if (!scrollContainer) return;
+
+    const originalOverflow = scrollContainer.style.overflow;
+    scrollContainer.style.overflow = "hidden";
+
+    return () => {
+      scrollContainer.style.overflow = originalOverflow;
+    };
+  }, [isOpen, lockScrollSelector]);
+
   return (
     <RadixPopover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <RadixPopover.Trigger asChild>{trigger}</RadixPopover.Trigger>
+      <RadixPopover.Trigger asChild>
+        <div ref={triggerRef}>{trigger}</div>
+      </RadixPopover.Trigger>
 
       <RadixPopover.Portal>
         <RadixPopover.Content

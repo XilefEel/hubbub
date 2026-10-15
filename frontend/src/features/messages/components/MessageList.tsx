@@ -52,7 +52,11 @@ export default function MessageList({
   }, [ready, newestMessage, atBottom, lastReadAt, markAsRead]);
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto pt-3">
+    <div
+      style={{ scrollbarGutter: "stable" }}
+      className="flex flex-1 flex-col overflow-y-auto pt-3"
+      data-editor-scroll-container
+    >
       {messages && messages.length > 0
         ? messages.map((message, index) => {
             const prevMessage = index > 0 ? messages[index - 1] : undefined;

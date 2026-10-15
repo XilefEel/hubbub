@@ -13,6 +13,7 @@ import ReactionRow from "./ReactionRow";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import MessageContent from "./MessageContent";
 import { cn } from "cn";
+import UserCard from "@/features/users/components/UserCard";
 
 export default function MessageItem({
   message,
@@ -126,9 +127,11 @@ export default function MessageItem({
 
           {showHeader && (
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold">
-                {message.expand?.user?.name || "Unknown User"}
-              </span>
+              <UserCard user={message.expand?.user}>
+                <span className="cursor-pointer text-sm font-semibold hover:underline">
+                  {message.expand?.user?.name || "Unknown User"}
+                </span>
+              </UserCard>
 
               <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
                 {formatMessageDate(message.created)}

@@ -26,6 +26,7 @@ export default function UserCard({
       padding="p-0"
       side="right"
       trigger={children}
+      lockScrollSelector="[data-editor-scroll-container]"
       content={
         <>
           <div
