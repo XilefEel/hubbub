@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Download from "yet-another-react-lightbox/plugins/download";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import { cn } from "cn";
@@ -15,6 +16,7 @@ import {
   PanelBottomOpen,
   ZoomIn,
   ZoomOut,
+  Download as DownloadIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -68,7 +70,7 @@ export default function AttachmentGrid({ message }: { message: Message }) {
           controller={{
             closeOnBackdropClick: true,
           }}
-          plugins={[Thumbnails, Zoom]}
+          plugins={[Thumbnails, Zoom, Download]}
           carousel={{
             preload: 7,
             padding: 0,
@@ -105,6 +107,7 @@ export default function AttachmentGrid({ message }: { message: Message }) {
             iconThumbnailsHidden: () => <LightboxIcon Icon={PanelBottomOpen} />,
             iconZoomIn: () => <LightboxIcon Icon={ZoomIn} />,
             iconZoomOut: () => <LightboxIcon Icon={ZoomOut} />,
+            iconDownload: () => <LightboxIcon Icon={DownloadIcon} />,
           }}
         />
       )}
