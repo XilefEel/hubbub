@@ -7,15 +7,9 @@ export default function MessageContent({
   content: string;
   mentions: User[] | undefined;
 }) {
-  if (!mentions || mentions.length === 0) {
-    return (
-      <p className="text-sm wrap-anywhere whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
-        {content}
-      </p>
-    );
-  }
+  if (content.trim() === "") return null;
 
-  const parts = parseMentions(mentions, content);
+  const parts = mentions?.length ? parseMentions(mentions, content) : [content];
 
   return (
     <p className="text-sm wrap-anywhere whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
@@ -36,11 +30,15 @@ export default function MessageContent({
 }
 
 function parseMentions(mentions: User[], content: string) {
-  const names = mentions.map((u) => u.name).sort((a, b) => b.length - a.length);
+  const names = mentions
+    .map((u) => u.name)
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+
+  if (names.length === 0) return [content];
 
   const escaped = names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
   const pattern = new RegExp(`(@(?:${escaped.join("|")}))`, "g");
 
-  const parts = content.split(pattern);
-  return parts;
+  return content.split(pattern);
 }

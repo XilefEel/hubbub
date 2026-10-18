@@ -151,9 +151,11 @@ export default function MessageInput({
     }
   };
 
+  const canSend = content.trim().length > 0 || files.length > 0;
+
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!content.trim() && files.length === 0) return;
+    if (!canSend || sendMessage.isPending) return;
 
     const activeMentions = mentions
       .filter((m) => content.includes(`@${m.name}`))
@@ -287,7 +289,7 @@ export default function MessageInput({
 
           <button
             type="submit"
-            disabled={sendMessage.isPending || content.trim() === ""}
+            disabled={sendMessage.isPending || !canSend}
             className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
           >
             <ArrowUp className="size-5 shrink-0" />

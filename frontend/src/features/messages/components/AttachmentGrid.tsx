@@ -40,12 +40,7 @@ export default function AttachmentGrid({ message }: { message: Message }) {
 
   return (
     <div className="mt-2 flex flex-wrap gap-2">
-      <div
-        className={cn(
-          "mt-2",
-          single ? "flex" : "grid max-w-lg grid-cols-3 gap-2",
-        )}
-      >
+      <div className={cn(single ? "flex" : "grid max-w-lg grid-cols-3 gap-2")}>
         {images.map((image, index) => (
           <img
             key={image.filename}
