@@ -32,20 +32,32 @@ export default function AttachmentGrid({ message }: { message: Message }) {
     [message],
   );
 
+  const single = images.length === 1;
+
   if (images.length === 0) return null;
 
   return (
     <div className="mt-2 flex flex-wrap gap-2">
-      {images.map((image, index) => (
-        <img
-          key={image.filename}
-          src={image.src}
-          alt="Attachment"
-          loading="lazy"
-          onClick={() => setLightboxIndex(index)}
-          className="w-auto cursor-zoom-in object-cover transition-opacity duration-100 hover:opacity-95"
-        />
-      ))}
+      <div
+        className={cn(
+          "mt-2",
+          single ? "flex" : "grid max-w-lg grid-cols-3 gap-2",
+        )}
+      >
+        {images.map((image, index) => (
+          <img
+            key={image.filename}
+            src={image.src}
+            alt={`Attachment ${index + 1}`}
+            loading="lazy"
+            onClick={() => setLightboxIndex(index)}
+            className={cn(
+              "cursor-zoom-in rounded object-cover transition-opacity duration-100 hover:opacity-90",
+              single ? "max-h-80 w-auto max-w-full" : "aspect-square w-full",
+            )}
+          />
+        ))}
+      </div>
 
       {lightboxIndex >= 0 && (
         <Lightbox
