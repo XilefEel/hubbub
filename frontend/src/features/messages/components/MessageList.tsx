@@ -50,20 +50,20 @@ export default function MessageList({
     scopeId: scope.id,
   });
 
-  useStickyScroll(endRef, scope.id, last, atBottom);
-
-  useEffect(() => {
-    if (!ready || !newestMessage || !atBottom) return;
-    if (lastReadAt && newestMessage <= lastReadAt) return;
-    markAsRead(newestMessage);
-  }, [ready, newestMessage, atBottom, lastReadAt, markAsRead]);
-
   const { containerRef, topRef } = useLoadOlderOnScroll({
     oldestId: messages?.[0]?.id,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
   });
+
+  useStickyScroll(endRef, containerRef, scope.id, last, atBottom);
+
+  useEffect(() => {
+    if (!ready || !newestMessage || !atBottom) return;
+    if (lastReadAt && newestMessage <= lastReadAt) return;
+    markAsRead(newestMessage);
+  }, [ready, newestMessage, atBottom, lastReadAt, markAsRead]);
 
   return (
     <div
