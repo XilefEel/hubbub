@@ -41,6 +41,9 @@ function ChannelPage() {
     isLoading: messagesLoading,
     isError: messagesIsError,
     error: messagesError,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
   } = useMessages({
     type: "channel",
     id: channelId,
@@ -80,6 +83,9 @@ function ChannelPage() {
             scope={scope}
             readMarker={readMarker}
             onReply={setReplyingTo}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
             emptyState={<ChannelEmpty channelName={channel.name} />}
           />
         )}

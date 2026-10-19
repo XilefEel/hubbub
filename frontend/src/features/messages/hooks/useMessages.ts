@@ -1,9 +1,15 @@
-import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
+import {
+  useInfiniteQuery,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import type { Message, MessageScope } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
 import { useMutation } from "@tanstack/react-query";
+
+const PAGE_SIZE = 50;
 
 export function useSendMessage() {
   return useMutation({
@@ -69,16 +75,36 @@ export function useMessages(scope: MessageScope) {
   const queryClient = useQueryClient();
   const { type, id } = scope;
 
-  const query = useQuery<Message[]>({
+  const query = useInfiniteQuery({
     queryKey: queryKeys.messages.list(type, id),
-    queryFn: async () => {
-      return await pb.collection("messages").getFullList<Message>({
-        filter: pb.filter(`${type} = {:id}`, { id }),
-        sort: "created",
-        expand: "user,replyTo,replyTo.user,mentions",
-      });
+    queryFn: async ({ pageParam }) => {
+      const filter = pageParam
+        ? pb.filter(`${type} = {:id} && created < {:cursor}`, {
+            id,
+            cursor: pageParam,
+          })
+        : pb.filter(`${type} = {:id}`, { id });
+
+      const res = await pb
+        .collection("messages")
+        .getList<Message>(1, PAGE_SIZE, {
+          filter,
+          sort: "-created",
+          expand: "user,replyTo,replyTo.user,mentions",
+          skipTotal: true,
+        });
+
+      return {
+        items: res.items,
+        nextCursor:
+          res.items.length === PAGE_SIZE
+            ? res.items.at(-1)?.created
+            : undefined,
+      };
     },
     enabled: !!id,
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => last.nextCursor,
   });
 
   useEffect(() => {
@@ -88,17 +114,44 @@ export function useMessages(scope: MessageScope) {
     const unsubPromise = pb.collection("messages").subscribe<Message>(
       "*",
       (e) => {
-        queryClient.setQueryData<Message[]>(key, (old) => {
+        queryClient.setQueryData<
+          InfiniteData<{ items: Message[]; nextCursor?: string }>
+        >(key, (old) => {
           if (!old) return old;
+
           switch (e.action) {
-            case "create":
-              return old.some((m) => m.id === e.record.id)
-                ? old
-                : [...old, e.record];
+            case "create": {
+              const exists = old.pages.some((p) =>
+                p.items.some((m) => m.id === e.record.id),
+              );
+              if (exists) return old;
+              const [first, ...rest] = old.pages;
+              return {
+                ...old,
+                pages: [
+                  { ...first, items: [e.record, ...first.items] },
+                  ...rest,
+                ],
+              };
+            }
             case "update":
-              return old.map((m) => (m.id === e.record.id ? e.record : m));
+              return {
+                ...old,
+                pages: old.pages.map((p) => ({
+                  ...p,
+                  items: p.items.map((m) =>
+                    m.id === e.record.id ? e.record : m,
+                  ),
+                })),
+              };
             case "delete":
-              return old.filter((m) => m.id !== e.record.id);
+              return {
+                ...old,
+                pages: old.pages.map((p) => ({
+                  ...p,
+                  items: p.items.filter((m) => m.id !== e.record.id),
+                })),
+              };
             default:
               return old;
           }
@@ -119,7 +172,15 @@ export function useMessages(scope: MessageScope) {
     };
   }, [type, id, queryClient]);
 
-  return query;
+  const messages = useMemo(
+    () =>
+      query.data
+        ? [...query.data.pages].reverse().flatMap((p) => [...p.items].reverse())
+        : [],
+    [query.data],
+  );
+
+  return { ...query, data: messages };
 }
 
 export async function fetchLastMessage(channelId: string) {

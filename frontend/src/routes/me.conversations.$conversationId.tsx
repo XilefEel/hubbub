@@ -31,7 +31,15 @@ function ConversationPage() {
 
   const isInVoiceCall = useIsInVoiceCall(scope);
 
-  const { data: messages, isLoading, isError, error } = useMessages(scope);
+  const {
+    data: messages,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useMessages(scope);
 
   const { data: members } = useConversationMembers(conversationId);
   const { typingNames, sendTyping } = useTypingIndicator(scope, members);
@@ -65,6 +73,9 @@ function ConversationPage() {
             scope={scope}
             readMarker={readMarker}
             onReply={setReplyingTo}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
             emptyState={
               conversation && <ConversationEmpty conversation={conversation} />
             }
