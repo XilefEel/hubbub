@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 import MessageItem from "./MessageItem";
 import type { Message, MessageScope } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
@@ -8,6 +8,7 @@ import { useStickyScroll } from "../hooks/useStickyScroll";
 import { useUnreadDivider } from "../hooks/useUnreadDivider";
 import UnreadDivider from "./UnreadDivider";
 import type { ReadMarker } from "../hooks/useReadMarker";
+import { useLoadOlderOnScroll } from "../hooks/useLoadOlderOnScroll";
 
 export default function MessageList({
   messages,
@@ -57,31 +58,12 @@ export default function MessageList({
     markAsRead(newestMessage);
   }, [ready, newestMessage, atBottom, lastReadAt, markAsRead]);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const prevScrollHeight = useRef(0);
-  const topRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = topRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-        prevScrollHeight.current = containerRef.current?.scrollHeight ?? 0;
-        fetchNextPage();
-      }
-    });
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  useLayoutEffect(() => {
-    const c = containerRef.current;
-    if (!c || !prevScrollHeight.current) return;
-    c.scrollTop += c.scrollHeight - prevScrollHeight.current;
-    prevScrollHeight.current = 0;
-  }, [messages?.length]);
+  const { containerRef, topRef } = useLoadOlderOnScroll({
+    oldestId: messages?.[0]?.id,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
 
   return (
     <div
