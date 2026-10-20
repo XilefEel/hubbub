@@ -169,6 +169,17 @@ export function useMessages(scope: MessageScope) {
 
     return () => {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
+
+      queryClient.setQueryData<
+        InfiniteData<{ items: Message[]; nextCursor?: string }>
+      >(key, (old) =>
+        old
+          ? {
+              pages: old.pages.slice(0, 1),
+              pageParams: old.pageParams.slice(0, 1),
+            }
+          : old,
+      );
     };
   }, [type, id, queryClient]);
 
