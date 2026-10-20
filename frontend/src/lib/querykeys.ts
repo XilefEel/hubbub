@@ -48,4 +48,7 @@ export const queryKeys = {
   mutualFriends: {
     list: (userId: string) => ["mutual_friends", userId] as const,
   },
+  stickers: {
+    all: () => ["stickers"] as const,
+  },
 };

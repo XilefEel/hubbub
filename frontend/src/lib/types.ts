@@ -147,3 +147,19 @@ export type ConversationMember = BaseRecord & {
     conversation?: Conversation;
   };
 };
+
+export type Sticker = BaseRecord & {
+  file: string;
+  creator: string; // user id
+  expand?: {
+    creator?: User;
+  };
+};
+
+export type UserSticker = BaseRecord & {
+  user: string; // user id
+  sticker: string; // sticker id
+  expand?: {
+    sticker?: Sticker;
+  };
+};
