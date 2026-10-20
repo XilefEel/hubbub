@@ -14,6 +14,7 @@ import UserAvatar from "@/features/users/components/UserAvatar";
 import MessageContent from "./MessageContent";
 import { cn } from "cn";
 import UserCard from "@/features/users/components/UserCard";
+import { StickerMessage } from "../../stickers/components/StickerMessage";
 
 export default function MessageItem({
   message,
@@ -163,6 +164,10 @@ export default function MessageItem({
           )}
 
           <AttachmentGrid message={message} />
+
+          {message.sticker && (
+            <StickerMessage sticker={message.expand?.sticker} />
+          )}
 
           <ReactionRow
             reactions={groupedReactions}

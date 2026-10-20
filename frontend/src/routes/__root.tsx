@@ -8,6 +8,8 @@ import { pb } from "../lib/pocketbase";
 import ServerRail from "@/features/servers/components/ServerRail";
 import { useFriendshipsSubscription } from "@/features/friends/hooks/useFriendships";
 import GlobalModals from "@/app/modals/GlobalModals";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {
@@ -38,6 +40,8 @@ function RootLayout() {
     return (
       <>
         <Outlet />
+        <TanStackRouterDevtools />
+        <ReactQueryDevtools />
       </>
     );
   }
@@ -49,6 +53,8 @@ function RootLayout() {
         <div className="flex-1 overflow-hidden">
           <Outlet />
           <GlobalModals />
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools />
         </div>
       </div>
     </>

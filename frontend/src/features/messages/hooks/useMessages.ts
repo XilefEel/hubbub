@@ -19,12 +19,14 @@ export function useSendMessage() {
       files,
       replyTo,
       mentions,
+      stickerId,
     }: {
       content: string;
       scope: MessageScope;
       files?: File[];
       replyTo?: string;
       mentions?: string[];
+      stickerId?: string;
     }) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to send messages");
@@ -33,6 +35,7 @@ export function useSendMessage() {
       formData.append("content", content);
       formData.append(scope.type, scope.id);
       formData.append("user", userId);
+
       if (replyTo) formData.append("replyTo", replyTo);
 
       for (const file of files ?? []) {
@@ -42,6 +45,8 @@ export function useSendMessage() {
       for (const mention of mentions ?? []) {
         formData.append("mentions", mention);
       }
+
+      if (stickerId) formData.append("sticker", stickerId);
 
       return await pb.collection<Message>("messages").create(formData);
     },
@@ -90,7 +95,7 @@ export function useMessages(scope: MessageScope) {
         .getList<Message>(1, PAGE_SIZE, {
           filter,
           sort: "-created",
-          expand: "user,replyTo,replyTo.user,mentions",
+          expand: "user,replyTo,replyTo.user,mentions,sticker",
           skipTotal: true,
         });
 
@@ -159,7 +164,7 @@ export function useMessages(scope: MessageScope) {
       },
       {
         filter: pb.filter(`${type} = {:id}`, { id }),
-        expand: "user,replyTo,replyTo.user,mentions",
+        expand: "user,replyTo,replyTo.user,mentions,sticker",
       },
     );
 

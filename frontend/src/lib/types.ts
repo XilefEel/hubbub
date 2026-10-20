@@ -59,10 +59,12 @@ export type Message = BaseRecord & {
   replyTo?: string; // message id
   mentions?: string[]; // user ids
   attachments?: string[];
+  sticker?: string; // sticker id
   expand?: {
     user?: User;
     replyTo?: Message;
     mentions?: User[];
+    sticker?: Sticker;
   };
 };
 

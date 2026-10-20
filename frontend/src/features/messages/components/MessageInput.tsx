@@ -186,6 +186,22 @@ export default function MessageInput({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleStickerSelect = (stickerId: string) => {
+    if (sendMessage.isPending) return;
+
+    sendMessage.mutate(
+      {
+        content: "",
+        scope,
+        files: [],
+        replyTo: replyingTo?.id,
+        mentions: [],
+        stickerId,
+      },
+      { onSuccess: onCancelReply },
+    );
+  };
+
   return (
     <>
       {isDragging && (
@@ -285,11 +301,7 @@ export default function MessageInput({
           />
 
           <div className="absolute top-1/2 right-20 -translate-y-1/2">
-            <StickerPopover
-              onSend={(stickerId) =>
-                console.log("Send sticker with ID:", stickerId)
-              }
-            >
+            <StickerPopover onSend={handleStickerSelect}>
               <button
                 type="button"
                 className="block text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"

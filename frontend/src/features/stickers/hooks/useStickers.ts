@@ -3,7 +3,7 @@ import { queryKeys } from "@/lib/querykeys";
 import type { Sticker, UserSticker } from "@/lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useMyStickers = () => {
+export function useMyStickers() {
   return useQuery({
     queryKey: queryKeys.stickers.all(),
     queryFn: () =>
@@ -12,9 +12,9 @@ export const useMyStickers = () => {
         sort: "-created",
       }),
   });
-};
+}
 
-export const useCreateSticker = () => {
+export function useCreateSticker() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
@@ -37,9 +37,9 @@ export const useCreateSticker = () => {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.stickers.all() }),
   });
-};
+}
 
-export const useSaveSticker = () => {
+export function useSaveSticker() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -55,9 +55,9 @@ export const useSaveSticker = () => {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.stickers.all() }),
   });
-};
+}
 
-export const useRemoveSticker = () => {
+export function useRemoveSticker() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -69,4 +69,4 @@ export const useRemoveSticker = () => {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.stickers.all() }),
   });
-};
+}
