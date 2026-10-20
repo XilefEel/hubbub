@@ -4,7 +4,6 @@ import {
   redirect,
   useLocation,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { pb } from "../lib/pocketbase";
 import ServerRail from "@/features/servers/components/ServerRail";
 import { useFriendshipsSubscription } from "@/features/friends/hooks/useFriendships";
@@ -39,7 +38,6 @@ function RootLayout() {
     return (
       <>
         <Outlet />
-        <TanStackRouterDevtools position="bottom-right" />
       </>
     );
   }
@@ -53,7 +51,6 @@ function RootLayout() {
           <GlobalModals />
         </div>
       </div>
-      <TanStackRouterDevtools position="bottom-right" />
     </>
   );
 }

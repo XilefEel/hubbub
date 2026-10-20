@@ -1,5 +1,12 @@
 import { useRef, useState, useCallback, useMemo } from "react";
-import { ArrowUp, FaceSlightlySmiling, Plus, Upload, X } from "lucide-react";
+import {
+  ArrowUp,
+  FaceSlightlySmiling,
+  Plus,
+  Sticker,
+  Upload,
+  X,
+} from "lucide-react";
 import FilePreview from "./FilePreview";
 import { useFileDrop } from "../hooks/useFileDrop";
 import type {
@@ -16,6 +23,7 @@ import { pb } from "@/lib/pocketbase";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import { EmojiPickerPopover } from "@/components/ui/EmojiPickerPopover";
 import { MAX_FILE_SIZE, MAX_FILES } from "@/lib/constants";
+import { StickerPopover } from "@/features/stickers/components/StickerPopover";
 
 export default function MessageInput({
   members,
@@ -273,15 +281,30 @@ export default function MessageInput({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
-            className="w-full rounded-xl border border-zinc-200 py-2 pr-20 pl-12 outline-none focus:outline-none dark:border-zinc-700"
+            className="w-full rounded-xl border border-zinc-200 py-2 pr-28 pl-12 outline-none focus:outline-none dark:border-zinc-700"
           />
+
+          <div className="absolute top-1/2 right-20 -translate-y-1/2">
+            <StickerPopover
+              onSend={(stickerId) =>
+                console.log("Send sticker with ID:", stickerId)
+              }
+            >
+              <button
+                type="button"
+                className="block text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
+              >
+                <Sticker className="size-5 shrink-0" />
+              </button>
+            </StickerPopover>
+          </div>
 
           <EmojiPickerPopover
             onEmojiSelect={(emoji) => setContent((prev) => prev + emoji)}
           >
             <button
               type="button"
-              className="absolute top-1/2 right-12 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
+              className="absolute top-1/2 right-12 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
             >
               <FaceSlightlySmiling className="size-5 shrink-0" />
             </button>
