@@ -1,16 +1,14 @@
 import { useRef } from "react";
+import { Heart } from "lucide-react";
 import { pb } from "@/lib/pocketbase";
 import type { Sticker } from "@/lib/types";
+import { cn } from "cn";
+import { useStickerFavorite } from "../hooks/useStickerFavorite";
 
 export function StickerMessage({ sticker }: { sticker: Sticker | undefined }) {
+  const { isSaved, isPending, toggle } = useStickerFavorite(sticker?.id);
+
   const dialogRef = useRef<HTMLDialogElement>(null);
-
-  if (!sticker) {
-    return <p className="text-sm text-zinc-500 italic">Sticker removed</p>;
-  }
-
-  const thumb = pb.files.getURL(sticker, sticker.file, { thumb: "512x512" });
-  const full = pb.files.getURL(sticker, sticker.file);
 
   const openDialog = () => {
     dialogRef.current?.showModal();
@@ -19,6 +17,13 @@ export function StickerMessage({ sticker }: { sticker: Sticker | undefined }) {
   const closeDialog = () => {
     dialogRef.current?.close();
   };
+
+  if (!sticker) {
+    return <p className="text-sm text-zinc-500 italic">Sticker removed</p>;
+  }
+
+  const thumb = pb.files.getURL(sticker, sticker.file, { thumb: "512x512" });
+  const full = pb.files.getURL(sticker, sticker.file);
 
   return (
     <>
@@ -42,12 +47,30 @@ export function StickerMessage({ sticker }: { sticker: Sticker | undefined }) {
         }}
         className="m-auto bg-transparent backdrop:bg-black/30 backdrop:backdrop-blur-sm"
       >
-        <img
-          src={full}
-          alt="sticker"
-          onClick={closeDialog}
-          className="max-h-[60vh] max-w-sm cursor-zoom-out rounded-xl border border-zinc-700 bg-zinc-900 object-contain p-2 shadow-2xl"
-        />
+        <div className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-2 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
+          <img
+            src={full}
+            alt="sticker"
+            onClick={closeDialog}
+            className="max-h-[60vh] max-w-[80vw] cursor-zoom-out rounded-lg object-contain sm:max-w-sm"
+          />
+
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={toggle}
+            aria-pressed={isSaved}
+            className={cn(
+              "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors duration-100 disabled:opacity-50",
+              isSaved
+                ? "border-red-200 bg-red-50 text-red-500 hover:bg-red-100 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
+                : "dark:hover:bg-zinc-750 border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200",
+            )}
+          >
+            <Heart className={cn("size-4", isSaved && "fill-current")} />
+            {isSaved ? "Saved" : "Add to favorites"}
+          </button>
+        </div>
       </dialog>
     </>
   );

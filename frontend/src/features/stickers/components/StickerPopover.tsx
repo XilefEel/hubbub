@@ -17,15 +17,15 @@ export function StickerPopover({
   children: React.ReactNode;
 }) {
   const { data: myStickers } = useMyStickers();
-  const create = useCreateSticker();
-  const remove = useRemoveSticker();
+  const createSticker = useCreateSticker();
+  const removeSticker = useRemoveSticker();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    create.mutate({ file });
+    createSticker.mutate({ file });
   };
 
   return (
@@ -41,7 +41,7 @@ export function StickerPopover({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              disabled={create.isPending}
+              disabled={createSticker.isPending}
               className={cn(
                 "flex aspect-square w-full items-center justify-center rounded-md transition-colors duration-100",
                 "dark:hover:bg-zinc-750 hover:bg-zinc-100",
@@ -49,7 +49,7 @@ export function StickerPopover({
                 "text-zinc-500",
               )}
             >
-              {create.isPending ? (
+              {createSticker.isPending ? (
                 <Loader2 className="size-5 animate-spin" />
               ) : (
                 <Plus className="size-5" />
@@ -88,7 +88,7 @@ export function StickerPopover({
                   <button
                     type="button"
                     aria-label="Remove sticker"
-                    onClick={() => remove.mutate(ms.id)}
+                    onClick={() => removeSticker.mutate(ms.id)}
                     className="absolute -top-1 -right-1 rounded-full bg-zinc-900/80 p-0.5 text-white opacity-0 transition-opacity duration-100 group-hover:opacity-100"
                   >
                     <X className="size-3" />
