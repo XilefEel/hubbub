@@ -51,7 +51,7 @@ function ConversationPage() {
   return (
     <div className="flex h-full flex-col text-zinc-900 dark:text-zinc-100">
       {isInVoiceCall && (
-        <div className="h-1/2 min-h-0 shrink-0">
+        <div className="m-2 h-1/2 min-h-0 shrink-0 rounded-2xl bg-zinc-900">
           <VoiceRoomView scope={scope} />
         </div>
       )}

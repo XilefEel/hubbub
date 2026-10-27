@@ -1,38 +1,18 @@
-import UserAvatar from "@/features/users/components/UserAvatar";
-import type { User, VoiceScope } from "@/lib/types";
-import {
-  useTracks,
-  GridLayout,
-  TrackRefContext,
-  VideoTrack,
-} from "@livekit/components-react";
-import { cn } from "cn";
-import { Track } from "livekit-client";
-import { MicOff, HeadphoneOff } from "lucide-react";
-import { useVoiceParticipants } from "../hooks/useVoiceChannel";
+import { TrackRefContext, VideoTrack } from "@livekit/components-react";
 import { useIsDeafened } from "../store/useVoiceChannelStore";
+import type { User } from "@/lib/types";
+import UserAvatar from "@/features/users/components/UserAvatar";
+import { cn } from "cn";
+import { MicOff, HeadphoneOff } from "lucide-react";
+import VoiceAvatar from "./VoiceAvatar";
 
-export default function VideoGrid({ scope }: { scope: VoiceScope }) {
-  const { data: participants } = useVoiceParticipants(scope);
-
-  const tracks = useTracks([
-    { source: Track.Source.Camera, withPlaceholder: true },
-    { source: Track.Source.ScreenShare, withPlaceholder: false },
-  ]);
-
-  const userByIdentity = new Map<string, User>();
-  for (const p of participants ?? []) {
-    if (p.expand?.user) userByIdentity.set(p.user, p.expand.user);
-  }
-
-  return (
-    <GridLayout tracks={tracks}>
-      <VideoTile userByIdentity={userByIdentity} />
-    </GridLayout>
-  );
-}
-
-function VideoTile({ userByIdentity }: { userByIdentity: Map<string, User> }) {
+export default function VoiceTile({
+  userByIdentity,
+  cameraOff = "card",
+}: {
+  userByIdentity: Map<string, User>;
+  cameraOff?: "card" | "avatar";
+}) {
   const isDeafened = useIsDeafened();
 
   return (
@@ -46,6 +26,11 @@ function VideoTile({ userByIdentity }: { userByIdentity: Map<string, User> }) {
           !!trackRef.publication && !trackRef.publication.isMuted;
 
         const user = userByIdentity.get(participant.identity);
+
+        // if the participant has no video and the cameraOff is "avatar", just use VoiceAvatar
+        if (!hasVideo && cameraOff === "avatar") {
+          return <VoiceAvatar trackRef={trackRef} user={user} />;
+        }
 
         return (
           <div
