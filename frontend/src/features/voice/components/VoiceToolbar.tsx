@@ -38,7 +38,7 @@ export default function VoiceToolbar() {
   if (!activeScope) return null;
 
   return (
-    <div className="mt-auto flex items-center justify-between rounded bg-zinc-50 px-2 py-1 dark:bg-zinc-700/50">
+    <div className="dark:bg-zinc-750 mt-auto flex items-center justify-center gap-2 rounded bg-zinc-50 px-2 py-1">
       <Tooltip content={isMuted ? "Unmute" : "Mute"}>
         <button
           onClick={toggleMute}

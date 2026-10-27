@@ -58,7 +58,7 @@ function ServerPage() {
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel
           id="channels-sidebar"
-          minSize="15%"
+          minSize="20%"
           panelRef={channelsRef}
           onResize={handleChannelsResize}
           collapsible
@@ -99,7 +99,7 @@ function ServerPage() {
 
         <Panel
           id="members-sidebar"
-          minSize="15%"
+          minSize="20%"
           panelRef={membersRef}
           onResize={handleMembersResize}
           collapsible

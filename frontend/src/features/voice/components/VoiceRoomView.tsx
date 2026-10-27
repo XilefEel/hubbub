@@ -1,8 +1,8 @@
 import { RoomContext, RoomAudioRenderer } from "@livekit/components-react";
 import { useVoiceRoom } from "../store/useVoiceChannelStore";
 import type { VoiceScope } from "@/lib/types";
-import VideoGrid from "./ServerCallGrid";
-import AvatarGrid from "./DmCallGrid";
+import ServerCallGrid from "./ServerCallGrid";
+import DmCallGrid from "./DmCallGrid";
 
 export default function VoiceRoomView({ scope }: { scope: VoiceScope }) {
   const room = useVoiceRoom();
@@ -12,9 +12,9 @@ export default function VoiceRoomView({ scope }: { scope: VoiceScope }) {
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer />
       {scope.type === "conversation" ? (
-        <AvatarGrid scope={scope} />
+        <DmCallGrid scope={scope} />
       ) : (
-        <VideoGrid scope={scope} />
+        <ServerCallGrid scope={scope} />
       )}
     </RoomContext.Provider>
   );

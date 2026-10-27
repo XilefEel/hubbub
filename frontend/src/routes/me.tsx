@@ -31,7 +31,7 @@ function MePage() {
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
         <Panel
           id="dm-sidebar"
-          minSize="15%"
+          minSize="20%"
           panelRef={sidebarRef}
           collapsible
           className="dark:bg-zinc-850 flex h-full flex-col bg-white p-4"

@@ -14,11 +14,11 @@ export default function VoiceAvatar({
 }) {
   const isDeafened = useIsDeafened();
   const participant = trackRef.participant;
-  const isMicMuted = !participant.isMicrophoneEnabled;
+  const isMuted = !participant.isMicrophoneEnabled;
   const showDeafened = isDeafened && participant.isLocal;
 
   return (
-    <div className={cn("relative flex flex-col items-center gap-3")}>
+    <div className="relative flex flex-col items-center gap-3">
       <div
         className={cn(
           "rounded-full ring-3 transition-all",
@@ -28,13 +28,12 @@ export default function VoiceAvatar({
         <UserAvatar user={user} size="size-24" />
       </div>
 
-      {(isMicMuted || showDeafened) && (
+      {(isMuted || showDeafened) && (
         <div className="absolute right-0 bottom-0 flex items-center gap-1.5 rounded-full bg-zinc-900 p-1.5">
-          {isMicMuted && (
-            <MicOff className="size-4 shrink-0 text-red-500 dark:text-red-400" />
-          )}
+          {isMuted && <MicOff className="size-4 shrink-0 text-red-500" />}
+
           {showDeafened && (
-            <HeadphoneOff className="size-4 shrink-0 text-red-500 dark:text-red-400" />
+            <HeadphoneOff className="size-4 shrink-0 text-red-500" />
           )}
         </div>
       )}
