@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { User, VoiceScope } from "@/lib/types";
-import { useVoiceParticipants } from "./useVoiceChannel";
+import { useVoiceParticipants } from "./useVoiceParticipants";
 
 export function useUserByIdentity(scope: VoiceScope) {
   const { data: participants } = useVoiceParticipants(scope);

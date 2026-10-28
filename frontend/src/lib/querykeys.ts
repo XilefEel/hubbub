@@ -27,6 +27,7 @@ export const queryKeys = {
       ["voice_participants", type, id] as const,
     byServer: (serverId: string) =>
       ["voice_participants", "server", serverId] as const,
+    dmCalls: () => ["voice_participants", "dms"] as const,
   },
   readStates: {
     list: () => ["read_states"] as const,

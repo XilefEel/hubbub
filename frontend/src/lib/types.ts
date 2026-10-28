@@ -86,10 +86,12 @@ export type VoiceTokenResponse = {
 
 export type VoiceParticipant = BaseRecord & {
   user: string; // user id
-  channel: string; // channel id
+  channel?: string; // channel id
+  conversation?: string; // conversation id
   expand?: {
     user?: User;
     channel?: Channel;
+    conversation?: Conversation;
   };
 };
 
