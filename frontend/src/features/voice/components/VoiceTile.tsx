@@ -21,7 +21,7 @@ export default function VoiceTile({
         if (!trackRef) return null;
 
         const participant = trackRef.participant;
-        const isMuted = !participant.isMicrophoneEnabled;
+        const showMuted = !participant.isMicrophoneEnabled;
         const hasVideo =
           !!trackRef.publication && !trackRef.publication.isMuted;
 
@@ -51,7 +51,7 @@ export default function VoiceTile({
             )}
 
             <div className="absolute bottom-2 left-2 flex items-center gap-3 rounded-lg bg-black/60 px-3 py-1">
-              {isMuted && <MicOff className="size-4 shrink-0 text-red-500" />}
+              {showMuted && <MicOff className="size-4 shrink-0 text-red-500" />}
 
               {isDeafened && participant.isLocal && (
                 <HeadphoneOff className="size-4 shrink-0 text-red-500" />

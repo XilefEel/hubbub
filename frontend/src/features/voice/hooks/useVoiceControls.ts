@@ -28,6 +28,7 @@ export function useVoiceControls() {
     if (!next && isDeafened) {
       setDeafened(false);
       setRemoteAudioEnabled(room, true);
+      publishDeafened(room, false);
     }
   };
 
@@ -36,6 +37,7 @@ export function useVoiceControls() {
     const next = !isDeafened;
     setDeafened(next);
     setRemoteAudioEnabled(room, !next);
+    publishDeafened(room, next);
 
     if (next && !isMuted) {
       await room.localParticipant.setMicrophoneEnabled(false);
@@ -78,4 +80,10 @@ function setRemoteAudioEnabled(room: Room, enabled: boolean) {
       }
     });
   });
+}
+
+function publishDeafened(room: Room, deafened: boolean) {
+  room.localParticipant
+    .setAttributes({ deafened: String(deafened) })
+    .catch(console.error);
 }

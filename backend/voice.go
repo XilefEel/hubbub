@@ -62,9 +62,11 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 	at := auth.NewAccessToken(apiKey, apiSecret)
 
 	// set the video grant to allow joining the room
+	canUpdate := true
 	grant := &auth.VideoGrant{
-		RoomJoin: true,
-		Room:     room,
+		RoomJoin:             true,
+		Room:                 room,
+		CanUpdateOwnMetadata: &canUpdate,
 	}
 
 	at.SetVideoGrant(grant).
