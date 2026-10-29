@@ -18,25 +18,26 @@ export default function VoiceAvatar({
   const showDeafened = isDeafened && participant.isLocal;
 
   return (
-    <div className="relative flex flex-col items-center gap-3">
-      <div
-        className={cn(
-          "rounded-full ring-3 transition-all",
-          participant.isSpeaking ? "ring-teal-500" : "ring-transparent",
-        )}
-      >
-        <UserAvatar user={user} size="size-24" />
-      </div>
-
-      {(isMuted || showDeafened) && (
-        <div className="absolute right-0 bottom-0 flex items-center gap-1.5 rounded-full bg-zinc-900 p-1.5">
-          {isMuted && <MicOff className="size-4 shrink-0 text-red-500" />}
-
-          {showDeafened && (
-            <HeadphoneOff className="size-4 shrink-0 text-red-500" />
+    <div className="flex size-full flex-col items-center justify-center gap-3">
+      <div className="relative">
+        <div
+          className={cn(
+            "flex rounded-full ring-3 transition-all",
+            participant.isSpeaking ? "ring-teal-500" : "ring-transparent",
           )}
+        >
+          <UserAvatar user={user} size="size-24" />
         </div>
-      )}
+
+        {(isMuted || showDeafened) && (
+          <div className="absolute right-0 bottom-0 flex items-center gap-1.5 rounded-full bg-zinc-900 p-1.5">
+            {isMuted && <MicOff className="size-4 shrink-0 text-red-500" />}
+            {showDeafened && (
+              <HeadphoneOff className="size-4 shrink-0 text-red-500" />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
