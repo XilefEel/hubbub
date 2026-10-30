@@ -3,21 +3,22 @@ import { Link } from "@tanstack/react-router";
 import { useJoinVoiceChannel } from "@/features/voice/hooks/useVoiceChannel";
 import { useChannelReads } from "../hooks/useReadStates";
 import ChannelContextMenu from "./ChannelContextMenu";
-import type { Channel, VoiceScope } from "@/lib/types";
+import type { Channel, VoiceParticipant, VoiceScope } from "@/lib/types";
 import VoiceParticipantsList from "@/features/voice/components/VoiceParticipantsList";
 import { useActiveScope } from "@/features/voice/store/useVoiceChannelStore";
 import { isAfter } from "@/lib/utils";
 import { cn } from "cn";
-import { useServerActiveCalls } from "@/features/voice/hooks/useVoiceParticipants";
 
 export default function ChannelItem({
   channel,
   serverId,
   isOwner,
+  participants,
 }: {
   channel: Channel;
   serverId: string;
   isOwner: boolean;
+  participants: VoiceParticipant[];
 }) {
   const activeScope = useActiveScope();
   const joinVoice = useJoinVoiceChannel();
@@ -45,8 +46,6 @@ export default function ChannelItem({
     if (isThisChannelActive) return;
     joinVoice.mutate(scope);
   };
-
-  const { data: voiceByChannel } = useServerActiveCalls(serverId);
 
   return (
     <div>
@@ -86,9 +85,7 @@ export default function ChannelItem({
       </ChannelContextMenu>
 
       {channel.type === "voice" && (
-        <VoiceParticipantsList
-          participants={voiceByChannel?.get(channel.id) ?? []}
-        />
+        <VoiceParticipantsList participants={participants} />
       )}
     </div>
   );

@@ -6,10 +6,12 @@ import Tooltip from "@/components/ui/Tooltip";
 import { useGroupModal } from "../modals/useGroupModal";
 import { isConversationHidden } from "../hooks/useConversationMembers";
 import { pb } from "@/lib/pocketbase";
+import { useDmActiveCalls } from "@/features/voice/hooks/useVoiceParticipants";
 
 export default function ConversationList() {
   const userId = pb.authStore.record?.id;
   const { data: conversations, isError, isLoading, error } = useConversations();
+  const { data: voiceByDms } = useDmActiveCalls();
 
   const visible = conversations?.filter(
     (c) => !isConversationHidden(c, userId),
@@ -35,7 +37,13 @@ export default function ConversationList() {
       ) : isLoading ? (
         <ConversationListSkeleton />
       ) : (
-        visible?.map((c) => <ConversationItem key={c.id} conversation={c} />)
+        visible?.map((c) => (
+          <ConversationItem
+            key={c.id}
+            conversation={c}
+            participants={voiceByDms?.get(c.id) ?? []}
+          />
+        ))
       )}
     </div>
   );

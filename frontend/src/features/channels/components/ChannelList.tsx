@@ -6,10 +6,13 @@ import ChannelItem from "./ChannelItem";
 import Tooltip from "@/components/ui/Tooltip";
 import ChannelListSkeleton from "./ChannelListSkeleton";
 import { useCreateChannelModal } from "../modals/useCreateChannelModal";
+import { useServerActiveCalls } from "@/features/voice/hooks/useVoiceParticipants";
 
 export default function ChannelList({ serverId }: { serverId: string }) {
   const { data: channels, isLoading, isError, error } = useChannels(serverId);
+  const { data: voiceByChannel } = useServerActiveCalls(serverId);
   const { isOwner } = useCurrentMembership(serverId);
+
   const { openModal } = useCreateChannelModal();
   useReadStatesSubscription();
 
@@ -44,6 +47,7 @@ export default function ChannelList({ serverId }: { serverId: string }) {
               channel={c}
               serverId={serverId}
               isOwner={isOwner}
+              participants={voiceByChannel?.get(c.id) ?? []}
             />
           ))}
         </ul>
