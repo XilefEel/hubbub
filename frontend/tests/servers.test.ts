@@ -1,13 +1,13 @@
 import type { Server, Message } from "../src/lib/types.ts";
 import { test, expect } from "vitest";
-import { makeUser, makeServer, makeServerWithMember } from "./helpers.ts";
+import { makeUser, makeServer, makeServerWithMember, url } from "./helpers.ts";
 import PocketBase from "pocketbase";
 
 test("logged-out user cannot create a server", async () => {
-  const pb = new PocketBase("http://127.0.0.1:8091");
+  const unauthenticated = new PocketBase(url);
 
   await expect(
-    pb.collection<Server>("servers").create({
+    unauthenticated.collection<Server>("servers").create({
       name: "My Server",
       owner: "someone-not-logged-in",
       inviteCode: Math.random().toString(36).slice(2, 10),

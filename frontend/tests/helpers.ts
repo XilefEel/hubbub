@@ -4,6 +4,8 @@ import type {
   Channel,
   ServerMember,
   ServerRole,
+  Friendship,
+  ConversationMember,
 } from "../src/lib/types.ts";
 
 export const url = "http://127.0.0.1:8091";
@@ -71,4 +73,30 @@ export async function makeServerWithMember() {
   await addMember(server.id, bob.id);
 
   return { alice, bob, server, channel };
+}
+
+export async function makeFriends(
+  requester: { pb: PocketBase; id: string },
+  addressee: { pb: PocketBase; id: string },
+) {
+  const friendship = await requester.pb
+    .collection<Friendship>("friendships")
+    .create({
+      requester: requester.id,
+      addressee: addressee.id,
+      status: "pending",
+    });
+
+  await addressee.pb
+    .collection<Friendship>("friendships")
+    .update(friendship.id, { status: "accepted" });
+}
+
+export async function getConversationMembers(
+  pb: PocketBase,
+  conversationId: string,
+) {
+  return pb.collection<ConversationMember>("conversation_members").getFullList({
+    filter: `conversation = "${conversationId}"`,
+  });
 }

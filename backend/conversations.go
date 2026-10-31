@@ -217,7 +217,18 @@ func editGroupHandler(e *core.RequestEvent) error {
 		}
 	}
 
-	err := e.App.RunInTransaction(func(tx core.App) error {
+	convo, err := e.App.FindRecordById("conversations", convoId)
+	if err != nil {
+		return e.NotFoundError("Conversation not found", err)
+	}
+	if !convo.GetBool("isGroup") {
+		return e.BadRequestError("Not a group conversation", nil)
+	}
+	if convo.GetString("owner") != me {
+		return e.ForbiddenError("You are not the owner of this group", nil)
+	}
+
+	err = e.App.RunInTransaction(func(tx core.App) error {
 		convo, err := tx.FindRecordById("conversations", convoId)
 		if err != nil {
 			return e.NotFoundError("Conversation not found", err)
