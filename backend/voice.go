@@ -112,6 +112,28 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 
 	// handle the event based on its type
 	switch event.Event {
+	case "participant_joined":
+		if _, err := app.FindFirstRecordByFilter(
+			"voice_participants",
+			field+" = {:id} && user = {:user}",
+			dbx.Params{"id": id, "user": userId},
+		); err == nil {
+			break
+		}
+
+		col, err := app.FindCollectionByNameOrId("voice_participants")
+		if err != nil {
+			log.Printf("voice webhook: %v", err)
+			break
+		}
+
+		record := core.NewRecord(col)
+		record.Set("user", userId)
+		record.Set(field, id)
+		if err := app.Save(record); err != nil {
+			log.Printf("voice webhook: failed to save participant record: %v", err)
+		}
+
 	case "participant_left":
 		// remove the participant from voice_participants
 		record, err := app.FindFirstRecordByFilter(
@@ -160,6 +182,7 @@ func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Rec
 		"server = {:server} && user = {:user}",
 		dbx.Params{"server": serverId, "user": authRecord.Id},
 	)
+
 	return err == nil && membership != nil
 }
 
@@ -169,5 +192,6 @@ func userInConversation(app core.App, userId, conversationId string) bool {
 		"conversation = {:c} && user = {:u}",
 		dbx.Params{"c": conversationId, "u": userId},
 	)
+
 	return err == nil
 }
