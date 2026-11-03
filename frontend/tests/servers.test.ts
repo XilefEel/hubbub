@@ -81,6 +81,7 @@ test("only owner can edit a server", async () => {
   const unchanged = await alice.pb
     .collection<Server>("servers")
     .getOne(server.id);
+
   expect(unchanged.name).toBe(server.name);
 
   const updated = await alice.pb
@@ -88,6 +89,7 @@ test("only owner can edit a server", async () => {
     .update(server.id, {
       name: "Alice's Updated Server",
     });
+
   expect(updated.name).toBe("Alice's Updated Server");
 });
 
@@ -101,6 +103,7 @@ test("only owner can delete a server", async () => {
   const stillExists = await alice.pb
     .collection<Server>("servers")
     .getOne(server.id);
+
   expect(stillExists).toBeDefined();
 
   await alice.pb.collection<Server>("servers").delete(server.id);

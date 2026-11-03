@@ -61,6 +61,7 @@ test("requester cannot accept their own friendship request", async () => {
   const after = await bob.pb
     .collection<Friendship>("friendships")
     .getOne(friendship.id);
+
   expect(after.status).toBe("pending");
 });
 

@@ -79,6 +79,7 @@ test("member can leave a server", async () => {
 test("member cannot kick another member", async () => {
   const { alice, bob, server } = await makeServerWithMember();
   const carol = await makeUser("carol");
+
   await addMember(server.id, carol.id);
 
   const carolMembership = await alice.pb

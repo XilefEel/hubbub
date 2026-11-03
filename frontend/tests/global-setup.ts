@@ -1,12 +1,13 @@
 import { spawn, execFileSync, type ChildProcess } from "node:child_process";
 import { rmSync } from "node:fs";
 import path from "node:path";
+import { wsUrl } from "./helpers.ts";
 
 let pb: ChildProcess;
 
 const env = {
   ...process.env,
-  LIVEKIT_URL: "ws://localhost:7881",
+  LIVEKIT_URL: wsUrl,
   LIVEKIT_API_KEY: "test",
   LIVEKIT_API_SECRET: "test-secret-test-secret-test-secret",
 };

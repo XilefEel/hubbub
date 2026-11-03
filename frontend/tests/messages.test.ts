@@ -1,6 +1,12 @@
 import { test, expect } from "vitest";
-import type { Message, Channel } from "../src/lib/types.ts";
-import { makeUser, makeServer, makeServerWithMember } from "./helpers.ts";
+import type { Message } from "../src/lib/types.ts";
+import {
+  makeUser,
+  makeServer,
+  makeServerWithMember,
+  makeTextChannel,
+  sendMessageInChannel,
+} from "./helpers.ts";
 
 test("member cannot post as someone else", async () => {
   const { alice, bob, channel } = await makeServerWithMember();
@@ -18,17 +24,13 @@ test("author cannot move their own message to another channel", async () => {
   const alice = await makeUser("alice");
   const { channel: general } = await makeServer(alice);
 
-  const channel2 = await alice.pb.collection<Channel>("channels").create({
-    name: "Channel 2",
-    server: general.server,
-    type: "text",
-  });
+  const channel2 = await makeTextChannel(alice, general.server, "channel-2");
 
-  const message = await alice.pb.collection<Message>("messages").create({
-    channel: general.id,
-    user: alice.id,
-    content: "This is a message in general",
-  });
+  const message = await sendMessageInChannel(
+    alice,
+    general.id,
+    "This is a message in the general channel",
+  );
 
   await expect(
     alice.pb.collection<Message>("messages").update(message.id, {
@@ -46,11 +48,11 @@ test("author cannot move their own message to another channel", async () => {
 test("member cannot edit another member's message", async () => {
   const { alice, bob, channel } = await makeServerWithMember();
 
-  const message = await alice.pb.collection<Message>("messages").create({
-    channel: channel.id,
-    user: alice.id,
-    content: "This is Alice's message",
-  });
+  const message = await sendMessageInChannel(
+    alice,
+    channel.id,
+    "This is Alice's message",
+  );
 
   await expect(
     bob.pb.collection<Message>("messages").update(message.id, {
@@ -71,11 +73,7 @@ test("non-member cannot read messages in a server", async () => {
 
   const { channel } = await makeServer(alice);
 
-  await alice.pb.collection<Message>("messages").create({
-    channel: channel.id,
-    user: alice.id,
-    content: "secret",
-  });
+  sendMessageInChannel(alice, channel.id, "secret message");
 
   const messagesForBob = await bob.pb
     .collection<Message>("messages")
@@ -97,11 +95,11 @@ test("non-member cannot read messages in a server", async () => {
 test("member cannot delete another member's message", async () => {
   const { alice, bob, channel } = await makeServerWithMember();
 
-  const message = await alice.pb.collection<Message>("messages").create({
-    channel: channel.id,
-    user: alice.id,
-    content: "This is Alice's message",
-  });
+  const message = await sendMessageInChannel(
+    alice,
+    channel.id,
+    "This is Alice's message",
+  );
 
   await expect(
     bob.pb.collection<Message>("messages").delete(message.id),

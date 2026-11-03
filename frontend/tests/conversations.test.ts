@@ -74,7 +74,7 @@ test("users who share a server can open and reuse a dm", async () => {
 
   expect(second.conversationId).toBe(first.conversationId);
 
-  const members = await getConversationMembers(alice.pb, first.conversationId);
+  const members = await getConversationMembers(alice, first.conversationId);
 
   expect(members.map((member) => member.user).sort()).toEqual(
     [alice.id, bob.id].sort(),
@@ -100,10 +100,7 @@ test("friends can open a dm", async () => {
 
   expect(conversation.isGroup).toBe(false);
 
-  const members = await getConversationMembers(
-    alice.pb,
-    response.conversationId,
-  );
+  const members = await getConversationMembers(alice, response.conversationId);
 
   expect(members.map((member) => member.user)).toEqual(
     expect.arrayContaining([alice.id, bob.id]),
@@ -176,10 +173,7 @@ test("dm groups deduplicate members", async () => {
     },
   );
 
-  const members = await getConversationMembers(
-    alice.pb,
-    response.conversationId,
-  );
+  const members = await getConversationMembers(alice, response.conversationId);
 
   expect(members).toHaveLength(3);
 
@@ -229,10 +223,7 @@ test("only the group owner can rename the group or add members", async () => {
 
   expect(conversation.name).toBe("Renamed");
 
-  const members = await getConversationMembers(
-    alice.pb,
-    created.conversationId,
-  );
+  const members = await getConversationMembers(alice, created.conversationId);
 
   expect(members.map((member) => member.user)).toEqual(
     expect.arrayContaining([alice.id, bob.id, carol.id, dave.id]),
