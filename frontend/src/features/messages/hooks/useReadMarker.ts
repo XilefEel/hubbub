@@ -6,6 +6,7 @@ import {
   useMarkChannelRead,
 } from "@/features/channels/hooks/useReadStates";
 import { useMarkConversationRead } from "@/features/conversations/hooks/useConversationMembers";
+import { isAfter } from "@/lib/utils";
 
 export type ReadMarker = {
   lastReadAt: DateTime | undefined;
@@ -36,13 +37,14 @@ export function useConversationReadMarker(
   const { mutate } = useMarkConversationRead();
 
   const me = members?.find((m) => m.user === userId);
-  const myId = me?.id;
 
   const markAsRead = useCallback(
     (newest: DateTime) => {
-      if (myId) mutate({ memberId: myId, lastReadAt: newest });
+      if (!me) return;
+      if (me.lastReadAt && !isAfter(newest, me.lastReadAt)) return;
+      mutate({ memberId: me.id, lastReadAt: newest });
     },
-    [myId, mutate],
+    [me, mutate],
   );
 
   return {

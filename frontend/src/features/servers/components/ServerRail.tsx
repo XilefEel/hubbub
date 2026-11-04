@@ -9,6 +9,8 @@ import ServerSkeleton from "./ServerSkeleton";
 import { useSettingsModal } from "@/features/settings/modals/useSettingsModal";
 import { useCreateServerModal } from "../modals/useCreateServerModal";
 import { useJoinServerModal } from "../modals/useJoinServerModal";
+import { useUnreadConversations } from "@/features/conversations/hooks/useConversations";
+import { useEffect } from "react";
 
 export default function ServerRail() {
   const { serverId } = useParams({ strict: false });
@@ -16,6 +18,13 @@ export default function ServerRail() {
   const { openModal: openCreate } = useCreateServerModal();
   const { openModal: openJoin } = useJoinServerModal();
   const { openModal: openSettings } = useSettingsModal();
+
+  const unread = useUnreadConversations();
+  const count = unread.length;
+
+  useEffect(() => {
+    document.title = count > 0 ? `(${count}) Hubbub` : "Hubbub";
+  }, [count]);
 
   return (
     <nav
@@ -37,7 +46,7 @@ export default function ServerRail() {
           <Link
             to="/me"
             className={cn(
-              "flex size-10 shrink-0 items-center justify-center",
+              "relative flex size-10 shrink-0 items-center justify-center",
               "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
               serverId === undefined
                 ? "rounded-xl bg-teal-500 text-white"
@@ -45,6 +54,11 @@ export default function ServerRail() {
             )}
           >
             <Home className="size-5 shrink-0" />
+            {count > 0 && (
+              <span className="absolute right-0 bottom-0 rounded-full bg-red-500 px-1.5 text-xs font-medium text-white">
+                {count > 99 ? "99+" : count}
+              </span>
+            )}
           </Link>
         </Tooltip>
       </div>

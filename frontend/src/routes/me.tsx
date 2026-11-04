@@ -1,5 +1,4 @@
 import ConversationList from "@/features/conversations/components/ConversationList";
-import { useConversationSubscription } from "@/features/conversations/hooks/useConversations";
 import VoiceToolbar from "@/features/voice/components/VoiceToolbar";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { UsersRound } from "lucide-react";
@@ -17,8 +16,6 @@ export const Route = createFileRoute("/me")({
 });
 
 function MePage() {
-  useConversationSubscription();
-
   const sidebarRef = useRef<PanelImperativeHandle>(null);
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({

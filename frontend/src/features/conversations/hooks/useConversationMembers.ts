@@ -68,6 +68,7 @@ export function getConversationTitle(
   if (conversation.name) return conversation.name;
 
   const others = getOtherUsers(conversation, myId);
+
   if (conversation.isGroup)
     return others.map((u) => u.name).join(", ") || "Group";
 
@@ -83,7 +84,23 @@ export function isConversationHidden(
   );
   if (!me?.hiddenAt) return false;
   if (!conversation.lastMessageAt) return true;
+
   return !isAfter(conversation.lastMessageAt, me.hiddenAt);
+}
+
+export function isConversationUnread(
+  conversation: Conversation,
+  userId?: string,
+) {
+  if (!conversation.lastMessageAt) return false;
+
+  const me = conversation.expand?.conversation_members_via_conversation?.find(
+    (m) => m.user === userId,
+  );
+  if (!me) return false;
+  if (!me.lastReadAt) return true;
+
+  return isAfter(conversation.lastMessageAt, me.lastReadAt);
 }
 
 export function useHideConversation() {

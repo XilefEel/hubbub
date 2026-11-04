@@ -10,6 +10,7 @@ import { useFriendshipsSubscription } from "@/features/friends/hooks/useFriendsh
 import GlobalModals from "@/app/modals/GlobalModals";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useConversationSubscription } from "@/features/conversations/hooks/useConversations";
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {
@@ -35,6 +36,7 @@ function RootLayout() {
   const userId = pb.authStore.record?.id;
 
   useFriendshipsSubscription(userId);
+  useConversationSubscription();
 
   if (isLoginPage) {
     return (

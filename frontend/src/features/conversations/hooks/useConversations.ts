@@ -3,6 +3,10 @@ import { queryKeys } from "@/lib/querykeys";
 import type { Conversation } from "@/lib/types";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import {
+  isConversationHidden,
+  isConversationUnread,
+} from "./useConversationMembers";
 
 export function useConversations() {
   return useQuery<Conversation[]>({
@@ -14,6 +18,15 @@ export function useConversations() {
       });
     },
   });
+}
+
+export function useUnreadConversations() {
+  const userId = pb.authStore.record?.id;
+  const { data: conversations } = useConversations();
+
+  return (conversations || []).filter(
+    (c) => !isConversationHidden(c, userId) && isConversationUnread(c, userId),
+  );
 }
 
 export function useConversationSubscription() {
