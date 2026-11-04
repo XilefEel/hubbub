@@ -5,10 +5,7 @@ import UserAvatar from "@/features/users/components/UserAvatar";
 import { useJoinVoiceChannel } from "@/features/voice/hooks/useVoiceChannel";
 import ConversationAvatar from "./ConversationAvatar";
 import { pb } from "@/lib/pocketbase";
-import {
-  getOtherUsers,
-  getConversationTitle,
-} from "../hooks/useConversationMembers";
+import { getOtherUsers, getConversationTitle } from "../utils/conversation";
 import { useVoiceParticipants } from "@/features/voice/hooks/useVoiceParticipants";
 
 export default function ConversationHeader({

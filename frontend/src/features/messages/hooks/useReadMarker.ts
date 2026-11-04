@@ -5,7 +5,7 @@ import {
   useChannelReads,
   useMarkChannelRead,
 } from "@/features/channels/hooks/useReadStates";
-import { useMarkConversationRead } from "@/features/conversations/hooks/useConversationMembers";
+import { useMarkConversationRead } from "@/features/conversations/hooks/useConversations";
 import { isAfter } from "@/lib/utils";
 
 export type ReadMarker = {

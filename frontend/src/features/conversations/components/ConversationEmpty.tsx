@@ -1,10 +1,7 @@
 import type { Conversation } from "@/lib/types";
 import ConversationAvatar from "./ConversationAvatar";
 import { pb } from "@/lib/pocketbase";
-import {
-  getOtherUsers,
-  getConversationTitle,
-} from "../hooks/useConversationMembers";
+import { getOtherUsers, getConversationTitle } from "../utils/conversation";
 
 export default function ConversationEmpty({
   conversation,

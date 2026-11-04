@@ -1,12 +1,12 @@
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
-import type { Conversation } from "@/lib/types";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import type { Conversation, DateTime } from "@/lib/types";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import {
   isConversationHidden,
   isConversationUnread,
-} from "./useConversationMembers";
+} from "../utils/conversation";
 
 export function useConversations() {
   return useQuery<Conversation[]>({
@@ -69,4 +69,42 @@ export function useConversationSubscription() {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
   }, [queryClient]);
+}
+
+export function useMarkConversationRead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      memberId,
+      lastReadAt,
+    }: {
+      memberId: string;
+      lastReadAt: DateTime;
+    }) => {
+      return await pb
+        .collection("conversation_members")
+        .update(memberId, { lastReadAt });
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.list(),
+      }),
+  });
+}
+
+export function useHideConversation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ memberId }: { memberId: string }) =>
+      pb
+        .collection("conversation_members")
+        .update(memberId, { hiddenAt: new Date().toISOString() }),
+
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      }),
+  });
 }

@@ -1,16 +1,16 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import type { Conversation, VoiceParticipant } from "@/lib/types";
 import { pb } from "@/lib/pocketbase";
 import {
   getConversationTitle,
   getOtherUsers,
-  useHideConversation,
-} from "../hooks/useConversationMembers";
+  isConversationUnread,
+} from "../utils/conversation";
 import { cn } from "cn";
-import { isAfter } from "@/lib/utils";
 import ConversationAvatar from "./ConversationAvatar";
 import ConversationContextMenu from "./ConversationContextMenu";
 import { Phone, X } from "lucide-react";
+import { useHideConversation } from "../hooks/useConversations";
 
 export default function ConversationItem({
   conversation,
@@ -19,6 +19,9 @@ export default function ConversationItem({
   conversation: Conversation;
   participants: VoiceParticipant[];
 }) {
+  const navigate = useNavigate();
+  const { conversationId: activeId } = useParams({ strict: false });
+
   const userId = pb.authStore.record?.id;
 
   const me = conversation.expand?.conversation_members_via_conversation?.find(
@@ -27,11 +30,7 @@ export default function ConversationItem({
 
   const isOwner = !!me && conversation.owner === me.user;
 
-  const unread =
-    !!me &&
-    !!conversation.lastMessageAt &&
-    (!me.lastReadAt || isAfter(conversation.lastMessageAt, me.lastReadAt));
-
+  const unread = isConversationUnread(conversation, userId);
   const title = getConversationTitle(conversation, userId);
   const others = getOtherUsers(conversation, userId);
 
@@ -40,12 +39,19 @@ export default function ConversationItem({
   const handleHideConversation = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (!me) return;
 
-    hideConversation.mutate({
-      memberId: me.id,
-      conversationId: conversation.id,
-    });
+    hideConversation.mutate(
+      {
+        memberId: me.id,
+      },
+      {
+        onSuccess: () => {
+          if (activeId === conversation.id) navigate({ to: "/me" });
+        },
+      },
+    );
   };
 
   return (
