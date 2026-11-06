@@ -1,19 +1,20 @@
-import { Link, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { useServers } from "../hooks/useServers";
-import { Compass, Home, Plus, Settings } from "lucide-react";
+import { Compass, Plus, Settings } from "lucide-react";
 import { cn } from "cn";
-import Tooltip from "@/components/ui/Tooltip";
-import { pb } from "@/lib/pocketbase";
-import ServerContextMenu from "./ServerContextMenu";
 import ServerSkeleton from "./ServerSkeleton";
 import { useSettingsModal } from "@/features/settings/modals/useSettingsModal";
 import { useCreateServerModal } from "../modals/useCreateServerModal";
 import { useJoinServerModal } from "../modals/useJoinServerModal";
 import { useUnreadConversations } from "@/features/conversations/hooks/useConversations";
 import { useEffect } from "react";
+import ServerItem from "./ServerItem";
+import ServerRailButton from "./ServerRailButton";
+import HomeItem from "./HomeItem";
 
 export default function ServerRail() {
   const { serverId } = useParams({ strict: false });
+
   const { data: servers, isLoading, isError, error } = useServers();
   const { openModal: openCreate } = useCreateServerModal();
   const { openModal: openJoin } = useJoinServerModal();
@@ -34,34 +35,7 @@ export default function ServerRail() {
         "dark:bg-zinc-850 bg-white",
       )}
     >
-      <div className="group relative flex w-full justify-center">
-        <span
-          className={cn(
-            "absolute top-1/2 left-0 w-1 -translate-y-1/2 rounded-r-full bg-zinc-800 dark:bg-white",
-            "transition-[height] duration-100",
-            serverId === undefined ? "h-10" : "h-0 group-hover:h-5",
-          )}
-        />
-        <Tooltip content="Home" side="right">
-          <Link
-            to="/me"
-            className={cn(
-              "relative flex size-10 shrink-0 items-center justify-center",
-              "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
-              serverId === undefined
-                ? "rounded-xl bg-teal-500 text-white"
-                : "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
-            )}
-          >
-            <Home className="size-5 shrink-0" />
-            {count > 0 && (
-              <span className="absolute right-0 bottom-0 rounded-full bg-red-500 px-1.5 text-xs font-medium text-white">
-                {count > 99 ? "99+" : count}
-              </span>
-            )}
-          </Link>
-        </Tooltip>
-      </div>
+      <HomeItem active={serverId === undefined} unread={count} />
 
       <div className="w-12 border-t border-zinc-200 dark:border-zinc-700" />
 
@@ -74,87 +48,30 @@ export default function ServerRail() {
       ) : (
         <div className="flex w-full flex-col items-center gap-2 overflow-y-auto">
           {servers?.map((server) => (
-            <ServerContextMenu key={server.id} server={server}>
-              <div className="group relative flex w-full justify-center">
-                <span
-                  className={cn(
-                    "absolute top-1/2 left-0 w-1 -translate-y-1/2 rounded-r-full bg-zinc-800 dark:bg-white",
-                    "transition-[height] duration-100",
-                    serverId === server.id ? "h-10" : "h-0 group-hover:h-5",
-                  )}
-                />
-                <Tooltip content={server.name} side="right">
-                  <Link
-                    to="/servers/$serverId"
-                    params={{ serverId: server.id }}
-                    aria-label={server.name}
-                    className={cn(
-                      "flex size-10 shrink-0 items-center justify-center overflow-hidden",
-                      "transition-[border-radius,background-color] duration-100",
-                      serverId === server.id
-                        ? "rounded-xl bg-teal-500 text-white"
-                        : "dark:bg-zinc-750 rounded-[50%] bg-zinc-100 hover:rounded-xl hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
-                    )}
-                  >
-                    {server.icon ? (
-                      <img
-                        src={pb.files.getURL(server, server.icon, {
-                          thumb: "100x100",
-                        })}
-                        alt="server icon"
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      server.name.slice(0, 2).toUpperCase()
-                    )}
-                  </Link>
-                </Tooltip>
-              </div>
-            </ServerContextMenu>
+            <ServerItem
+              key={server.id}
+              server={server}
+              selectedServerId={serverId ?? ""}
+            />
           ))}
         </div>
       )}
 
       <div className="mt-auto w-12 border-t border-zinc-200 dark:border-zinc-700" />
 
-      <Tooltip content="Create server" side="right">
-        <button
-          onClick={openCreate}
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center",
-            "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
-            "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
-          )}
-        >
-          <Plus className="size-5 shrink-0" />
-        </button>
-      </Tooltip>
+      <ServerRailButton
+        label="Create server"
+        Icon={Plus}
+        onClick={openCreate}
+      />
 
-      <Tooltip content="Join server" side="right">
-        <button
-          onClick={openJoin}
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center",
-            "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
-            "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
-          )}
-        >
-          <Compass className="size-5 shrink-0" />
-        </button>
-      </Tooltip>
+      <ServerRailButton label="Join server" Icon={Compass} onClick={openJoin} />
 
-      <Tooltip content="Settings" side="right">
-        <button
-          onClick={openSettings}
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center",
-            "rounded-[50%] transition-[border-radius,background-color] duration-100 hover:rounded-xl",
-            "dark:bg-zinc-750 bg-zinc-100 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
-          )}
-        >
-          <Settings className="size-5 shrink-0" />
-        </button>
-      </Tooltip>
+      <ServerRailButton
+        label="Settings"
+        Icon={Settings}
+        onClick={openSettings}
+      />
     </nav>
   );
 }
