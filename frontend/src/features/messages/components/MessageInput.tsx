@@ -203,7 +203,7 @@ export default function MessageInput({
   };
 
   return (
-    <>
+    <div>
       {isDragging && (
         <div
           className={cn(
@@ -302,24 +302,29 @@ export default function MessageInput({
 
           <div className="absolute top-1/2 right-20 -translate-y-1/2">
             <StickerPopover onSend={handleStickerSelect}>
-              <button
-                type="button"
-                className="block text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
-              >
-                <Sticker className="size-5 shrink-0" />
-              </button>
+              <div>
+                <Tooltip content="Send Sticker" side="top">
+                  <div className="block text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400">
+                    <Sticker className="size-5 shrink-0" />
+                  </div>
+                </Tooltip>
+              </div>
             </StickerPopover>
           </div>
 
           <EmojiPickerPopover
             onEmojiSelect={(emoji) => setContent((prev) => prev + emoji)}
           >
-            <button
-              type="button"
-              className="absolute top-1/2 right-12 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
-            >
-              <FaceSlightlySmiling className="size-5 shrink-0" />
-            </button>
+            <div className="absolute top-1/2 right-12 -translate-y-1/2">
+              <Tooltip content="Add emoji" side="top">
+                <button
+                  type="button"
+                  className="block text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
+                >
+                  <FaceSlightlySmiling className="size-5 shrink-0" />
+                </button>
+              </Tooltip>
+            </div>
           </EmojiPickerPopover>
 
           <button
@@ -331,6 +336,6 @@ export default function MessageInput({
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

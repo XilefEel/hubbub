@@ -11,6 +11,7 @@ import ConversationAvatar from "./ConversationAvatar";
 import ConversationContextMenu from "./ConversationContextMenu";
 import { Phone, X } from "lucide-react";
 import { useHideConversation } from "../hooks/useConversations";
+import Tooltip from "@/components/ui/Tooltip";
 
 export default function ConversationItem({
   conversation,
@@ -89,16 +90,18 @@ export default function ConversationItem({
             </span>
           )}
 
-          <button
-            onClick={handleHideConversation}
-            className={cn(
-              "opacity-0 transition-opacity duration-100 group-hover:opacity-100",
-              participants.length > 0 &&
-                "absolute inset-y-0 right-0 flex items-center",
-            )}
-          >
-            <X className="size-4 text-zinc-500 transition-colors duration-100 hover:text-zinc-700 dark:hover:text-zinc-300" />
-          </button>
+          <Tooltip content="Hide DM" side="right">
+            <button
+              onClick={handleHideConversation}
+              className={cn(
+                "opacity-0 transition-opacity duration-100 group-hover:opacity-100",
+                participants.length > 0 &&
+                  "absolute inset-y-0 right-0 flex items-center",
+              )}
+            >
+              <X className="size-4 text-zinc-500 transition-colors duration-100 hover:text-zinc-700 dark:hover:text-zinc-300" />
+            </button>
+          </Tooltip>
         </div>
       </Link>
     </ConversationContextMenu>

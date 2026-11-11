@@ -48,9 +48,13 @@ export default function MessageActions({
         side="top"
         align="end"
       >
-        <button className="text-zinc-400 transition-colors duration-100 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300">
-          <SmilePlus className="size-4 shrink-0" />
-        </button>
+        <div>
+          <Tooltip content="Add reaction" side="top">
+            <div className="text-zinc-400 transition-colors duration-100 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300">
+              <SmilePlus className="size-4 shrink-0" />
+            </div>
+          </Tooltip>
+        </div>
       </EmojiPickerPopover>
 
       <Tooltip content="Reply">
