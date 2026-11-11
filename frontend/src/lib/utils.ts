@@ -1,5 +1,5 @@
 import { pb } from "./pocketbase";
-import type { DateTime, Message, Reaction } from "./types";
+import type { DateTime, Message, Reaction, User } from "./types";
 import { ClientResponseError } from "pocketbase";
 import { isToday, isYesterday } from "date-fns";
 
@@ -90,3 +90,17 @@ export function groupReactionsByEmoji(
 }
 
 export const isAfter = (a: DateTime, b: DateTime) => a > b;
+
+export const parseMentions = (mentions: User[], content: string) => {
+  const names = mentions
+    .map((u) => u.name)
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+
+  if (names.length === 0) return [content];
+
+  const escaped = names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const pattern = new RegExp(`(@(?:${escaped.join("|")}))`, "g");
+
+  return content.split(pattern);
+};

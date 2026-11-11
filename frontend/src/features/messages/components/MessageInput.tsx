@@ -16,6 +16,7 @@ import MentionSuggestions from "./MentionSuggestions";
 import AttachmentButton from "./AttachmentButton";
 import StickerButton from "./StickerButton";
 import EmojiButton from "./EmojiButton";
+import HighlightedText from "./HighlightedText";
 
 export default function MessageInput({
   members,
@@ -32,6 +33,7 @@ export default function MessageInput({
 }) {
   const [content, setContent] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   const attachments = useAttachments();
 
@@ -120,19 +122,43 @@ export default function MessageInput({
             />
           )}
 
-          <input
-            autoFocus
-            ref={inputRef}
-            value={content}
-            onChange={(e) => {
-              setContent(e.target.value);
-              onTyping();
-              mentions.updateQuery(e);
-            }}
-            onKeyDown={mentions.onKeyDown}
-            placeholder="Type a message..."
-            className="w-full rounded-xl border border-zinc-200 py-2 pr-28 pl-12 outline-none focus:outline-none dark:border-zinc-700"
-          />
+          <div className="relative">
+            <div
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute inset-0 overflow-hidden rounded-xl py-2 pr-28 pl-12 whitespace-pre",
+                "border border-transparent",
+                "text-zinc-900 dark:text-zinc-100",
+              )}
+            >
+              <HighlightedText content={content} mentions={mentions.users} />
+            </div>
+
+            <input
+              autoFocus
+              ref={inputRef}
+              value={content}
+              onKeyDown={mentions.onKeyDown}
+              onChange={(e) => {
+                setContent(e.target.value);
+                onTyping();
+                mentions.updateQuery(e);
+              }}
+              onScroll={(e) => {
+                if (backdropRef.current)
+                  backdropRef.current.scrollLeft = e.currentTarget.scrollLeft;
+              }}
+              placeholder="Type a message..."
+
+              className={cn(
+                "relative w-full rounded-xl py-2 pr-28 pl-12",
+                "bg-transparent text-transparent outline-none focus:outline-none",
+                "border border-zinc-200 dark:border-zinc-700",
+                "caret-zinc-900 dark:caret-zinc-100",
+                "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+              )}
+            />
+          </div>
 
           <StickerButton handleStickerSelect={handleStickerSelect} />
 
@@ -143,7 +169,11 @@ export default function MessageInput({
           <button
             type="submit"
             disabled={sendMessage.isPending || !canSend}
-            className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 disabled:opacity-50 disabled:hover:cursor-not-allowed dark:text-zinc-500 dark:hover:text-zinc-400"
+            className={cn(
+              "absolute top-1/2 right-4 -translate-y-1/2 transition-colors duration-100",
+              "text-zinc-400 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400",
+              "disabled:opacity-50 disabled:hover:cursor-not-allowed",
+            )}
           >
             <ArrowUp className="size-5 shrink-0" />
           </button>

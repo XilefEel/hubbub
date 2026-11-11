@@ -10,7 +10,7 @@ export function useMentions({
 }: {
   members: ServerMember[] | ConversationMember[] | undefined;
   content: string;
-  setContent: (v: string) => void;
+  setContent: (content: string) => void;
   inputRef: RefObject<HTMLInputElement | null>;
 }) {
   const [mentions, setMentions] = useState<User[]>([]);
@@ -58,6 +58,7 @@ export function useMentions({
     const value = e.target.value;
     const cursor = e.target.selectionStart ?? value.length;
     const match = value.slice(0, cursor).match(/(?:^|\s)@(\w*)$/);
+
     setQuery(match ? match[1] : null);
     setSelected(0);
   };
@@ -88,6 +89,7 @@ export function useMentions({
   const reset = () => setMentions([]);
 
   return {
+    users: mentions,
     matched,
     selected,
     pick,

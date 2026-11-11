@@ -1,4 +1,5 @@
 import type { User } from "@/lib/types";
+import { parseMentions } from "@/lib/utils";
 
 export default function MessageContent({
   content,
@@ -27,18 +28,4 @@ export default function MessageContent({
       )}
     </p>
   );
-}
-
-function parseMentions(mentions: User[], content: string) {
-  const names = mentions
-    .map((u) => u.name)
-    .filter(Boolean)
-    .sort((a, b) => b.length - a.length);
-
-  if (names.length === 0) return [content];
-
-  const escaped = names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const pattern = new RegExp(`(@(?:${escaped.join("|")}))`, "g");
-
-  return content.split(pattern);
 }
