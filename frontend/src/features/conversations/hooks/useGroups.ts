@@ -21,7 +21,7 @@ export function useCreateGroup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.conversations.list(),
+        queryKey: queryKeys.conversations.all(),
       });
     },
   });
@@ -51,7 +51,7 @@ export function useEditGroup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.conversations.list(),
+        queryKey: queryKeys.conversations.all(),
       });
     },
   });

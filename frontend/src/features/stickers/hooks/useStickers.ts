@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useMyStickers() {
   return useQuery({
-    queryKey: queryKeys.stickers.all(),
+    queryKey: queryKeys.stickers.list(),
     queryFn: () =>
       pb.collection<UserSticker>("user_stickers").getFullList({
         expand: "sticker",

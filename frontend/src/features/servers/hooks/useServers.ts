@@ -11,7 +11,7 @@ export function useServers() {
   const userId = pb.authStore.record?.id;
 
   return useQuery<Server[]>({
-    queryKey: queryKeys.servers.list(userId || ""),
+    queryKey: queryKeys.servers.byUser(userId || ""),
     queryFn: async () => {
       if (!userId) return [];
       return await pb.collection("servers").getFullList<Server>();
@@ -43,7 +43,7 @@ export function useCreateServer() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.servers.list(userId || ""),
+        queryKey: queryKeys.servers.all(),
       });
     },
   });
@@ -51,7 +51,6 @@ export function useCreateServer() {
 
 export function useJoinServer() {
   const queryClient = useQueryClient();
-  const userId = pb.authStore.record?.id;
 
   return useMutation({
     mutationFn: async ({ inviteCode }: { inviteCode: string }) => {
@@ -62,7 +61,7 @@ export function useJoinServer() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.servers.list(userId || ""),
+        queryKey: queryKeys.servers.all(),
       });
     },
   });
@@ -107,7 +106,7 @@ export function useLeaveServer() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.servers.list(userId || ""),
+        queryKey: queryKeys.servers.all(),
       });
     },
   });
@@ -115,7 +114,6 @@ export function useLeaveServer() {
 
 export function useDeleteServer() {
   const queryClient = useQueryClient();
-  const userId = pb.authStore.record?.id;
 
   return useMutation({
     mutationFn: async (serverId: string) => {
@@ -123,7 +121,7 @@ export function useDeleteServer() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.servers.list(userId || ""),
+        queryKey: queryKeys.servers.all(),
       });
     },
   });
@@ -133,7 +131,7 @@ export function useMutualServers(targetId?: string) {
   const currentUserId = pb.authStore.record?.id;
 
   const { data } = useQuery({
-    queryKey: queryKeys.mutualServers.list(targetId || ""),
+    queryKey: queryKeys.mutualServers.byUser(targetId || ""),
     queryFn: async () => {
       return await pb.send<{ servers: string[] }>(
         `/api/mutual/${targetId}`,

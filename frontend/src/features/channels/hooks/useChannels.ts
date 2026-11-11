@@ -8,7 +8,7 @@ export function useChannels(serverId: string) {
   const queryClient = useQueryClient();
 
   const query = useQuery<Channel[]>({
-    queryKey: queryKeys.channels.list(serverId),
+    queryKey: queryKeys.channels.byServer(serverId),
     queryFn: async () => {
       return await pb.collection("channels").getFullList<Channel>({
         filter: pb.filter("server = {:id}", { id: serverId }),
@@ -21,7 +21,7 @@ export function useChannels(serverId: string) {
   useEffect(() => {
     if (!serverId) return;
 
-    const key = queryKeys.channels.list(serverId);
+    const key = queryKeys.channels.byServer(serverId);
     const unsubPromise = pb.collection("channels").subscribe<Channel>(
       "*",
       (e) => {
@@ -67,7 +67,7 @@ export function useChannelDetail(channelId: string, serverId: string) {
     queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
     initialData: () =>
       queryClient
-        .getQueryData<Channel[]>(queryKeys.channels.list(serverId))
+        .getQueryData<Channel[]>(queryKeys.channels.byServer(serverId))
         ?.find((c) => c.id === channelId),
     enabled: !!channelId,
   });
@@ -90,7 +90,7 @@ export function useCreateChannel(serverId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.list(serverId),
+        queryKey: queryKeys.channels.all(),
       });
     },
   });
@@ -109,12 +109,9 @@ export function useUpdateChannel() {
     }) => {
       return await pb.collection("channels").update(channelId, { name });
     },
-    onSuccess: (_data, { channelId }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.detail(channelId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.list(_data.server),
+        queryKey: queryKeys.channels.all(),
       });
     },
   });
@@ -124,17 +121,15 @@ export function useDeleteChannel() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      channelId,
-    }: {
-      serverId: string;
-      channelId: string;
-    }) => {
+    mutationFn: async ({ channelId }: { channelId: string }) => {
       return await pb.collection("channels").delete(channelId);
     },
-    onSuccess: (_data, { serverId }) => {
+    onSuccess: (_, { channelId }) => {
+      queryClient.removeQueries({
+        queryKey: queryKeys.channels.detail(channelId),
+      });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.list(serverId),
+        queryKey: queryKeys.channels.all(),
       });
     },
   });

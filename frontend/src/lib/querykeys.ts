@@ -1,55 +1,66 @@
 export const queryKeys = {
   servers: {
     all: () => ["servers"] as const,
-    list: (userId: string) => ["servers", userId] as const,
+    byUser: (userId: string) => ["servers", "byUser", userId] as const,
     detail: (serverId: string) => ["servers", "detail", serverId] as const,
   },
   serverMembers: {
     all: () => ["server_members"] as const,
-    list: (serverId: string) => ["server_members", serverId] as const,
-    mine: (userId?: string) => ["server_members", "mine", userId] as const,
+    byServer: (serverId: string) =>
+      ["server_members", "byServer", serverId] as const,
+    byUser: (userId?: string) => ["server_members", "byUser", userId] as const,
   },
   channels: {
-    list: (serverId: string) => ["channels", serverId] as const,
+    all: () => ["channels"] as const,
+    byServer: (serverId: string) => ["channels", "byServer", serverId] as const,
     detail: (channelId: string) => ["channels", "detail", channelId] as const,
   },
   messages: {
     all: () => ["messages"] as const,
-    list: (type: "channel" | "conversation", id: string) =>
-      ["messages", type, id] as const,
+    byParent: (type: "channel" | "conversation", id: string) =>
+      ["messages", "byParent", type, id] as const,
   },
   reactions: {
     all: () => ["reactions"] as const,
-    list: (channelId: string) => ["reactions", channelId] as const,
+    byParent: (type: "channel" | "conversation", id: string) =>
+      ["reactions", "byParent", type, id] as const,
   },
   voiceParticipants: {
-    list: (type: "channel" | "conversation", id: string) =>
-      ["voice_participants", type, id] as const,
+    all: () => ["voice_participants"] as const,
+    byParent: (type: "channel" | "conversation", id: string) =>
+      ["voice_participants", "byParent", type, id] as const,
     byServer: (serverId: string) =>
-      ["voice_participants", "server", serverId] as const,
-    dmCalls: () => ["voice_participants", "dms"] as const,
+      ["voice_participants", "byServer", serverId] as const,
+    dmCalls: () => ["voice_participants", "dmCalls"] as const,
   },
   readStates: {
-    list: () => ["read_states"] as const,
+    all: () => ["read_states"] as const,
+    list: () => ["read_states", "list"] as const,
   },
   friendships: {
-    list: (userId: string) => ["friendships", userId] as const,
+    all: () => ["friendships"] as const,
+    byUser: (userId?: string) => ["friendships", "byUser", userId] as const,
   },
   conversations: {
     all: () => ["conversations"] as const,
     list: () => ["conversations", "list"] as const,
   },
   conversationMembers: {
-    list: (conversationId: string) =>
-      ["conversation_members", conversationId] as const,
+    all: () => ["conversation_members"] as const,
+    byConversation: (conversationId: string) =>
+      ["conversation_members", "byConversation", conversationId] as const,
   },
   mutualServers: {
-    list: (userId: string) => ["mutual_servers", userId] as const,
+    all: () => ["mutual_servers"] as const,
+    byUser: (userId: string) => ["mutual_servers", "byUser", userId] as const,
   },
   mutualFriends: {
-    list: (userId: string) => ["mutual_friends", userId] as const,
+    all: () => ["mutual_friends"] as const,
+    byUsers: (currentUserId?: string, targetId?: string) =>
+      ["mutual_friends", "byUsers", currentUserId, targetId] as const,
   },
   stickers: {
     all: () => ["stickers"] as const,
+    list: () => ["stickers", "list"] as const,
   },
 };

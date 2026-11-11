@@ -34,11 +34,14 @@ export function useConversationSubscription() {
 
   useEffect(() => {
     const key = queryKeys.conversations.list();
+
     const unsubPromise = pb
       .collection("conversations")
       .subscribe<Conversation>("*", (e) => {
         if (e.action === "create") {
-          queryClient.invalidateQueries({ queryKey: key });
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.conversations.all(),
+          });
           return;
         }
 
@@ -88,7 +91,7 @@ export function useMarkConversationRead() {
     },
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: queryKeys.conversations.list(),
+        queryKey: queryKeys.conversations.all(),
       }),
   });
 }

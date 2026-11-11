@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function useConversationMembers(conversationId: string) {
   return useQuery({
-    queryKey: queryKeys.conversationMembers.list(conversationId),
+    queryKey: queryKeys.conversationMembers.byConversation(conversationId),
     queryFn: async () => {
       return await pb
         .collection("conversation_members")

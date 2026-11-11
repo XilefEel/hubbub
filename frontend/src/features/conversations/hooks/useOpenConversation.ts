@@ -17,7 +17,7 @@ export function useOpenConversation() {
     },
     onSuccess: (conversationId) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.conversations.list(),
+        queryKey: queryKeys.conversations.all(),
       });
       navigate({
         to: "/me/conversations/$conversationId",

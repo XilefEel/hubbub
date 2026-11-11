@@ -6,7 +6,7 @@ function useMyMemberships() {
   const userId = pb.authStore.record?.id;
 
   return useQuery({
-    queryKey: queryKeys.serverMembers.mine(userId),
+    queryKey: queryKeys.serverMembers.byUser(userId!),
     queryFn: async () => {
       return await pb.collection("server_members").getFullList({
         filter: pb.filter("user = {:id}", { id: userId }),

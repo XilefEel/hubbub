@@ -5,7 +5,7 @@ import { queryKeys } from "@/lib/querykeys";
 
 export function useServerMembers(serverId: string) {
   return useQuery<ServerMember[]>({
-    queryKey: queryKeys.serverMembers.list(serverId),
+    queryKey: queryKeys.serverMembers.byServer(serverId),
     queryFn: async () => {
       return await pb.collection("server_members").getFullList<ServerMember>({
         filter: pb.filter("server = {:id}", { id: serverId }),
@@ -34,7 +34,7 @@ export function useUpdateMemberRole(serverId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.serverMembers.list(serverId),
+        queryKey: queryKeys.serverMembers.byServer(serverId),
       });
     },
   });
@@ -49,7 +49,7 @@ export function useBanMember(serverId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.serverMembers.list(serverId),
+        queryKey: queryKeys.serverMembers.byServer(serverId),
       });
     },
   });

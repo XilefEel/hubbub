@@ -2,16 +2,16 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
-import {
-  type Friendship,
-  type FriendshipRelation,
-  type SendFriendRequestResult,
-  type User,
+import type {
+  Friendship,
+  FriendshipRelation,
+  SendFriendRequestResult,
+  User,
 } from "@/lib/types";
 
 export function useFriendships(userId: string | undefined) {
   return useQuery<Friendship[]>({
-    queryKey: queryKeys.friendships.list(userId ?? ""),
+    queryKey: queryKeys.friendships.byUser(userId),
     queryFn: () =>
       pb.collection("friendships").getFullList<Friendship>({
         filter: pb.filter("requester = {:id} || addressee = {:id}", {
@@ -31,7 +31,7 @@ export function useFriendshipsSubscription(userId: string | undefined) {
   useEffect(() => {
     if (!userId) return;
 
-    const key = queryKeys.friendships.list(userId);
+    const key = queryKeys.friendships.byUser(userId);
     const unsubPromise = pb.collection("friendships").subscribe<Friendship>(
       "*",
       (e) => {
@@ -41,7 +41,7 @@ export function useFriendshipsSubscription(userId: string | undefined) {
             case "create":
               return old.some((f) => f.id === e.record.id)
                 ? old
-                : [...old, e.record];
+                : [e.record, ...old];
             case "update":
               return old.map((f) => (f.id === e.record.id ? e.record : f));
             case "delete":
@@ -126,7 +126,7 @@ export function useSendFriendRequest() {
     onSuccess: (result) => {
       if (result.status === "sent") {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.friendships.list(currentUserId || ""),
+          queryKey: queryKeys.friendships.all(),
         });
       }
     },
@@ -134,6 +134,7 @@ export function useSendFriendRequest() {
 }
 
 export function useRespondToFriendRequest() {
+  const queryClient = useQueryClient();
   const currentUserId = pb.authStore.record?.id;
 
   return useMutation({
@@ -155,6 +156,8 @@ export function useRespondToFriendRequest() {
         await pb.collection("friendships").delete(friendshipId);
       }
     },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.friendships.all() }),
   });
 }
 
@@ -187,7 +190,7 @@ export function useMutualFriends(targetId?: string) {
   const currentUserId = pb.authStore.record?.id;
 
   const { data } = useQuery({
-    queryKey: queryKeys.mutualFriends.list(targetId || ""),
+    queryKey: queryKeys.mutualFriends.byUsers(currentUserId, targetId),
     queryFn: async () => {
       return await pb.send<{ friends: string[] }>(
         `/api/mutual/${targetId}`,

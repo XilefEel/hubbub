@@ -81,7 +81,7 @@ export function useMessages(scope: MessageScope) {
   const { type, id } = scope;
 
   const query = useInfiniteQuery({
-    queryKey: queryKeys.messages.list(type, id),
+    queryKey: queryKeys.messages.byParent(type, id),
     queryFn: async ({ pageParam }) => {
       const filter = pageParam
         ? pb.filter(`${type} = {:id} && created < {:cursor}`, {
@@ -115,7 +115,7 @@ export function useMessages(scope: MessageScope) {
   useEffect(() => {
     if (!id) return;
 
-    const key = queryKeys.messages.list(type, id);
+    const key = queryKeys.messages.byParent(type, id);
     const unsubPromise = pb.collection("messages").subscribe<Message>(
       "*",
       (e) => {

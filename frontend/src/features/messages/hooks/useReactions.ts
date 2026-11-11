@@ -8,7 +8,7 @@ export function useReactions(scope: MessageScope) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: queryKeys.reactions.list(scope.id),
+    queryKey: queryKeys.reactions.byParent(scope.type, scope.id),
     queryFn: async () => {
       return await pb.collection("reactions").getFullList<Reaction>({
         filter: pb.filter(`message.${scope.type} = {:id}`, { id: scope.id }),
@@ -21,7 +21,7 @@ export function useReactions(scope: MessageScope) {
   useEffect(() => {
     if (!scope.id) return;
 
-    const key = queryKeys.reactions.list(scope.id);
+    const key = queryKeys.reactions.byParent(scope.type, scope.id);
     const unsubPromise = pb.collection("reactions").subscribe<Reaction>(
       "*",
       (e) => {

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 export function useVoiceParticipants({ type, id }: VoiceScope) {
   return useVoiceParticipantsQuery({
-    queryKey: queryKeys.voiceParticipants.list(type, id),
+    queryKey: queryKeys.voiceParticipants.byParent(type, id),
     filter: pb.filter(`${type} = {:id}`, { id }),
     enabled: !!id,
   });
