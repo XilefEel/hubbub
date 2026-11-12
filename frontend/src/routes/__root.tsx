@@ -12,6 +12,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useConversationsSubscription } from "@/features/conversations/hooks/useConversations";
 import { useDmCallsSubscription } from "@/features/voice/hooks/useVoiceParticipants";
 import { usePresence } from "@/features/members/hooks/usePresence";
+import { useReadStatesSubscription } from "@/features/channels/hooks/useReadStates";
+import { useMyChannelsSubscription } from "@/features/channels/hooks/useChannels";
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {
@@ -35,6 +37,8 @@ function RootLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
 
+  useMyChannelsSubscription();
+  useReadStatesSubscription();
   useFriendshipsSubscription();
   useConversationsSubscription();
   useDmCallsSubscription();

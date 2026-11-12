@@ -2,7 +2,6 @@ import { useUIActions } from "@/app/stores/useUIStore";
 import Tooltip from "@/components/ui/Tooltip";
 import ChannelList from "@/features/channels/components/ChannelList";
 import { useChannelsSubscription } from "@/features/channels/hooks/useChannels";
-import { useReadStatesSubscription } from "@/features/channels/hooks/useReadStates";
 import MemberList from "@/features/members/components/MemberList";
 import { usePanelSync } from "@/features/servers/hooks/usePanelSync";
 import { useServerDetail } from "@/features/servers/hooks/useServers";
@@ -44,7 +43,6 @@ function ServerPage() {
 
   useChannelsSubscription(serverId);
   useServerCallsSubscription(serverId);
-  useReadStatesSubscription();
 
   if (isLoading)
     return (

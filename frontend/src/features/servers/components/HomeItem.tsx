@@ -34,7 +34,7 @@ export default function HomeItem({
           <Home className="size-5 shrink-0" />
 
           {unread > 0 && (
-            <span className="absolute right-0 bottom-0 rounded-full bg-red-500 px-1.5 text-xs font-medium text-white">
+            <span className="absolute -right-1 -bottom-1 rounded-full bg-red-500 px-1.5 text-xs font-medium text-white">
               {unread > 99 ? "99+" : unread}
             </span>
           )}

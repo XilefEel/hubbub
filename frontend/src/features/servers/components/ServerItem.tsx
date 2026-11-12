@@ -8,10 +8,14 @@ import ServerContextMenu from "./ServerContextMenu";
 export default function ServerItem({
   server,
   selectedServerId,
+  unreads,
 }: {
   server: Server;
   selectedServerId: string;
+  unreads?: { unread: boolean; mentions: number };
 }) {
+  const hasMentions = (unreads?.mentions ?? 0) > 0;
+
   return (
     <ServerContextMenu server={server}>
       <div className="group relative flex w-full justify-center">
@@ -22,31 +26,40 @@ export default function ServerItem({
             selectedServerId === server.id ? "h-10" : "h-0 group-hover:h-5",
           )}
         />
+
         <Tooltip content={server.name} side="right">
-          <Link
-            to="/servers/$serverId"
-            params={{ serverId: server.id }}
-            aria-label={server.name}
-            className={cn(
-              "flex size-10 shrink-0 items-center justify-center overflow-hidden",
-              "transition-[border-radius,background-color] duration-100",
-              selectedServerId === server.id
-                ? "rounded-xl bg-teal-500 text-white"
-                : "dark:bg-zinc-750 rounded-[50%] bg-zinc-100 hover:rounded-xl hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
+          <div className="relative">
+            <Link
+              to="/servers/$serverId"
+              params={{ serverId: server.id }}
+              aria-label={server.name}
+              className={cn(
+                "flex size-10 shrink-0 items-center justify-center overflow-hidden",
+                "transition-[border-radius,background-color] duration-100",
+                selectedServerId === server.id
+                  ? "rounded-xl bg-teal-500 text-white"
+                  : "dark:bg-zinc-750 rounded-[50%] bg-zinc-100 hover:rounded-xl hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700",
+              )}
+            >
+              {server.icon ? (
+                <img
+                  src={pb.files.getURL(server, server.icon, {
+                    thumb: "100x100",
+                  })}
+                  alt="server icon"
+                  className="size-full object-cover"
+                />
+              ) : (
+                server.name.slice(0, 2).toUpperCase()
+              )}
+            </Link>
+
+            {hasMentions && (
+              <span className="absolute -right-1 -bottom-1 rounded-full bg-red-500 px-1.5 text-xs font-medium text-white">
+                {unreads!.mentions > 99 ? "99+" : unreads!.mentions}
+              </span>
             )}
-          >
-            {server.icon ? (
-              <img
-                src={pb.files.getURL(server, server.icon, {
-                  thumb: "100x100",
-                })}
-                alt="server icon"
-                className="size-full object-cover"
-              />
-            ) : (
-              server.name.slice(0, 2).toUpperCase()
-            )}
-          </Link>
+          </div>
         </Tooltip>
       </div>
     </ServerContextMenu>

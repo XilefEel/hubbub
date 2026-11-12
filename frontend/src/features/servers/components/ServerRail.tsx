@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import ServerItem from "./ServerItem";
 import ServerRailButton from "./ServerRailButton";
 import HomeItem from "./HomeItem";
+import { useServerUnreads } from "../hooks/useServerReads";
 
 export default function ServerRail() {
   const { serverId } = useParams({ strict: false });
@@ -21,6 +22,7 @@ export default function ServerRail() {
   const { openModal: openSettings } = useSettingsModal();
 
   const unread = useUnreadConversations();
+  const serverUnreads = useServerUnreads();
   const count = unread.length;
 
   useEffect(() => {
@@ -52,6 +54,7 @@ export default function ServerRail() {
               key={server.id}
               server={server}
               selectedServerId={serverId ?? ""}
+              unreads={serverUnreads?.get(server.id)}
             />
           ))}
         </div>

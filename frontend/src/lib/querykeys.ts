@@ -13,6 +13,7 @@ export const queryKeys = {
   channels: {
     all: () => ["channels"] as const,
     byServer: (serverId: string) => ["channels", "byServer", serverId] as const,
+    byUser: (userId?: string) => ["channels", "byUser", userId] as const,
     detail: (channelId: string) => ["channels", "detail", channelId] as const,
   },
   messages: {

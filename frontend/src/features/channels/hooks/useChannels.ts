@@ -77,6 +77,61 @@ export function useChannelDetail(channelId: string, serverId: string) {
   });
 }
 
+export function useMyChannels() {
+  const userId = pb.authStore.record?.id;
+
+  return useQuery<Channel[]>({
+    queryKey: queryKeys.channels.byUser(userId),
+    queryFn: () =>
+      pb.collection("channels").getFullList<Channel>({
+        filter: pb.filter("server.server_members_via_server.user ?= {:me}", {
+          me: userId,
+        }),
+      }),
+    enabled: !!userId,
+  });
+}
+
+export function useMyChannelsSubscription() {
+  const queryClient = useQueryClient();
+  const userId = pb.authStore.record?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+    const key = queryKeys.channels.byUser(userId);
+
+    const unsubPromise = pb
+      .collection("channels")
+      .subscribe<Channel>("*", (e) => {
+        if (e.action === "create") {
+          queryClient.invalidateQueries({ queryKey: key });
+          return;
+        }
+
+        queryClient.setQueryData<Channel[]>(key, (old) => {
+          if (!old || !old.some((c) => c.id === e.record.id)) return old;
+
+          switch (e.action) {
+            case "update":
+              return old.map((c) => (c.id === e.record.id ? e.record : c));
+            case "delete":
+              return old.filter((c) => c.id !== e.record.id);
+            default:
+              return old;
+          }
+        });
+      });
+
+    unsubPromise.catch((err) =>
+      console.warn("my channels subscription failed:", err),
+    );
+
+    return () => {
+      unsubPromise.then((unsub) => unsub()).catch(() => {});
+    };
+  }, [queryClient, userId]);
+}
+
 export function useCreateChannel(serverId: string) {
   const queryClient = useQueryClient();
 

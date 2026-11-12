@@ -6,8 +6,8 @@ import ChannelContextMenu from "./ChannelContextMenu";
 import type { Channel, VoiceParticipant, VoiceScope } from "@/lib/types";
 import VoiceParticipantsList from "@/features/voice/components/VoiceParticipantsList";
 import { useActiveScope } from "@/features/voice/store/useVoiceChannelStore";
-import { isAfter } from "@/lib/utils";
 import { cn } from "cn";
+import { isChannelUnread } from "../utils/unread";
 
 export default function ChannelItem({
   channel,
@@ -35,11 +35,7 @@ export default function ChannelItem({
 
   const mentionCount = read?.mentionCount ?? 0;
 
-  const isUnread =
-    !isPending &&
-    channel.type !== "voice" &&
-    !!channel.lastMessageAt &&
-    (!read || isAfter(channel.lastMessageAt, read.lastReadAt));
+  const isUnread = !isPending && isChannelUnread(channel, read);
 
   const handleClick = () => {
     if (channel.type !== "voice") return;

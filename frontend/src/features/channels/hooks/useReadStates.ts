@@ -16,6 +16,7 @@ export function useChannelReads() {
       });
     },
     select: (rows) => new Map(rows.map((r) => [r.channel, r])),
+    enabled: !!userId,
   });
 }
 
