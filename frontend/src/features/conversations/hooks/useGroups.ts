@@ -19,11 +19,10 @@ export function useCreateGroup() {
       });
       return res.conversationId;
     },
-    onSuccess: () => {
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.conversations.all(),
-      });
-    },
+      }),
   });
 }
 
@@ -49,10 +48,9 @@ export function useEditGroup() {
       );
       return res.conversationId;
     },
-    onSuccess: () => {
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.conversations.all(),
-      });
-    },
+      }),
   });
 }

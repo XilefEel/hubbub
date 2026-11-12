@@ -12,14 +12,14 @@ export function useUpdateAvatar() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: (file: File) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to update avatar");
 
       const formData = new FormData();
       formData.append("avatar", file);
 
-      return await pb.collection("users").update(userId, formData);
+      return pb.collection("users").update(userId, formData);
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -29,11 +29,11 @@ export function useRemoveAvatar() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: () => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to remove avatar");
 
-      return await pb.collection("users").update(userId, { avatar: "" });
+      return pb.collection("users").update(userId, { avatar: "" });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -43,11 +43,11 @@ export function useUpdateUsername() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name }: { name: string }) => {
+    mutationFn: ({ name }: { name: string }) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to update username");
 
-      return await pb.collection("users").update(userId, { name });
+      return pb.collection("users").update(userId, { name });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -55,12 +55,13 @@ export function useUpdateUsername() {
 
 export function useUpdateBio() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (bio: string) => {
+    mutationFn: (bio: string) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to update bio");
 
-      return await pb.collection("users").update(userId, { bio });
+      return pb.collection("users").update(userId, { bio });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -68,12 +69,13 @@ export function useUpdateBio() {
 
 export function useUpdateBannerColor() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (bannerColor: string) => {
+    mutationFn: (bannerColor: string) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to update banner color");
 
-      return await pb.collection("users").update(userId, { bannerColor });
+      return pb.collection("users").update(userId, { bannerColor });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });

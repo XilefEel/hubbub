@@ -60,7 +60,7 @@ export function useFriendshipsSubscription(userId: string | undefined) {
     );
 
     unsubPromise.catch((err) =>
-      console.warn("friendship subscription failed:", err),
+      console.warn("friendships subscription failed:", err),
     );
 
     return () => {
@@ -71,10 +71,10 @@ export function useFriendshipsSubscription(userId: string | undefined) {
 
 export function useSendFriendRequest() {
   const queryClient = useQueryClient();
-  const currentUserId = pb.authStore.record?.id;
 
   return useMutation({
     mutationFn: async (username: string): Promise<SendFriendRequestResult> => {
+      const currentUserId = pb.authStore.record?.id;
       if (!currentUserId)
         throw new Error("Must be logged in to send friend requests");
 
@@ -125,7 +125,7 @@ export function useSendFriendRequest() {
     },
     onSuccess: (result) => {
       if (result.status === "sent") {
-        queryClient.invalidateQueries({
+        return queryClient.invalidateQueries({
           queryKey: queryKeys.friendships.all(),
         });
       }
@@ -191,12 +191,8 @@ export function useMutualFriends(targetId?: string) {
 
   const { data } = useQuery({
     queryKey: queryKeys.mutualFriends.byUsers(currentUserId, targetId),
-    queryFn: async () => {
-      return await pb.send<{ friends: string[] }>(
-        `/api/mutual/${targetId}`,
-        {},
-      );
-    },
+    queryFn: () =>
+      pb.send<{ friends: string[] }>(`/api/mutual/${targetId}`, {}),
     enabled: !!targetId && targetId !== currentUserId,
     staleTime: 1000 * 60 * 5,
   });

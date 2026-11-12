@@ -55,29 +55,25 @@ export function useSendMessage() {
 
 export function useEditMessage(onSuccess?: () => void) {
   return useMutation({
-    mutationFn: async ({
+    mutationFn: ({
       messageId,
       content,
     }: {
       messageId: string;
       content: string;
-    }) => {
-      return await pb.collection("messages").update(messageId, { content });
-    },
+    }) => pb.collection("messages").update(messageId, { content }),
     onSuccess,
   });
 }
 
 export function useDeleteMessage() {
   return useMutation({
-    mutationFn: async (messageId: string) => {
-      return await pb.collection("messages").delete(messageId);
-    },
+    mutationFn: (messageId: string) =>
+      pb.collection("messages").delete(messageId),
   });
 }
 
 export function useMessages(scope: MessageScope) {
-  const queryClient = useQueryClient();
   const { type, id } = scope;
 
   const query = useInfiniteQuery({
@@ -112,6 +108,21 @@ export function useMessages(scope: MessageScope) {
     getNextPageParam: (last) => last.nextCursor,
   });
 
+  const messages = useMemo(
+    () =>
+      query.data
+        ? [...query.data.pages].reverse().flatMap((p) => [...p.items].reverse())
+        : [],
+    [query.data],
+  );
+
+  return { ...query, data: messages };
+}
+
+export function useMessagesSubscription(scope: MessageScope) {
+  const queryClient = useQueryClient();
+  const { type, id } = scope;
+
   useEffect(() => {
     if (!id) return;
 
@@ -131,6 +142,7 @@ export function useMessages(scope: MessageScope) {
               );
               if (exists) return old;
               const [first, ...rest] = old.pages;
+
               return {
                 ...old,
                 pages: [
@@ -187,16 +199,6 @@ export function useMessages(scope: MessageScope) {
       );
     };
   }, [type, id, queryClient]);
-
-  const messages = useMemo(
-    () =>
-      query.data
-        ? [...query.data.pages].reverse().flatMap((p) => [...p.items].reverse())
-        : [],
-    [query.data],
-  );
-
-  return { ...query, data: messages };
 }
 
 export async function fetchLastMessage(channelId: string) {

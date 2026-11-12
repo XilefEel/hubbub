@@ -59,9 +59,7 @@ export function useLeaveVoiceChannel() {
   const { clearRoom } = useVoiceActions();
 
   return useMutation({
-    mutationFn: async () => {
-      useVoiceChannelStore.getState().room?.disconnect();
-    },
+    mutationFn: async () => useVoiceChannelStore.getState().room?.disconnect(),
     onSuccess: clearRoom,
   });
 }

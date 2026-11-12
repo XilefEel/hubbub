@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef } from "react";
 import MessageItem from "./MessageItem";
 import type { Message, MessageScope } from "@/lib/types";
 import { groupReactionsByMessage, isSameGroup } from "@/lib/utils";
-import { useReactions } from "../hooks/useReactions";
+import { useReactions, useReactionsSubscription } from "../hooks/useReactions";
 import { useMessageFocus } from "../hooks/useMessageFocus";
 import { useStickyScroll } from "../hooks/useStickyScroll";
 import { useUnreadDivider } from "../hooks/useUnreadDivider";
@@ -40,6 +40,8 @@ export default function MessageList({
     () => groupReactionsByMessage(reactions),
     [reactions],
   );
+
+  useReactionsSubscription(scope);
 
   const { lastReadAt, markAsRead, ready } = readMarker;
 

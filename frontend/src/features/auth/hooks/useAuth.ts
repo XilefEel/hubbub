@@ -10,25 +10,21 @@ export function useAuth() {
     pb.authStore.record as User | null,
   );
 
-  useEffect(() => {
-    return pb.authStore.onChange(() => {
-      setIsValid(pb.authStore.isValid);
-      setUser(pb.authStore.record as User | null);
-    });
-  }, []);
+  useEffect(
+    () =>
+      pb.authStore.onChange(() => {
+        setIsValid(pb.authStore.isValid);
+        setUser(pb.authStore.record as User | null);
+      }),
+    [],
+  );
 
   return { isValid, user };
 }
 
 export function useLogin() {
   return useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => {
+    mutationFn: ({ email, password }: { email: string; password: string }) => {
       const cleanEmail = email.trim().toLowerCase();
 
       if (!cleanEmail) throw new Error("Email or username is required");
@@ -39,9 +35,7 @@ export function useLogin() {
         throw new Error("Invalid email address");
       }
 
-      return await pb
-        .collection("users")
-        .authWithPassword(cleanEmail, password);
+      return pb.collection("users").authWithPassword(cleanEmail, password);
     },
   });
 }
@@ -87,9 +81,7 @@ export function useSignup() {
         bannerColor: DEFAULT_COLOR,
       });
 
-      return await pb
-        .collection("users")
-        .authWithPassword(cleanEmail, password);
+      return pb.collection("users").authWithPassword(cleanEmail, password);
     },
   });
 }
@@ -112,7 +104,7 @@ export function useChangePassword() {
         throw new Error("Passwords do not match");
       }
 
-      return await pb.collection("users").update(userId, {
+      return pb.collection("users").update(userId, {
         oldPassword,
         password,
         passwordConfirm,

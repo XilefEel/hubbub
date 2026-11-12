@@ -7,11 +7,10 @@ function useMyMemberships() {
 
   return useQuery({
     queryKey: queryKeys.serverMembers.byUser(userId!),
-    queryFn: async () => {
-      return await pb.collection("server_members").getFullList({
+    queryFn: () =>
+      pb.collection("server_members").getFullList({
         filter: pb.filter("user = {:id}", { id: userId }),
-      });
-    },
+      }),
     enabled: !!userId,
   });
 }

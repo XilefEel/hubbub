@@ -16,6 +16,7 @@ export function useMyStickers() {
 
 export function useCreateSticker() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
       const userId = pb.authStore.record?.id;
@@ -61,11 +62,8 @@ export function useRemoveSticker() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (userStickerId: string) => {
-      return await pb
-        .collection<UserSticker>("user_stickers")
-        .delete(userStickerId);
-    },
+    mutationFn: (userStickerId: string) =>
+      pb.collection<UserSticker>("user_stickers").delete(userStickerId),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.stickers.all() }),
   });

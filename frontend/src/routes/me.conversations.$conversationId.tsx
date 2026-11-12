@@ -5,7 +5,10 @@ import MessageInput from "@/features/messages/components/MessageInput";
 import MessageList from "@/features/messages/components/MessageList";
 import MessagesSkeleton from "@/features/messages/components/MessagesSkeleton";
 import TypingIndicator from "@/features/messages/components/TypingIndicator";
-import { useMessages } from "@/features/messages/hooks/useMessages";
+import {
+  useMessages,
+  useMessagesSubscription,
+} from "@/features/messages/hooks/useMessages";
 import type { MessageScope, Message } from "@/lib/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -40,6 +43,8 @@ function ConversationPage() {
     isFetchingNextPage,
     hasNextPage,
   } = useMessages(scope);
+
+  useMessagesSubscription(scope);
 
   const { data: members } = useConversationMembers(conversationId);
   const { typingNames, sendTyping } = useTypingIndicator(scope, members);

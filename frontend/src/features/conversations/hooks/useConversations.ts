@@ -11,12 +11,11 @@ import {
 export function useConversations() {
   return useQuery<Conversation[]>({
     queryKey: queryKeys.conversations.list(),
-    queryFn: async () => {
-      return await pb.collection("conversations").getFullList<Conversation>({
+    queryFn: () =>
+      pb.collection("conversations").getFullList<Conversation>({
         sort: "-lastMessageAt",
         expand: "conversation_members_via_conversation.user",
-      });
-    },
+      }),
   });
 }
 
@@ -78,17 +77,14 @@ export function useMarkConversationRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
+    mutationFn: ({
       memberId,
       lastReadAt,
     }: {
       memberId: string;
       lastReadAt: DateTime;
-    }) => {
-      return await pb
-        .collection("conversation_members")
-        .update(memberId, { lastReadAt });
-    },
+    }) =>
+      pb.collection("conversation_members").update(memberId, { lastReadAt }),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.conversations.all(),

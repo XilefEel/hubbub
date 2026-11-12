@@ -6,13 +6,12 @@ import { queryKeys } from "@/lib/querykeys";
 export function useServerMembers(serverId: string) {
   return useQuery<ServerMember[]>({
     queryKey: queryKeys.serverMembers.byServer(serverId),
-    queryFn: async () => {
-      return await pb.collection("server_members").getFullList<ServerMember>({
+    queryFn: () =>
+      pb.collection("server_members").getFullList<ServerMember>({
         filter: pb.filter("server = {:id}", { id: serverId }),
         expand: "user",
         sort: "role",
-      });
-    },
+      }),
     enabled: !!serverId,
   });
 }
@@ -21,17 +20,13 @@ export function useUpdateMemberRole(serverId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
+    mutationFn: ({
       membershipId,
       role,
     }: {
       membershipId: string;
       role: "admin" | "member";
-    }) => {
-      return await pb
-        .collection("server_members")
-        .update(membershipId, { role });
-    },
+    }) => pb.collection("server_members").update(membershipId, { role }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serverMembers.byServer(serverId),
@@ -44,9 +39,8 @@ export function useBanMember(serverId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (membershipId: string) => {
-      return await pb.collection("server_members").delete(membershipId);
-    },
+    mutationFn: (membershipId: string) =>
+      pb.collection("server_members").delete(membershipId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serverMembers.byServer(serverId),

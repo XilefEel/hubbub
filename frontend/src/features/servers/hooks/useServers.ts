@@ -41,11 +41,10 @@ export function useCreateServer() {
         inviteCode: generateInviteCode(),
       });
     },
-    onSuccess: () => {
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.servers.all(),
-      });
-    },
+      }),
   });
 }
 
@@ -59,11 +58,10 @@ export function useJoinServer() {
         body: { inviteCode },
       });
     },
-    onSuccess: () => {
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.servers.all(),
-      });
-    },
+      }),
   });
 }
 
@@ -84,11 +82,10 @@ export function useUpdateServer() {
       if (name !== undefined) formData.append("name", name);
       if (icon !== undefined) formData.append("icon", icon);
 
-      return await pb.collection("servers").update(serverId, formData);
+      return pb.collection("servers").update(serverId, formData);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.servers.all() });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.servers.all() }),
   });
 }
 
@@ -102,13 +99,12 @@ export function useLeaveServer() {
         .collection("server_members")
         .getFirstListItem(`user="${userId}" && server="${serverId}"`);
 
-      return await pb.collection("server_members").delete(membership.id);
+      return pb.collection("server_members").delete(membership.id);
     },
-    onSuccess: () => {
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.servers.all(),
-      });
-    },
+      }),
   });
 }
 
@@ -116,14 +112,11 @@ export function useDeleteServer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (serverId: string) => {
-      return await pb.collection("servers").delete(serverId);
-    },
-    onSuccess: () => {
+    mutationFn: (serverId: string) => pb.collection("servers").delete(serverId),
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.servers.all(),
-      });
-    },
+      }),
   });
 }
 
@@ -132,12 +125,8 @@ export function useMutualServers(targetId?: string) {
 
   const { data } = useQuery({
     queryKey: queryKeys.mutualServers.byUser(targetId || ""),
-    queryFn: async () => {
-      return await pb.send<{ servers: string[] }>(
-        `/api/mutual/${targetId}`,
-        {},
-      );
-    },
+    queryFn: () =>
+      pb.send<{ servers: string[] }>(`/api/mutual/${targetId}`, {}),
     enabled: !!targetId && targetId !== currentUserId,
     staleTime: 1000 * 60 * 5,
   });

@@ -20,8 +20,6 @@ export function useChannelReads() {
 }
 
 export function useMarkChannelRead() {
-  const userId = pb.authStore.record?.id;
-
   return useMutation({
     mutationFn: async ({
       channelId,
@@ -30,6 +28,9 @@ export function useMarkChannelRead() {
       channelId: string;
       lastReadAt: DateTime;
     }) => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Must be logged in to mark channel read");
+
       const filter = pb.filter("user = {:userId} && channel = {:channelId}", {
         userId,
         channelId,
@@ -45,12 +46,12 @@ export function useMarkChannelRead() {
       }
 
       if (existing) {
-        return await pb
+        return pb
           .collection("read_states")
           .update(existing.id, { lastReadAt, mentionCount: 0 });
       }
 
-      return await pb.collection("read_states").create({
+      return pb.collection("read_states").create({
         user: userId,
         channel: channelId,
         lastReadAt,

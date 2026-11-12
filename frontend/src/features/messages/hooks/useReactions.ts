@@ -5,23 +5,25 @@ import { queryKeys } from "@/lib/querykeys";
 import { useEffect } from "react";
 
 export function useReactions(scope: MessageScope) {
-  const queryClient = useQueryClient();
-
-  const query = useQuery({
+  return useQuery({
     queryKey: queryKeys.reactions.byParent(scope.type, scope.id),
-    queryFn: async () => {
-      return await pb.collection("reactions").getFullList<Reaction>({
+    queryFn: () =>
+      pb.collection("reactions").getFullList<Reaction>({
         filter: pb.filter(`message.${scope.type} = {:id}`, { id: scope.id }),
         expand: "user",
-      });
-    },
+      }),
     enabled: !!scope.id,
   });
+}
+
+export function useReactionsSubscription(scope: MessageScope) {
+  const queryClient = useQueryClient();
+  const { type, id } = scope;
 
   useEffect(() => {
-    if (!scope.id) return;
+    if (!id) return;
 
-    const key = queryKeys.reactions.byParent(scope.type, scope.id);
+    const key = queryKeys.reactions.byParent(type, id);
     const unsubPromise = pb.collection("reactions").subscribe<Reaction>(
       "*",
       (e) => {
@@ -40,7 +42,7 @@ export function useReactions(scope: MessageScope) {
         });
       },
       {
-        filter: pb.filter(`message.${scope.type} = {:id}`, { id: scope.id }),
+        filter: pb.filter(`message.${type} = {:id}`, { id }),
         expand: "user",
       },
     );
@@ -52,34 +54,24 @@ export function useReactions(scope: MessageScope) {
     return () => {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
-  }, [scope.id, scope.type, queryClient]);
-
-  return query;
+  }, [id, type, queryClient]);
 }
 
 export function useCreateReaction() {
   return useMutation({
-    mutationFn: async ({
-      messageId,
-      emoji,
-    }: {
-      messageId: string;
-      emoji: string;
-    }) => {
-      return await pb.collection("reactions").create<Reaction>({
+    mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) =>
+      pb.collection("reactions").create<Reaction>({
         message: messageId,
         emoji,
         user: pb.authStore.record?.id,
-      });
-    },
+      }),
   });
 }
 
 export function useDeleteReaction() {
   return useMutation({
-    mutationFn: async (reactionId: string) => {
-      return await pb.collection("reactions").delete(reactionId);
-    },
+    mutationFn: (reactionId: string) =>
+      pb.collection("reactions").delete(reactionId),
   });
 }
 
