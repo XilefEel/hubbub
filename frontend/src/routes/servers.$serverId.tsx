@@ -1,10 +1,13 @@
 import { useUIActions } from "@/app/stores/useUIStore";
 import Tooltip from "@/components/ui/Tooltip";
 import ChannelList from "@/features/channels/components/ChannelList";
+import { useChannelsSubscription } from "@/features/channels/hooks/useChannels";
+import { useReadStatesSubscription } from "@/features/channels/hooks/useReadStates";
 import MemberList from "@/features/members/components/MemberList";
 import { usePanelSync } from "@/features/servers/hooks/usePanelSync";
 import { useServerDetail } from "@/features/servers/hooks/useServers";
 import VoiceToolbar from "@/features/voice/components/VoiceToolbar";
+import { useServerCallsSubscription } from "@/features/voice/hooks/useVoiceParticipants";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { PanelLeft } from "lucide-react";
 import { useRef } from "react";
@@ -38,6 +41,10 @@ function ServerPage() {
   });
 
   const { toggleChannels } = useUIActions();
+
+  useChannelsSubscription(serverId);
+  useServerCallsSubscription(serverId);
+  useReadStatesSubscription();
 
   if (isLoading)
     return (

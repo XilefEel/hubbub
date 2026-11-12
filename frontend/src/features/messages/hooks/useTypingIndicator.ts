@@ -11,9 +11,7 @@ export function useTypingIndicator(
   members: ServerMember[] | ConversationMember[] | undefined,
 ) {
   const [typingUserIds, setTypingUserIds] = useState<string[]>([]);
-
   const timeoutsRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const lastEmittedRef = useRef<number>(0);
 
   useEffect(() => {
     if (!scope.id) return;
@@ -63,7 +61,22 @@ export function useTypingIndicator(
     };
   }, [scope.type, scope.id]);
 
-  const sendTyping = useCallback(() => {
+  const typingNames = useMemo(
+    () =>
+      typingUserIds.map(
+        (id) =>
+          members?.find((m) => m.user === id)?.expand?.user?.name || "Someone",
+      ),
+    [typingUserIds, members],
+  );
+
+  return typingNames;
+}
+
+export function useSendTyping(scope: MessageScope) {
+  const lastEmittedRef = useRef(0);
+
+  return useCallback(() => {
     if (!scope.id) return;
 
     const now = Date.now();
@@ -74,15 +87,4 @@ export function useTypingIndicator(
       (err) => console.error("typing POST failed:", err),
     );
   }, [scope.id, scope.type]);
-
-  const typingNames = useMemo(
-    () =>
-      typingUserIds.map(
-        (id) =>
-          members?.find((m) => m.user === id)?.expand?.user?.name || "Someone",
-      ),
-    [typingUserIds, members],
-  );
-
-  return { typingNames, sendTyping };
 }

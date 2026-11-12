@@ -1,7 +1,6 @@
 import { useCurrentMembership } from "@/features/members/hooks/useCurrentMembership";
 import { Plus } from "lucide-react";
-import { useChannels, useChannelsSubscription } from "../hooks/useChannels";
-import { useReadStatesSubscription } from "../hooks/useReadStates";
+import { useChannels } from "../hooks/useChannels";
 import ChannelItem from "./ChannelItem";
 import Tooltip from "@/components/ui/Tooltip";
 import ChannelListSkeleton from "./ChannelListSkeleton";
@@ -14,9 +13,6 @@ export default function ChannelList({ serverId }: { serverId: string }) {
   const { isOwner } = useCurrentMembership(serverId);
 
   const { openModal } = useCreateChannelModal();
-
-  useChannelsSubscription(serverId);
-  useReadStatesSubscription();
 
   return (
     <div className="flex flex-col gap-2">

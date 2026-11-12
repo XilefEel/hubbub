@@ -25,8 +25,9 @@ export function useFriendships(userId: string | undefined) {
   });
 }
 
-export function useFriendshipsSubscription(userId: string | undefined) {
+export function useFriendshipsSubscription() {
   const queryClient = useQueryClient();
+  const userId = pb.authStore.record?.id;
 
   useEffect(() => {
     if (!userId) return;

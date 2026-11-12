@@ -28,7 +28,7 @@ export function useUnreadConversations() {
   );
 }
 
-export function useConversationSubscription() {
+export function useConversationsSubscription() {
   const queryClient = useQueryClient();
 
   useEffect(() => {

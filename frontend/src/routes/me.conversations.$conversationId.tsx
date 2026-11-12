@@ -17,6 +17,8 @@ import { useIsInVoiceCall } from "@/features/voice/store/useVoiceChannelStore";
 import VoiceRoomView from "@/features/voice/components/VoiceRoomView";
 import { useConversations } from "@/features/conversations/hooks/useConversations";
 import { useConversationReadMarker } from "@/features/messages/hooks/useReadMarker";
+import { useVoiceParticipantsSubscription } from "@/features/voice/hooks/useVoiceParticipants";
+import { useReactionsSubscription } from "@/features/messages/hooks/useReactions";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
   component: ConversationPage,
@@ -44,14 +46,16 @@ function ConversationPage() {
     hasNextPage,
   } = useMessages(scope);
 
-  useMessagesSubscription(scope);
-
   const { data: members } = useConversationMembers(conversationId);
-  const { typingNames, sendTyping } = useTypingIndicator(scope, members);
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
   const readMarker = useConversationReadMarker(members);
+
+  useMessagesSubscription(scope);
+  useReactionsSubscription(scope);
+  useVoiceParticipantsSubscription(scope);
+  const typingNames = useTypingIndicator(scope, members);
 
   return (
     <div className="flex h-full flex-col text-zinc-900 dark:text-zinc-100">
@@ -93,7 +97,6 @@ function ConversationPage() {
           members={members}
           replyingTo={replyingTo}
           scope={scope}
-          onTyping={sendTyping}
           onCancelReply={() => setReplyingTo(null)}
         />
       </div>

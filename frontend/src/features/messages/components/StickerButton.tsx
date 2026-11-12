@@ -12,7 +12,10 @@ export default function StickerButton({
       <StickerPopover onSend={handleStickerSelect}>
         <div>
           <Tooltip content="Send Sticker" side="top">
-            <button className="block text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400">
+            <button
+              type="button"
+              className="block text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
+            >
               <Sticker className="size-5 shrink-0" />
             </button>
           </Tooltip>

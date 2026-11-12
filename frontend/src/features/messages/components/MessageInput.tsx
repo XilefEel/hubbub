@@ -17,18 +17,17 @@ import AttachmentButton from "./AttachmentButton";
 import StickerButton from "./StickerButton";
 import EmojiButton from "./EmojiButton";
 import HighlightedText from "./HighlightedText";
+import { useSendTyping } from "../hooks/useTypingIndicator";
 
 export default function MessageInput({
   members,
   replyingTo,
   scope,
-  onTyping,
   onCancelReply,
 }: {
   members: ServerMember[] | ConversationMember[] | undefined;
   replyingTo: Message | null;
   scope: MessageScope;
-  onTyping: () => void;
   onCancelReply: () => void;
 }) {
   const [content, setContent] = useState("");
@@ -83,6 +82,8 @@ export default function MessageInput({
       { onSuccess: onCancelReply },
     );
   };
+
+  const sendTyping = useSendTyping(scope);
 
   return (
     <div>
@@ -141,7 +142,7 @@ export default function MessageInput({
               onKeyDown={mentions.onKeyDown}
               onChange={(e) => {
                 setContent(e.target.value);
-                onTyping();
+                sendTyping();
                 mentions.updateQuery(e);
               }}
               onScroll={(e) => {

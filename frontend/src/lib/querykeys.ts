@@ -63,4 +63,8 @@ export const queryKeys = {
     all: () => ["stickers"] as const,
     list: () => ["stickers", "list"] as const,
   },
+  presence: {
+    all: () => ["presence"] as const,
+    online: () => ["presence", "online"] as const,
+  },
 };

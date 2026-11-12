@@ -8,9 +8,10 @@ import { pb } from "../lib/pocketbase";
 import ServerRail from "@/features/servers/components/ServerRail";
 import { useFriendshipsSubscription } from "@/features/friends/hooks/useFriendships";
 import GlobalModals from "@/app/modals/GlobalModals";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useConversationSubscription } from "@/features/conversations/hooks/useConversations";
+import { useConversationsSubscription } from "@/features/conversations/hooks/useConversations";
+import { useDmCallsSubscription } from "@/features/voice/hooks/useVoiceParticipants";
+import { usePresence } from "@/features/members/hooks/usePresence";
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {
@@ -33,16 +34,16 @@ export const Route = createRootRoute({
 function RootLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
-  const userId = pb.authStore.record?.id;
 
-  useFriendshipsSubscription(userId);
-  useConversationSubscription();
+  useFriendshipsSubscription();
+  useConversationsSubscription();
+  useDmCallsSubscription();
+  usePresence();
 
   if (isLoginPage) {
     return (
       <>
         <Outlet />
-        <TanStackRouterDevtools />
         <ReactQueryDevtools />
       </>
     );
@@ -55,7 +56,6 @@ function RootLayout() {
         <div className="flex-1 overflow-hidden">
           <Outlet />
           <GlobalModals />
-          <TanStackRouterDevtools />
           <ReactQueryDevtools />
         </div>
       </div>

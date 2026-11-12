@@ -1,26 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { pb } from "@/lib/pocketbase";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/querykeys";
+
+export function useOnlineUserIds() {
+  const { data } = useQuery({
+    queryKey: queryKeys.presence.online(),
+    queryFn: () => [] as string[],
+    enabled: false,
+    staleTime: Infinity,
+  });
+  return data ?? [];
+}
 
 export function usePresence() {
-  const myId = pb.authStore.record?.id;
-
-  const [onlineUserIds, setOnlineUserIds] = useState<string[]>(() =>
-    myId ? [myId] : [],
-  );
+  const queryClient = useQueryClient();
+  const userId = pb.authStore.record?.id;
 
   useEffect(() => {
-    if (!pb.authStore.isValid) return;
+    if (!userId) return;
+
+    const key = queryKeys.presence.online();
+    const setOnline = (ids: string[]) =>
+      queryClient.setQueryData<string[]>(key, ids);
 
     const sendHeartbeat = async () => {
       try {
         const res = await pb.send<{ online?: string[] }>(
           "/api/presence/heartbeat",
-          {
-            method: "POST",
-          },
+          { method: "POST" },
         );
-
-        if (Array.isArray(res.online)) setOnlineUserIds(res.online);
+        if (Array.isArray(res.online)) setOnline(res.online);
       } catch (err) {
         console.warn("heartbeat failed:", err);
       }
@@ -34,7 +44,7 @@ export function usePresence() {
       "global_presence",
       (e: { type?: string; online?: string[] }) => {
         if (e.type === "presence_update" && Array.isArray(e.online)) {
-          setOnlineUserIds(e.online);
+          setOnline(e.online);
         }
       },
     );
@@ -47,7 +57,5 @@ export function usePresence() {
       clearInterval(interval);
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
-  }, []);
-
-  return { onlineUserIds };
+  }, [userId, queryClient]);
 }

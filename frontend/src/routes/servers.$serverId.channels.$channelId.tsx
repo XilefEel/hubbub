@@ -17,6 +17,7 @@ import type { Message, MessageScope } from "@/lib/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useChannelReadMarker } from "@/features/messages/hooks/useReadMarker";
+import { useReactionsSubscription } from "@/features/messages/hooks/useReactions";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   component: ChannelPage,
@@ -52,13 +53,12 @@ function ChannelPage() {
     id: channelId,
   });
 
-  useMessagesSubscription(scope);
-
-  const { typingNames, sendTyping } = useTypingIndicator(scope, members);
-
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
-
+  const typingNames = useTypingIndicator(scope, members);
   const readMarker = useChannelReadMarker(channelId);
+
+  useMessagesSubscription(scope);
+  useReactionsSubscription(scope);
 
   if (channelLoading) return <ChannelPageSkeleton />;
 
@@ -101,7 +101,6 @@ function ChannelPage() {
           members={members}
           replyingTo={replyingTo}
           scope={scope}
-          onTyping={sendTyping}
           onCancelReply={() => setReplyingTo(null)}
         />
       </div>

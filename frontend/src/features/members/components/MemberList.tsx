@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PanelRight, Search } from "lucide-react";
 import { useCurrentMembership } from "../hooks/useCurrentMembership";
-import { usePresence } from "../hooks/usePresence";
+import { useOnlineUserIds } from "../hooks/usePresence";
 import { useServerMembers } from "../hooks/useServerMembers";
 import MemberListItem from "./MemberListItem";
 import Tooltip from "@/components/ui/Tooltip";
@@ -17,7 +17,7 @@ export default function MemberList({ serverId }: { serverId: string }) {
     error,
   } = useServerMembers(serverId);
   const { isOwner } = useCurrentMembership(serverId);
-  const { onlineUserIds } = usePresence();
+  const onlineUserIds = useOnlineUserIds();
   const { toggleMembers } = useUIActions();
 
   const [query, setQuery] = useState("");
