@@ -6,9 +6,28 @@ import (
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/tools/security"
 )
 
-func registerServerHooks(app core.App) {
+const inviteAlphabet = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+func newInviteCode() string {
+	return security.RandomStringWithAlphabet(8, inviteAlphabet)
+}
+
+func registerHooks(app core.App) {
+	// auto set the owner and invite code when a server is created
+	app.OnRecordCreateRequest("servers").BindFunc(func(e *core.RecordRequestEvent) error {
+		if e.Auth == nil {
+			return e.UnauthorizedError("Authentication required.", nil)
+		}
+
+		e.Record.Set("owner", e.Auth.Id)
+		e.Record.Set("inviteCode", newInviteCode())
+
+		return e.Next()
+	})
+
 	app.OnRecordAfterCreateSuccess("servers").BindFunc(func(e *core.RecordEvent) error {
 		// auto add the owner to server_members when a server is created
 		members, err := e.App.FindCollectionByNameOrId("server_members")

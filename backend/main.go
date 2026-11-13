@@ -20,7 +20,7 @@ func main() {
 		Automigrate: true,
 	})
 
-	registerServerHooks(app)
+	registerHooks(app)
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		registerRoutes(se)

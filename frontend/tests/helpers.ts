@@ -48,8 +48,6 @@ export async function makeUser(name: string): Promise<TestUser> {
 export async function makeServer(owner: TestUser) {
   const server = await owner.pb.collection<Server>("servers").create({
     name: `${owner.id}'s Server`,
-    owner: owner.id,
-    inviteCode: Math.random().toString(36).slice(2, 10),
   });
 
   const channel = await owner.pb

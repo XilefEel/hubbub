@@ -8,10 +8,6 @@ import { pb } from "@/lib/pocketbase";
 import type { Server } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
 
-function generateInviteCode() {
-  return Math.random().toString(36).slice(2, 10);
-}
-
 export function useServers() {
   const userId = pb.authStore.record?.id;
 
@@ -42,20 +38,12 @@ export function useServerDetail(serverId: string) {
 
 export function useCreateServer() {
   const queryClient = useQueryClient();
-  const userId = pb.authStore.record?.id;
 
   return useMutation({
-    mutationFn: async ({ name }: { name: string }) => {
-      return await pb.collection("servers").create<Server>({
-        name,
-        owner: userId,
-        inviteCode: generateInviteCode(),
-      });
-    },
+    mutationFn: ({ name }: { name: string }) =>
+      pb.collection("servers").create<Server>({ name }),
     onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.servers.all(),
-      }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.servers.all() }),
   });
 }
 
