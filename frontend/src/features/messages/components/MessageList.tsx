@@ -61,7 +61,6 @@ export default function MessageList({
 
   useEffect(() => {
     if (!ready || !newestMessage || !atBottom) return;
-    if (lastReadAt && newestMessage <= lastReadAt) return;
     markAsRead(newestMessage);
   }, [ready, newestMessage, atBottom, lastReadAt, markAsRead]);
 

@@ -32,15 +32,15 @@ export function useMarkChannelRead() {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to mark channel read");
 
-      const filter = pb.filter("user = {:userId} && channel = {:channelId}", {
-        userId,
-        channelId,
-      });
-
       let existing: ReadState | null = null;
 
       try {
-        existing = await pb.collection("read_states").getFirstListItem(filter);
+        existing = await pb.collection("read_states").getFirstListItem(
+          pb.filter("user = {:userId} && channel = {:channelId}", {
+            userId,
+            channelId,
+          }),
+        );
       } catch (err) {
         if (!(err instanceof ClientResponseError && err.status === 404))
           throw err;

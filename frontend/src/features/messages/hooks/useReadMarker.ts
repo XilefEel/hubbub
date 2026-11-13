@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { pb } from "@/lib/pocketbase";
 import type { ConversationMember, DateTime } from "@/lib/types";
 import {
@@ -18,16 +18,23 @@ export function useChannelReadMarker(channelId: string): ReadMarker {
   const { data: reads } = useChannelReads();
   const { mutate } = useMarkChannelRead();
 
+  const lastReadAt = reads?.get(channelId)?.lastReadAt;
+  const lastSentRef = useRef<{ channelId: string; at: DateTime } | null>(null);
+
   const markAsRead = useCallback(
-    (newest: DateTime) => mutate({ channelId, lastReadAt: newest }),
-    [channelId, mutate],
+    (newest: DateTime) => {
+      if (lastReadAt && !isAfter(newest, lastReadAt)) return;
+
+      const sent = lastSentRef.current;
+      if (sent?.channelId === channelId && !isAfter(newest, sent.at)) return;
+
+      lastSentRef.current = { channelId, at: newest };
+      mutate({ channelId, lastReadAt: newest });
+    },
+    [channelId, lastReadAt, mutate],
   );
 
-  return {
-    lastReadAt: reads?.get(channelId)?.lastReadAt,
-    markAsRead,
-    ready: !!reads,
-  };
+  return { lastReadAt, markAsRead, ready: !!reads };
 }
 
 export function useConversationReadMarker(
