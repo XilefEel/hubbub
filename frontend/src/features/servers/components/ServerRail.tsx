@@ -48,7 +48,7 @@ export default function ServerRail() {
       ) : isLoading ? (
         <ServerSkeleton />
       ) : (
-        <div className="flex w-full flex-col items-center gap-2 overflow-y-auto">
+        <div className="flex w-full flex-col items-center gap-2 overflow-y-auto py-2">
           {servers?.map((server) => (
             <ServerItem
               key={server.id}

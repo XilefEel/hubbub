@@ -26,27 +26,23 @@ function MePage() {
   return (
     <div className="flex h-full bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
       <Group defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
-        <Panel
-          id="dm-sidebar"
-          minSize="20%"
-          panelRef={sidebarRef}
-          collapsible
-          className="dark:bg-zinc-850 flex h-full flex-col bg-white p-4"
-        >
-          <Link
-            to="/me"
-            className="dark:hover:bg-zinc-750 flex w-full items-center gap-2 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50"
-          >
-            <UsersRound className="size-4" />
-            Friends
-          </Link>
+        <Panel id="dm-sidebar" minSize="20%" panelRef={sidebarRef} collapsible>
+          <div className="dark:bg-zinc-850 flex h-full min-w-56 flex-col bg-white p-4">
+            <Link
+              to="/me"
+              className="dark:hover:bg-zinc-750 flex w-full items-center gap-2 rounded px-2 py-1 transition-colors duration-100 hover:bg-zinc-50"
+            >
+              <UsersRound className="size-4" />
+              Friends
+            </Link>
 
-          <div className="my-3 shrink-0 border-t border-zinc-200 dark:border-zinc-700" />
+            <div className="my-3 shrink-0 border-t border-zinc-200 dark:border-zinc-700" />
 
-          <ConversationList />
+            <ConversationList />
 
-          <div className="mt-auto">
-            <VoiceToolbar />
+            <div className="mt-auto">
+              <VoiceToolbar />
+            </div>
           </div>
         </Panel>
 

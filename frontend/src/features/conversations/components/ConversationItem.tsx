@@ -44,9 +44,7 @@ export default function ConversationItem({
     if (!me) return;
 
     hideConversation.mutate(
-      {
-        memberId: me.id,
-      },
+      { memberId: me.id },
       {
         onSuccess: () => {
           if (activeId === conversation.id) navigate({ to: "/me" });
