@@ -1,22 +1,31 @@
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
 import type { Conversation, DateTime } from "@/lib/types";
-import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import {
+  useQueryClient,
+  useQuery,
+  useMutation,
+  queryOptions,
+} from "@tanstack/react-query";
 import { useEffect } from "react";
 import {
   isConversationHidden,
   isConversationUnread,
 } from "../utils/conversation";
 
-export function useConversations() {
-  return useQuery<Conversation[]>({
+export const conversationsOptions = () =>
+  queryOptions({
     queryKey: queryKeys.conversations.list(),
     queryFn: () =>
       pb.collection("conversations").getFullList<Conversation>({
         sort: "-lastMessageAt",
         expand: "conversation_members_via_conversation.user",
       }),
+    staleTime: 30_000,
   });
+
+export function useConversations() {
+  return useQuery(conversationsOptions());
 }
 
 export function useUnreadConversations() {

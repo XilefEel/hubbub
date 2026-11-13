@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import type { Server } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
@@ -21,10 +26,16 @@ export function useServers() {
   });
 }
 
-export function useServerDetail(serverId: string) {
-  return useQuery<Server>({
+export const serverDetailOptions = (serverId: string) =>
+  queryOptions({
     queryKey: queryKeys.servers.detail(serverId),
     queryFn: () => pb.collection("servers").getOne<Server>(serverId),
+    staleTime: 1000 * 30,
+  });
+
+export function useServerDetail(serverId: string) {
+  return useQuery({
+    ...serverDetailOptions(serverId),
     enabled: !!serverId,
   });
 }

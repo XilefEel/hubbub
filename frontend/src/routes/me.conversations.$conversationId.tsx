@@ -10,17 +10,28 @@ import {
   useMessagesSubscription,
 } from "@/features/messages/hooks/useMessages";
 import type { MessageScope, Message } from "@/lib/types";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import ConversationHeader from "@/features/conversations/components/ConversationHeader";
 import { useIsInVoiceCall } from "@/features/voice/store/useVoiceChannelStore";
 import VoiceRoomView from "@/features/voice/components/VoiceRoomView";
-import { useConversations } from "@/features/conversations/hooks/useConversations";
+import {
+  conversationsOptions,
+  useConversations,
+} from "@/features/conversations/hooks/useConversations";
 import { useConversationReadMarker } from "@/features/messages/hooks/useReadMarker";
 import { useVoiceParticipantsSubscription } from "@/features/voice/hooks/useVoiceParticipants";
 import { useReactionsSubscription } from "@/features/messages/hooks/useReactions";
+import { queryClient } from "@/main";
 
 export const Route = createFileRoute("/me/conversations/$conversationId")({
+  loader: async ({ params }) => {
+    const conversations = await queryClient.query(conversationsOptions());
+
+    if (!conversations.find((c) => c.id === params.conversationId)) {
+      throw redirect({ to: "/me", replace: true });
+    }
+  },
   component: ConversationPage,
 });
 

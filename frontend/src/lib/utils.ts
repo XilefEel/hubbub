@@ -8,6 +8,13 @@ export function isUniqueConstraintError(err: unknown): boolean {
   return err.status === 400 && JSON.stringify(err.data).includes("unique");
 }
 
+export function isNotFoundError(err: unknown) {
+  return (
+    err instanceof ClientResponseError &&
+    (err.status === 404 || err.status === 400)
+  );
+}
+
 export function getTime(dateString: string) {
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return "Unknown time";

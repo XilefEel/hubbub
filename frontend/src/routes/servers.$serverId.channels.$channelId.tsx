@@ -1,7 +1,10 @@
 import ChannelEmpty from "@/features/channels/components/ChannelEmpty";
 import ChannelHeader from "@/features/channels/components/ChannelHeader";
 import ChannelPageSkeleton from "@/features/channels/components/ChannelPageSkeleton";
-import { useChannelDetail } from "@/features/channels/hooks/useChannels";
+import {
+  channelDetailOptions,
+  useChannelDetail,
+} from "@/features/channels/hooks/useChannels";
 import { useTypingIndicator } from "@/features/messages/hooks/useTypingIndicator";
 import { useServerMembers } from "@/features/members/hooks/useServerMembers";
 import MessageInput from "@/features/messages/components/MessageInput";
@@ -14,12 +17,38 @@ import {
 } from "@/features/messages/hooks/useMessages";
 import VoiceChannel from "@/features/voice/components/VoiceChannel";
 import type { Message, MessageScope } from "@/lib/types";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { useChannelReadMarker } from "@/features/messages/hooks/useReadMarker";
 import { useReactionsSubscription } from "@/features/messages/hooks/useReactions";
+import { queryClient } from "@/main";
+import { isNotFoundError } from "@/lib/utils";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
+  loader: async ({ params }) => {
+    const { serverId, channelId } = params;
+
+    try {
+      const channel = await queryClient.query(channelDetailOptions(channelId));
+
+      if (channel.server !== serverId) {
+        throw redirect({
+          to: "/servers/$serverId",
+          params: { serverId },
+          replace: true,
+        });
+      }
+    } catch (err) {
+      if (isNotFoundError(err)) {
+        throw redirect({
+          to: "/servers/$serverId",
+          params: { serverId },
+          replace: true,
+        });
+      }
+      throw err;
+    }
+  },
   component: ChannelPage,
 });
 

@@ -4,10 +4,15 @@ import ChannelList from "@/features/channels/components/ChannelList";
 import { useChannelsSubscription } from "@/features/channels/hooks/useChannels";
 import MemberList from "@/features/members/components/MemberList";
 import { usePanelSync } from "@/features/servers/hooks/usePanelSync";
-import { useServerDetail } from "@/features/servers/hooks/useServers";
+import {
+  serverDetailOptions,
+  useServerDetail,
+} from "@/features/servers/hooks/useServers";
 import VoiceToolbar from "@/features/voice/components/VoiceToolbar";
 import { useServerCallsSubscription } from "@/features/voice/hooks/useVoiceParticipants";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { isNotFoundError } from "@/lib/utils";
+import { queryClient } from "@/main";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { PanelLeft } from "lucide-react";
 import { useRef } from "react";
 import {
@@ -19,6 +24,16 @@ import {
 } from "react-resizable-panels";
 
 export const Route = createFileRoute("/servers/$serverId")({
+  loader: async ({ params }) => {
+    try {
+      await queryClient.query(serverDetailOptions(params.serverId));
+    } catch (err) {
+      if (isNotFoundError(err)) {
+        throw redirect({ to: "/me", replace: true });
+      }
+      throw err;
+    }
+  },
   component: ServerPage,
 });
 

@@ -1,14 +1,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { createRouter, Navigate, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import "./index.css";
 import "@livekit/components-styles";
 
-const router = createRouter({ routeTree });
-const queryClient = new QueryClient();
+const router = createRouter({
+  routeTree,
+  defaultNotFoundComponent: () => <Navigate to="/me" replace />,
+});
+
+export const queryClient = new QueryClient();
 
 declare module "@tanstack/react-router" {
   interface Register {

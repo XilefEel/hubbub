@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import type { Channel } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
@@ -63,12 +68,18 @@ export function useChannelsSubscription(serverId: string) {
 const byTypeThenName = (a: Channel, b: Channel) =>
   a.type.localeCompare(b.type) || a.name.localeCompare(b.name);
 
+export const channelDetailOptions = (channelId: string) =>
+  queryOptions({
+    queryKey: queryKeys.channels.detail(channelId),
+    queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
+    staleTime: 30_000,
+  });
+
 export function useChannelDetail(channelId: string, serverId: string) {
   const queryClient = useQueryClient();
 
-  return useQuery<Channel>({
-    queryKey: queryKeys.channels.detail(channelId),
-    queryFn: () => pb.collection("channels").getOne<Channel>(channelId),
+  return useQuery({
+    ...channelDetailOptions(channelId),
     placeholderData: () =>
       queryClient
         .getQueryData<Channel[]>(queryKeys.channels.byServer(serverId))
