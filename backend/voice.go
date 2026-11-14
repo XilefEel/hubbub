@@ -170,28 +170,3 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 
 	return e.JSON(http.StatusOK, map[string]bool{"ok": true})
 }
-
-func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Record) bool {
-	serverId := channel.GetString("server")
-	if serverId == "" {
-		return false
-	}
-
-	membership, err := app.FindFirstRecordByFilter(
-		"server_members",
-		"server = {:server} && user = {:user}",
-		dbx.Params{"server": serverId, "user": authRecord.Id},
-	)
-
-	return err == nil && membership != nil
-}
-
-func userInConversation(app core.App, userId, conversationId string) bool {
-	_, err := app.FindFirstRecordByFilter(
-		"conversation_members",
-		"conversation = {:c} && user = {:u}",
-		dbx.Params{"c": conversationId, "u": userId},
-	)
-
-	return err == nil
-}

@@ -8,7 +8,6 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-// auto add the owner to server_members when a server is created
 func joinServerHandler(e *core.RequestEvent) error {
 	var body struct {
 		InviteCode string `json:"inviteCode"`
@@ -18,10 +17,12 @@ func joinServerHandler(e *core.RequestEvent) error {
 	}
 
 	// find the server by invite code
+	cleanInviteCode := strings.ToLower(strings.TrimSpace(body.InviteCode))
+
 	server, err := e.App.FindFirstRecordByFilter(
 		"servers",
 		"inviteCode = {:code}",
-		dbx.Params{"code": strings.TrimSpace(body.InviteCode)},
+		dbx.Params{"code": cleanInviteCode},
 	)
 	if err != nil {
 		return e.NotFoundError("Server not found", err)
@@ -40,7 +41,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 	// add the user to server_members
 	collection, err := e.App.FindCollectionByNameOrId("server_members")
 	if err != nil {
-		return err
+		return e.InternalServerError("Failed to join server", err)
 	}
 
 	membership := core.NewRecord(collection)
@@ -49,11 +50,11 @@ func joinServerHandler(e *core.RequestEvent) error {
 	membership.Set("role", "member")
 
 	if err := e.App.Save(membership); err != nil {
-		return err
+		return e.InternalServerError("Failed to join server", err)
 	}
 
 	return e.JSON(http.StatusOK, map[string]any{
-		"message": "Successfully joined the server",
-		"server":  server,
+		"message":  "Successfully joined the server",
+		"serverId": server.Id,
 	})
 }

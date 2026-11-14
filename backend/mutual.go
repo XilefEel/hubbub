@@ -18,7 +18,7 @@ func mutualsHandler(e *core.RequestEvent) error {
 		Where(dbx.HashExp{"a.user": viewer, "b.user": target}).
 		Column(&servers)
 	if err != nil {
-		return e.InternalServerError("", err)
+		return e.InternalServerError("Failed to load mutual servers", err)
 	}
 	if servers == nil {
 		servers = []string{}
@@ -43,7 +43,7 @@ func mutualsHandler(e *core.RequestEvent) error {
 		Bind(dbx.Params{"v": viewer, "t": target}).
 		Column(&friends)
 	if err != nil {
-		return e.InternalServerError("", err)
+		return e.InternalServerError("Failed to load mutual friends", err)
 	}
 	if friends == nil {
 		friends = []string{}

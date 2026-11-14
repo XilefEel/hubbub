@@ -8,6 +8,7 @@ import (
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/tools/router"
 	"github.com/pocketbase/pocketbase/tools/types"
 )
 
@@ -35,26 +36,29 @@ func openDmsHandler(e *core.RequestEvent) error {
 	}
 
 	var convoId string
-	err := e.App.DB().
-		Select("a.conversation").
-		From("conversation_members AS a").
-		InnerJoin("conversation_members AS b", dbx.NewExp("a.conversation = b.conversation")).
-		InnerJoin("conversations AS c", dbx.NewExp("c.id = a.conversation")).
-		Where(dbx.HashExp{"a.user": me, "b.user": body.UserId, "c.isGroup": false}).
-		Limit(1).
-		Row(&convoId)
-	if err == nil {
-		return e.JSON(http.StatusOK, map[string]string{"conversationId": convoId})
-	}
-	if !errors.Is(err, sql.ErrNoRows) {
-		return e.InternalServerError("Failed to open DM", err)
-	}
 
-	err = e.App.RunInTransaction(func(tx core.App) error {
+	err := e.App.RunInTransaction(func(tx core.App) error {
+		// check if a DM already exists between the two users
+		err := tx.DB().
+			Select("a.conversation").
+			From("conversation_members AS a").
+			InnerJoin("conversation_members AS b", dbx.NewExp("a.conversation = b.conversation")).
+			InnerJoin("conversations AS c", dbx.NewExp("c.id = a.conversation")).
+			Where(dbx.HashExp{"a.user": me, "b.user": body.UserId, "c.isGroup": false}).
+			Limit(1).
+			Row(&convoId)
+		if err == nil {
+			return nil
+		}
+		if !errors.Is(err, sql.ErrNoRows) {
+			return e.InternalServerError("Failed to open DM", err)
+		}
+
 		if !canStartDM(tx, me, body.UserId) {
 			return errNotAllowed
 		}
 
+		// create a new conversation and add both users as members
 		convos, err := tx.FindCollectionByNameOrId("conversations")
 		if err != nil {
 			return err
@@ -217,18 +221,7 @@ func editGroupHandler(e *core.RequestEvent) error {
 		}
 	}
 
-	convo, err := e.App.FindRecordById("conversations", convoId)
-	if err != nil {
-		return e.NotFoundError("Conversation not found", err)
-	}
-	if !convo.GetBool("isGroup") {
-		return e.BadRequestError("Not a group conversation", nil)
-	}
-	if convo.GetString("owner") != me {
-		return e.ForbiddenError("You are not the owner of this group", nil)
-	}
-
-	err = e.App.RunInTransaction(func(tx core.App) error {
+	err := e.App.RunInTransaction(func(tx core.App) error {
 		convo, err := tx.FindRecordById("conversations", convoId)
 		if err != nil {
 			return e.NotFoundError("Conversation not found", err)
@@ -301,35 +294,13 @@ func editGroupHandler(e *core.RequestEvent) error {
 	})
 
 	if err != nil {
+		if apiErr, ok := errors.AsType[*router.ApiError](err); ok {
+			return apiErr
+		}
 		return e.InternalServerError("Failed to update group", err)
 	}
 
 	return e.JSON(http.StatusOK, map[string]string{
 		"conversationId": convoId,
 	})
-}
-
-func usersAreFriends(app core.App, a string, b string) bool {
-	_, err := app.FindFirstRecordByFilter(
-		"friendships",
-		"status = 'accepted' && ((requester = {:a} && addressee = {:b}) || (requester = {:b} && addressee = {:a}))",
-		dbx.Params{"a": a, "b": b},
-	)
-	return err == nil
-}
-
-func usersShareServer(app core.App, a string, b string) bool {
-	var id string
-	err := app.DB().
-		Select("a.server").
-		From("server_members AS a").
-		InnerJoin("server_members AS b", dbx.NewExp("a.server = b.server")).
-		Where(dbx.HashExp{"a.user": a, "b.user": b}).
-		Limit(1).
-		Row(&id)
-	return err == nil
-}
-
-func canStartDM(app core.App, a, b string) bool {
-	return usersAreFriends(app, a, b) || usersShareServer(app, a, b)
 }
