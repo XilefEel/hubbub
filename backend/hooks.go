@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
@@ -14,6 +16,35 @@ func newInviteCode() string {
 }
 
 func registerHooks(app core.App) {
+	// auto validate realtime subscriptions to ensure the user is allowed to subscribe
+	app.OnRealtimeSubscribeRequest().BindFunc(func(e *core.RealtimeSubscribeRequestEvent) error {
+		if e.Auth == nil {
+			return e.UnauthorizedError("Authentication required.", nil)
+		}
+
+		for _, sub := range e.Subscriptions {
+			topic, _, _ := strings.Cut(sub, "?")
+
+			channelId, isChannel := strings.CutPrefix(topic, "channel_")
+			conversationId, isConversation := strings.CutPrefix(topic, "conversation_")
+
+			if isChannel {
+				channel, err := e.App.FindRecordById("channels", channelId)
+				if err != nil || !userCanJoinChannel(e.App, e.Auth, channel) {
+					return e.ForbiddenError("You are not allowed to subscribe to this channel.", nil)
+				}
+			}
+
+			if isConversation {
+				if !userInConversation(e.App, e.Auth.Id, conversationId) {
+					return e.ForbiddenError("You are not allowed to subscribe to this conversation.", nil)
+				}
+			}
+		}
+
+		return e.Next()
+	})
+
 	// auto set the owner and invite code when a server is created
 	app.OnRecordCreateRequest("servers").BindFunc(func(e *core.RecordRequestEvent) error {
 		if e.Auth == nil {
