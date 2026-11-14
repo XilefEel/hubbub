@@ -9,7 +9,7 @@ export default function EmojiButton({
 }) {
   return (
     <EmojiPickerPopover onEmojiSelect={addEmoji}>
-      <div className="absolute top-1/2 right-12 -translate-y-1/2">
+      <div className="absolute top-1/2 right-12 z-10 -translate-y-1/2">
         <Tooltip content="Add emoji" side="top">
           <button
             type="button"

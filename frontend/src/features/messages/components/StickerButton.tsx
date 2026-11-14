@@ -8,7 +8,7 @@ export default function StickerButton({
   handleStickerSelect: (stickerId: string) => void;
 }) {
   return (
-    <div className="absolute top-1/2 right-20 -translate-y-1/2">
+    <div className="absolute top-1/2 right-20 z-10 -translate-y-1/2">
       <StickerPopover onSend={handleStickerSelect}>
         <div>
           <Tooltip content="Send Sticker" side="top">

@@ -26,7 +26,7 @@ export default function AttachButton({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="absolute top-1/2 left-4 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
+          className="absolute top-1/2 left-4 z-10 -translate-y-1/2 text-zinc-400 transition-colors duration-100 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400"
         >
           <Plus className="size-5 shrink-0" />
         </button>

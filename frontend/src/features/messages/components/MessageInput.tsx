@@ -171,7 +171,7 @@ export default function MessageInput({
             type="submit"
             disabled={sendMessage.isPending || !canSend}
             className={cn(
-              "absolute top-1/2 right-4 -translate-y-1/2 transition-colors duration-100",
+              "absolute top-1/2 right-4 z-10 -translate-y-1/2 transition-colors duration-100",
               "text-zinc-400 hover:text-zinc-500 dark:text-zinc-500 dark:hover:text-zinc-400",
               "disabled:opacity-50 disabled:hover:cursor-not-allowed",
             )}
