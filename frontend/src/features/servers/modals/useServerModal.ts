@@ -4,11 +4,11 @@ import { useShallow } from "zustand/react/shallow";
 export const useServerModal = () =>
   useModalStore(
     useShallow((s) => ({
-      isOpen: s.isOpen,
-      server: s.server,
-      openCreate: s.openCreate,
-      openEdit: s.openEdit,
-      closeModal: s.closeModal,
-      setIsOpen: s.setIsOpen,
+      isOpen: s.isServerOpen,
+      server: s.serverModalServer,
+      setIsOpen: s.setServerOpen,
+      openCreate: s.openCreateServerModal,
+      openEdit: s.openEditServerModal,
+      closeModal: s.closeServerModal,
     })),
   );

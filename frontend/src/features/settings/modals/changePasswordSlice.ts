@@ -1,4 +1,4 @@
-import type { Slice } from "@/app/modals/types";
+import type { Slice } from "@/app/modals/useModalStore";
 
 export type ChangePasswordSlice = {
   isChangePasswordOpen: boolean;

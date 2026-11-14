@@ -1,16 +1,63 @@
 import { create } from "zustand";
-import type { ModalStore } from "./types";
-import { createChannelSlice } from "@/features/channels/modals/createChannelSlice";
-import { deleteChannelSlice } from "@/features/channels/modals/deleteChannelSlice";
-import { editChannelSlice } from "@/features/channels/modals/editChannelSlice";
-import { groupSlice } from "@/features/conversations/modals/groupSlice";
-import { deleteMessageSlice } from "@/features/messages/modals/deleteMessageSlice";
-import { deleteServerSlice } from "@/features/servers/modals/deleteServerSlice";
-import { joinServerSlice } from "@/features/servers/modals/joinServerSlice";
-import { changePasswordSlice } from "@/features/settings/modals/changePasswordSlice";
-import { settingsSlice } from "@/features/settings/modals/settingsSlice";
-import { updateUsernameSlice } from "@/features/settings/modals/updateUsernameSlice";
-import { serverSlice } from "@/features/servers/modals/serverSlice";
+import type { StateCreator } from "zustand";
+import {
+  type CreateChannelSlice,
+  createChannelSlice,
+} from "@/features/channels/modals/createChannelSlice";
+import {
+  type DeleteChannelSlice,
+  deleteChannelSlice,
+} from "@/features/channels/modals/deleteChannelSlice";
+import {
+  type EditChannelSlice,
+  editChannelSlice,
+} from "@/features/channels/modals/editChannelSlice";
+import {
+  type GroupSlice,
+  groupSlice,
+} from "@/features/conversations/modals/groupSlice";
+import {
+  type DeleteMessageSlice,
+  deleteMessageSlice,
+} from "@/features/messages/modals/deleteMessageSlice";
+import {
+  type DeleteServerSlice,
+  deleteServerSlice,
+} from "@/features/servers/modals/deleteServerSlice";
+import {
+  type JoinServerSlice,
+  joinServerSlice,
+} from "@/features/servers/modals/joinServerSlice";
+import {
+  type ServerSlice,
+  serverSlice,
+} from "@/features/servers/modals/serverSlice";
+import {
+  type ChangePasswordSlice,
+  changePasswordSlice,
+} from "@/features/settings/modals/changePasswordSlice";
+import {
+  type SettingsSlice,
+  settingsSlice,
+} from "@/features/settings/modals/settingsSlice";
+import {
+  type UpdateUsernameSlice,
+  updateUsernameSlice,
+} from "@/features/settings/modals/updateUsernameSlice";
+
+export type ModalStore = ServerSlice &
+  JoinServerSlice &
+  CreateChannelSlice &
+  EditChannelSlice &
+  DeleteMessageSlice &
+  DeleteChannelSlice &
+  DeleteServerSlice &
+  SettingsSlice &
+  UpdateUsernameSlice &
+  ChangePasswordSlice &
+  GroupSlice;
+
+export type Slice<T> = StateCreator<ModalStore, [], [], T>;
 
 export const useModalStore = create<ModalStore>((...a) => ({
   ...serverSlice(...a),
