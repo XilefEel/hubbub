@@ -4,7 +4,6 @@ import { Compass, Plus, Settings } from "lucide-react";
 import { cn } from "cn";
 import ServerSkeleton from "./ServerSkeleton";
 import { useSettingsModal } from "@/features/settings/modals/useSettingsModal";
-import { useCreateServerModal } from "../modals/useCreateServerModal";
 import { useJoinServerModal } from "../modals/useJoinServerModal";
 import { useUnreadConversations } from "@/features/conversations/hooks/useConversations";
 import { useEffect } from "react";
@@ -12,12 +11,13 @@ import ServerItem from "./ServerItem";
 import ServerRailButton from "./ServerRailButton";
 import HomeItem from "./HomeItem";
 import { useServerUnreads } from "../hooks/useServerReads";
+import { useServerModal } from "../modals/useServerModal";
 
 export default function ServerRail() {
   const { serverId } = useParams({ strict: false });
 
   const { data: servers, isLoading, isError, error } = useServers();
-  const { openModal: openCreate } = useCreateServerModal();
+  const { openCreate } = useServerModal();
   const { openModal: openJoin } = useJoinServerModal();
   const { openModal: openSettings } = useSettingsModal();
 

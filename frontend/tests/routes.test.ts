@@ -26,7 +26,7 @@ test("user can join a server with a valid invite code", async () => {
     body: { inviteCode: server.inviteCode },
   });
 
-  expect(res.server.id).toBe(server.id);
+  expect(res.serverId).toBe(server.id);
 
   const membership = await bob.pb
     .collection<ServerMember>("server_members")

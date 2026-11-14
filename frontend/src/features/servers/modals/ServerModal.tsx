@@ -1,26 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Dialog from "@/components/ui/Dialog";
-import { useUpdateServer } from "../hooks/useServers";
-import { pb } from "@/lib/pocketbase";
-import type { Server } from "@/lib/types";
 import Input from "@/components/ui/Input";
 import SubmitButton from "@/components/ui/SubmitButton";
-import { useEditServerModal } from "./useEditServerModal";
+import { useCreateServer, useUpdateServer } from "../hooks/useServers";
+import { pb } from "@/lib/pocketbase";
+import type { Server } from "@/lib/types";
+import { useServerModal } from "./useServerModal";
 
-export default function EditServerModal() {
-  const { isOpen, server, closeModal, setIsOpen } = useEditServerModal();
-
-  if (!server) return null;
+export default function ServerModal() {
+  const { isOpen, server, closeModal, setIsOpen } = useServerModal();
 
   return (
     <Dialog
-      title="Edit Server"
+      title={server ? "Edit server" : "Create server"}
       open={isOpen}
       onOpenChange={setIsOpen}
       width="max-w-xl"
     >
-      <EditServerModalContent
-        key={server.id}
+      <ServerForm
+        key={server?.id ?? "create"}
         server={server}
         closeModal={closeModal}
       />
@@ -28,20 +26,24 @@ export default function EditServerModal() {
   );
 }
 
-function EditServerModalContent({
+function ServerForm({
   server,
   closeModal,
 }: {
-  server: Server;
+  server: Server | null;
   closeModal: () => void;
 }) {
-  const [name, setName] = useState(server.name);
+  const isEdit = server !== null;
+
+  const [name, setName] = useState(server?.name ?? "");
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [removeIcon, setRemoveIcon] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const createServer = useCreateServer();
   const updateServer = useUpdateServer();
+  const mutation = isEdit ? updateServer : createServer;
 
   const objectUrl = useMemo(
     () => (iconFile ? URL.createObjectURL(iconFile) : null),
@@ -56,29 +58,32 @@ function EditServerModalContent({
 
   const previewUrl =
     objectUrl ??
-    (!removeIcon && server.icon
+    (server && !removeIcon && server.icon
       ? pb.files.getURL(server, server.icon, { thumb: "100x100" })
       : null);
 
-  const hasChanges = name !== server.name || iconFile !== null || removeIcon;
+  const hasChanges = isEdit
+    ? name !== server.name || iconFile !== null || removeIcon
+    : true;
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
 
-    updateServer.mutate(
-      {
-        serverId: server.id,
-        name: name !== server.name ? name : undefined,
-        icon: iconFile ?? (removeIcon ? "" : undefined),
-      },
-      {
-        onSuccess: () => {
-          setIconFile(null);
-          setRemoveIcon(false);
-          closeModal();
+    if (isEdit) {
+      updateServer.mutate(
+        {
+          serverId: server.id,
+          name: name !== server.name ? name : undefined,
+          icon: iconFile ?? (removeIcon ? "" : undefined),
         },
-      },
-    );
+        { onSuccess: closeModal },
+      );
+    } else {
+      createServer.mutate(
+        { name, icon: iconFile ?? undefined },
+        { onSuccess: closeModal },
+      );
+    }
   };
 
   return (
@@ -115,10 +120,10 @@ function EditServerModalContent({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              disabled={updateServer.isPending}
+              disabled={mutation.isPending}
               className="dark:hover:bg-zinc-750 rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700"
             >
-              Change icon
+              {previewUrl ? "Change icon" : "Upload icon"}
             </button>
 
             {previewUrl && (
@@ -128,6 +133,7 @@ function EditServerModalContent({
                   setIconFile(null);
                   setRemoveIcon(true);
                 }}
+                disabled={mutation.isPending}
                 className="dark:hover:bg-zinc-750 rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors duration-100 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700"
               >
                 Remove
@@ -149,17 +155,15 @@ function EditServerModalContent({
           placeholder="Server name"
         />
 
-        {updateServer.isError && (
-          <p className="text-red-500">{updateServer.error.message}</p>
+        {mutation.isError && (
+          <p className="text-red-500">{mutation.error.message}</p>
         )}
 
         <div className="flex justify-end">
           <SubmitButton
-            disabled={
-              updateServer.isPending || !hasChanges || name.trim() === ""
-            }
+            disabled={mutation.isPending || !hasChanges || name.trim() === ""}
           >
-            Save
+            {isEdit ? "Save" : "Create server"}
           </SubmitButton>
         </div>
       </div>

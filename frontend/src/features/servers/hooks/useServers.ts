@@ -40,8 +40,13 @@ export function useCreateServer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ name }: { name: string }) =>
-      pb.collection("servers").create<Server>({ name }),
+    mutationFn: ({ name, icon }: { name: string; icon?: File }) => {
+      const formData = new FormData();
+      formData.append("name", name);
+      if (icon) formData.append("icon", icon);
+
+      return pb.collection("servers").create<Server>(formData);
+    },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.servers.all() }),
   });

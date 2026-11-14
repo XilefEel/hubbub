@@ -4,18 +4,16 @@ import type { DeleteChannelSlice } from "@/features/channels/modals/deleteChanne
 import type { EditChannelSlice } from "@/features/channels/modals/editChannelSlice";
 import type { GroupSlice } from "@/features/conversations/modals/groupSlice";
 import type { DeleteMessageSlice } from "@/features/messages/modals/deleteMessageSlice";
-import type { CreateServerSlice } from "@/features/servers/modals/createServerSlice";
 import type { DeleteServerSlice } from "@/features/servers/modals/deleteServerSlice";
-import type { EditServerSlice } from "@/features/servers/modals/editServerSlice";
 import type { JoinServerSlice } from "@/features/servers/modals/joinServerSlice";
 import type { ChangePasswordSlice } from "@/features/settings/modals/changePasswordSlice";
 import type { SettingsSlice } from "@/features/settings/modals/settingsSlice";
 import type { UpdateUsernameSlice } from "@/features/settings/modals/updateUsernameSlice";
+import type { ServerSlice } from "@/features/servers/modals/serverSlice";
 
-export type ModalStore = CreateServerSlice &
+export type ModalStore = ServerSlice &
   JoinServerSlice &
   CreateChannelSlice &
-  EditServerSlice &
   EditChannelSlice &
   DeleteMessageSlice &
   DeleteChannelSlice &

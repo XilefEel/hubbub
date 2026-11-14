@@ -7,7 +7,7 @@ import { useCurrentMembership } from "@/features/members/hooks/useCurrentMembers
 import type { Server } from "@/lib/types";
 import { Copy, Settings, Trash2, LogOut } from "lucide-react";
 import { useLeaveServer, useDeleteServer } from "../hooks/useServers";
-import { useEditServerModal } from "../modals/useEditServerModal";
+import { useServerModal } from "../modals/useServerModal";
 
 export default function ServerContextMenu({
   server,
@@ -16,7 +16,7 @@ export default function ServerContextMenu({
   server: Server;
   children: React.ReactNode;
 }) {
-  const { openModal } = useEditServerModal();
+  const { openEdit } = useServerModal();
 
   const leaveServer = useLeaveServer();
   const deleteServer = useDeleteServer();
@@ -39,7 +39,7 @@ export default function ServerContextMenu({
           />
 
           <ContextMenuItem
-            action={() => openModal(server)}
+            action={() => openEdit(server)}
             Icon={Settings}
             label="Server settings"
             show={isOwner}
