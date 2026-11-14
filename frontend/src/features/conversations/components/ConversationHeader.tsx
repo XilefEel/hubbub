@@ -1,4 +1,4 @@
-import { Video } from "lucide-react";
+import { PanelLeft, Video } from "lucide-react";
 import type { Conversation, VoiceScope } from "@/lib/types";
 import Tooltip from "@/components/ui/Tooltip";
 import UserAvatar from "@/features/users/components/UserAvatar";
@@ -7,6 +7,7 @@ import ConversationAvatar from "./ConversationAvatar";
 import { pb } from "@/lib/pocketbase";
 import { getOtherUsers, getConversationTitle } from "../utils/conversation";
 import { useVoiceParticipants } from "@/features/voice/hooks/useVoiceParticipants";
+import { useIsConversationsOpen, useUIActions } from "@/app/stores/useUIStore";
 
 export default function ConversationHeader({
   conversation,
@@ -27,9 +28,23 @@ export default function ConversationHeader({
   const { data: participants } = useVoiceParticipants(scope);
   const hasCall = !!participants?.length;
 
+  const isConversationsOpen = useIsConversationsOpen();
+  const { toggleConversations } = useUIActions();
+
   return (
     <div className="mb-2 flex items-center justify-between border-b border-zinc-200 pb-4 dark:border-zinc-700">
-      <div className="flex items-center gap-3 text-sm font-bold">
+      <div className="flex items-center gap-4 text-sm font-bold">
+        {!isConversationsOpen && (
+          <Tooltip content="Show Conversations">
+            <button
+              onClick={toggleConversations}
+              className="text-sm transition-colors duration-100 hover:text-teal-500 dark:hover:text-teal-400"
+            >
+              <PanelLeft className="size-4 shrink-0" />
+            </button>
+          </Tooltip>
+        )}
+
         <ConversationAvatar
           users={users}
           isGroup={conversation.isGroup}

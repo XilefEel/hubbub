@@ -4,6 +4,9 @@ import AddFriendInput from "@/features/friends/components/AddFriendInput";
 import PendingRequests from "@/features/friends/components/PendingRequests";
 import FriendsList from "@/features/friends/components/FriendList";
 import { cn } from "cn";
+import Tooltip from "@/components/ui/Tooltip";
+import { PanelLeft } from "lucide-react";
+import { useIsConversationsOpen, useUIActions } from "@/app/stores/useUIStore";
 
 const TABS = [
   { id: "all", label: "All" },
@@ -18,9 +21,23 @@ export const Route = createFileRoute("/me/")({
 function FriendsPage() {
   const [tab, setTab] = useState<"all" | "pending" | "add">("all");
 
+  const isConversationsOpen = useIsConversationsOpen();
+  const { toggleConversations } = useUIActions();
+
   return (
     <section className="mx-auto flex h-full max-w-3xl flex-col gap-4 p-4 text-zinc-900 dark:text-zinc-100">
       <div className="flex items-center gap-1 border-b border-zinc-200 pb-2 dark:border-zinc-700">
+        {!isConversationsOpen && (
+          <Tooltip content="Show Conversations">
+            <button
+              onClick={toggleConversations}
+              className="mr-3 text-sm transition-colors duration-100 hover:text-teal-500 dark:hover:text-teal-400"
+            >
+              <PanelLeft className="size-4 shrink-0" />
+            </button>
+          </Tooltip>
+        )}
+
         {TABS.map(({ id, label }) => (
           <button
             key={id}
