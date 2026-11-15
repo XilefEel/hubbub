@@ -1,7 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { pb } from "@/lib/pocketbase";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { queryKeys } from "@/lib/querykeys";
+
+export type PresenceStatus = "online" | "invisible";
 
 export function useOnlineUserIds() {
   const { data } = useQuery({
@@ -11,6 +18,23 @@ export function useOnlineUserIds() {
     staleTime: Infinity,
   });
   return data ?? [];
+}
+
+async function sendHeartbeat(queryClient: QueryClient) {
+  try {
+    const res = await pb.send<{ online?: string[] }>(
+      "/api/presence/heartbeat",
+      { method: "POST" },
+    );
+    if (Array.isArray(res.online)) {
+      queryClient.setQueryData<string[]>(
+        queryKeys.presence.online(),
+        res.online,
+      );
+    }
+  } catch (err) {
+    console.warn("heartbeat failed:", err);
+  }
 }
 
 export function usePresence() {
@@ -24,21 +48,8 @@ export function usePresence() {
     const setOnline = (ids: string[]) =>
       queryClient.setQueryData<string[]>(key, ids);
 
-    const sendHeartbeat = async () => {
-      try {
-        const res = await pb.send<{ online?: string[] }>(
-          "/api/presence/heartbeat",
-          { method: "POST" },
-        );
-        if (Array.isArray(res.online)) setOnline(res.online);
-      } catch (err) {
-        console.warn("heartbeat failed:", err);
-      }
-    };
-
-    sendHeartbeat();
-
-    const interval = setInterval(sendHeartbeat, 15_000);
+    sendHeartbeat(queryClient);
+    const interval = setInterval(() => sendHeartbeat(queryClient), 15_000);
 
     const unsubPromise = pb.realtime.subscribe(
       "global_presence",
@@ -58,4 +69,34 @@ export function usePresence() {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
   }, [userId, queryClient]);
+}
+
+export function useSetPresenceStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (status: PresenceStatus) => {
+      const userId = pb.authStore.record?.id;
+      if (!userId) throw new Error("Not authenticated");
+
+      await pb.collection("users").update(userId, { presenceStatus: status });
+    },
+    onSuccess: () => sendHeartbeat(queryClient),
+  });
+}
+
+export function useMyPresenceStatus() {
+  const [status, setStatus] = useState<PresenceStatus>(
+    pb.authStore.record?.presenceStatus || "online",
+  );
+
+  useEffect(
+    () =>
+      pb.authStore.onChange((_, record) => {
+        setStatus(record?.presenceStatus || "online");
+      }),
+    [],
+  );
+
+  return status;
 }

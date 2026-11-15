@@ -83,9 +83,16 @@ func startPresenceHeartbeat(app core.App) {
 
 // endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
-	_, wasOnline := presenceMap.Swap(e.Auth.Id, time.Now())
-	if !wasOnline {
-		broadcastPresence(e.App)
+	userId := e.Auth.Id
+
+	if e.Auth.GetString("presenceStatus") == "invisible" {
+		if _, wasOnline := presenceMap.LoadAndDelete(userId); wasOnline {
+			broadcastPresence(e.App)
+		}
+	} else {
+		if _, wasOnline := presenceMap.Swap(e.Auth.Id, time.Now()); !wasOnline {
+			broadcastPresence(e.App)
+		}
 	}
 
 	return e.JSON(http.StatusOK, map[string]any{

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Dialog from "@/components/ui/Dialog";
-import { User, Palette, LogOut } from "lucide-react";
+import { User, Palette, LogOut, Shield, type LucideIcon } from "lucide-react";
 import { cn } from "cn";
 import AccountSettings from "../components/AccountSettings";
 import AppearanceSettings from "../components/AppearanceSettings";
@@ -8,12 +8,14 @@ import { useSettingsModal } from "./useSettingsModal";
 import { pb } from "@/lib/pocketbase";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import PrivacySettings from "../components/PrivacySettings";
 
-type TabId = "account" | "appearance";
+type TabId = "account" | "appearance" | "privacy";
 
-const TABS: { id: TabId; label: string; Icon: React.ElementType }[] = [
+const TABS: { id: TabId; label: string; Icon: LucideIcon }[] = [
   { id: "account", label: "Account", Icon: User },
   { id: "appearance", label: "Appearance", Icon: Palette },
+  { id: "privacy", label: "Privacy", Icon: Shield },
 ];
 
 export default function SettingsModal() {
@@ -65,6 +67,7 @@ export default function SettingsModal() {
         <div className="flex-1 overflow-y-auto px-6">
           {activeTab === "account" && <AccountSettings />}
           {activeTab === "appearance" && <AppearanceSettings />}
+          {activeTab === "privacy" && <PrivacySettings />}
         </div>
       </div>
     </Dialog>
