@@ -1,3 +1,4 @@
+import { Collections } from "@/lib/collections";
 import { pb } from "@/lib/pocketbase";
 import type { VoiceParticipant } from "@/lib/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,8 +19,8 @@ export function useVoiceParticipantsQuery<T = VoiceParticipant[]>({
     queryKey,
     queryFn: () =>
       pb
-        .collection("voice_participants")
-        .getFullList<VoiceParticipant>({ filter, expand: "user" }),
+        .collection(Collections.VoiceParticipants)
+        .getFullList({ filter, expand: "user" }),
     select,
     enabled,
   });
@@ -39,28 +40,26 @@ export function useVoiceParticipantsSync({
   useEffect(() => {
     if (!enabled) return;
 
-    const unsubPromise = pb
-      .collection("voice_participants")
-      .subscribe<VoiceParticipant>(
-        "*",
-        (e) =>
-          queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old) => {
-            if (!old) return old;
-            switch (e.action) {
-              case "create":
-                return old.some((vp) => vp.id === e.record.id)
-                  ? old
-                  : [...old, e.record];
-              case "update":
-                return old.map((vp) => (vp.id === e.record.id ? e.record : vp));
-              case "delete":
-                return old.filter((vp) => vp.id !== e.record.id);
-              default:
-                return old;
-            }
-          }),
-        { filter, expand: "user" },
-      );
+    const unsubPromise = pb.collection(Collections.VoiceParticipants).subscribe(
+      "*",
+      (e) =>
+        queryClient.setQueryData<VoiceParticipant[]>(queryKey, (old) => {
+          if (!old) return old;
+          switch (e.action) {
+            case "create":
+              return old.some((vp) => vp.id === e.record.id)
+                ? old
+                : [...old, e.record];
+            case "update":
+              return old.map((vp) => (vp.id === e.record.id ? e.record : vp));
+            case "delete":
+              return old.filter((vp) => vp.id !== e.record.id);
+            default:
+              return old;
+          }
+        }),
+      { filter, expand: "user" },
+    );
 
     unsubPromise.catch((err) =>
       console.warn("voice participants subscription failed:", err),

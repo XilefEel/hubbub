@@ -12,12 +12,13 @@ import {
   isConversationHidden,
   isConversationUnread,
 } from "../utils/conversation";
+import { Collections } from "@/lib/collections";
 
 export const conversationsOptions = () =>
   queryOptions({
     queryKey: queryKeys.conversations.list(),
     queryFn: () =>
-      pb.collection("conversations").getFullList<Conversation>({
+      pb.collection(Collections.Conversations).getFullList({
         sort: "-lastMessageAt",
         expand: "conversation_members_via_conversation.user",
       }),
@@ -44,8 +45,8 @@ export function useConversationsSubscription() {
     const key = queryKeys.conversations.list();
 
     const unsubPromise = pb
-      .collection("conversations")
-      .subscribe<Conversation>("*", (e) => {
+      .collection(Collections.Conversations)
+      .subscribe("*", (e) => {
         if (e.action === "create") {
           queryClient.invalidateQueries({
             queryKey: queryKeys.conversations.all(),
@@ -93,7 +94,9 @@ export function useMarkConversationRead() {
       memberId: string;
       lastReadAt: DateTime;
     }) =>
-      pb.collection("conversation_members").update(memberId, { lastReadAt }),
+      pb
+        .collection(Collections.ConversationMembers)
+        .update(memberId, { lastReadAt }),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.conversations.all(),
@@ -107,9 +110,8 @@ export function useHideConversation() {
   return useMutation({
     mutationFn: ({ memberId }: { memberId: string }) =>
       pb
-        .collection("conversation_members")
+        .collection(Collections.ConversationMembers)
         .update(memberId, { hiddenAt: new Date().toISOString() }),
-
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.conversations.all(),

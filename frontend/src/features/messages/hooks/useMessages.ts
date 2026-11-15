@@ -8,6 +8,7 @@ import { pb } from "@/lib/pocketbase";
 import type { Message, MessageScope } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
 import { useMutation } from "@tanstack/react-query";
+import { Collections } from "@/lib/collections";
 
 const PAGE_SIZE = 50;
 
@@ -48,7 +49,7 @@ export function useSendMessage() {
 
       if (stickerId) formData.append("sticker", stickerId);
 
-      return await pb.collection<Message>("messages").create(formData);
+      return await pb.collection(Collections.Messages).create(formData);
     },
   });
 }
@@ -61,7 +62,7 @@ export function useEditMessage(onSuccess?: () => void) {
     }: {
       messageId: string;
       content: string;
-    }) => pb.collection("messages").update(messageId, { content }),
+    }) => pb.collection(Collections.Messages).update(messageId, { content }),
     onSuccess,
   });
 }
@@ -69,7 +70,7 @@ export function useEditMessage(onSuccess?: () => void) {
 export function useDeleteMessage() {
   return useMutation({
     mutationFn: (messageId: string) =>
-      pb.collection("messages").delete(messageId),
+      pb.collection(Collections.Messages).delete(messageId),
   });
 }
 
@@ -87,8 +88,8 @@ export function useMessages(scope: MessageScope) {
         : pb.filter(`${type} = {:id}`, { id });
 
       const res = await pb
-        .collection("messages")
-        .getList<Message>(1, PAGE_SIZE, {
+        .collection(Collections.Messages)
+        .getList(1, PAGE_SIZE, {
           filter,
           sort: "-created",
           expand: "user,replyTo,replyTo.user,mentions,sticker",
@@ -127,7 +128,7 @@ export function useMessagesSubscription(scope: MessageScope) {
     if (!id) return;
 
     const key = queryKeys.messages.byParent(type, id);
-    const unsubPromise = pb.collection("messages").subscribe<Message>(
+    const unsubPromise = pb.collection(Collections.Messages).subscribe(
       "*",
       (e) => {
         queryClient.setQueryData<
@@ -202,7 +203,7 @@ export function useMessagesSubscription(scope: MessageScope) {
 }
 
 export async function fetchLastMessage(channelId: string) {
-  const res = await pb.collection("messages").getList<Message>(1, 1, {
+  const res = await pb.collection(Collections.Messages).getList(1, 1, {
     filter: pb.filter("channel = {:id}", { id: channelId }),
     sort: "-created",
     skipTotal: true,

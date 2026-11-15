@@ -5,17 +5,17 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
-import type { Server } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
+import { Collections } from "@/lib/collections";
 
 export function useServers() {
   const userId = pb.authStore.record?.id;
 
-  return useQuery<Server[]>({
+  return useQuery({
     queryKey: queryKeys.servers.byUser(userId || ""),
     queryFn: async () => {
       if (!userId) return [];
-      return await pb.collection("servers").getFullList<Server>();
+      return await pb.collection(Collections.Servers).getFullList();
     },
     enabled: !!userId,
     staleTime: 1000 * 60 * 5,
@@ -25,7 +25,7 @@ export function useServers() {
 export const serverDetailOptions = (serverId: string) =>
   queryOptions({
     queryKey: queryKeys.servers.detail(serverId),
-    queryFn: () => pb.collection("servers").getOne<Server>(serverId),
+    queryFn: () => pb.collection(Collections.Servers).getOne(serverId),
     staleTime: 1000 * 30,
   });
 
@@ -45,7 +45,7 @@ export function useCreateServer() {
       formData.append("name", name);
       if (icon) formData.append("icon", icon);
 
-      return pb.collection("servers").create<Server>(formData);
+      return pb.collection(Collections.Servers).create(formData);
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.servers.all() }),
@@ -86,7 +86,7 @@ export function useUpdateServer() {
       if (name !== undefined) formData.append("name", name);
       if (icon !== undefined) formData.append("icon", icon);
 
-      return pb.collection("servers").update(serverId, formData);
+      return pb.collection(Collections.Servers).update(serverId, formData);
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.servers.all() }),
@@ -100,10 +100,10 @@ export function useLeaveServer() {
   return useMutation({
     mutationFn: async (serverId: string) => {
       const membership = await pb
-        .collection("server_members")
+        .collection(Collections.ServerMembers)
         .getFirstListItem(`user="${userId}" && server="${serverId}"`);
 
-      return pb.collection("server_members").delete(membership.id);
+      return pb.collection(Collections.ServerMembers).delete(membership.id);
     },
     onSuccess: () =>
       queryClient.invalidateQueries({
@@ -116,7 +116,8 @@ export function useDeleteServer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (serverId: string) => pb.collection("servers").delete(serverId),
+    mutationFn: (serverId: string) =>
+      pb.collection(Collections.Servers).delete(serverId),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: queryKeys.servers.all(),

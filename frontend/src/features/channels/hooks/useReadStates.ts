@@ -4,14 +4,15 @@ import { useEffect } from "react";
 import { queryKeys } from "@/lib/querykeys";
 import type { DateTime, ReadState } from "@/lib/types";
 import { ClientResponseError } from "pocketbase";
+import { Collections } from "@/lib/collections";
 
 export function useChannelReads() {
   const userId = pb.authStore.record?.id;
 
-  return useQuery<ReadState[], Error, Map<string, ReadState>>({
+  return useQuery({
     queryKey: queryKeys.readStates.list(),
     queryFn: async () => {
-      return await pb.collection("read_states").getFullList<ReadState>({
+      return await pb.collection(Collections.ReadStates).getFullList({
         filter: pb.filter("user = {:id}", { id: userId }),
       });
     },
@@ -35,7 +36,7 @@ export function useMarkChannelRead() {
       let existing: ReadState | null = null;
 
       try {
-        existing = await pb.collection("read_states").getFirstListItem(
+        existing = await pb.collection(Collections.ReadStates).getFirstListItem(
           pb.filter("user = {:userId} && channel = {:channelId}", {
             userId,
             channelId,
@@ -48,11 +49,11 @@ export function useMarkChannelRead() {
 
       if (existing) {
         return pb
-          .collection("read_states")
+          .collection(Collections.ReadStates)
           .update(existing.id, { lastReadAt, mentionCount: 0 });
       }
 
-      return pb.collection("read_states").create({
+      return pb.collection(Collections.ReadStates).create({
         user: userId,
         channel: channelId,
         lastReadAt,
@@ -70,7 +71,7 @@ export function useReadStatesSubscription() {
     if (!userId) return;
 
     const key = queryKeys.readStates.list();
-    const unsubPromise = pb.collection("read_states").subscribe<ReadState>(
+    const unsubPromise = pb.collection(Collections.ReadStates).subscribe(
       "*",
       (e) => {
         queryClient.setQueryData<ReadState[]>(key, (old) => {

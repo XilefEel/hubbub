@@ -3,12 +3,13 @@ import { pb } from "@/lib/pocketbase";
 import type { MessageScope, Reaction } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
 import { useEffect } from "react";
+import { Collections } from "@/lib/collections";
 
 export function useReactions(scope: MessageScope) {
   return useQuery({
     queryKey: queryKeys.reactions.byParent(scope.type, scope.id),
     queryFn: () =>
-      pb.collection("reactions").getFullList<Reaction>({
+      pb.collection(Collections.Reactions).getFullList({
         filter: pb.filter(`message.${scope.type} = {:id}`, { id: scope.id }),
         expand: "user",
       }),
@@ -24,7 +25,7 @@ export function useReactionsSubscription(scope: MessageScope) {
     if (!id) return;
 
     const key = queryKeys.reactions.byParent(type, id);
-    const unsubPromise = pb.collection("reactions").subscribe<Reaction>(
+    const unsubPromise = pb.collection(Collections.Reactions).subscribe(
       "*",
       (e) => {
         queryClient.setQueryData<Reaction[]>(key, (old) => {
@@ -60,7 +61,7 @@ export function useReactionsSubscription(scope: MessageScope) {
 export function useCreateReaction() {
   return useMutation({
     mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) =>
-      pb.collection("reactions").create<Reaction>({
+      pb.collection(Collections.Reactions).create({
         message: messageId,
         emoji,
         user: pb.authStore.record?.id,
@@ -71,7 +72,7 @@ export function useCreateReaction() {
 export function useDeleteReaction() {
   return useMutation({
     mutationFn: (reactionId: string) =>
-      pb.collection("reactions").delete(reactionId),
+      pb.collection(Collections.Reactions).delete(reactionId),
   });
 }
 

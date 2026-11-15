@@ -1,3 +1,4 @@
+import { Collections } from "@/lib/collections";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
 import type { QueryClient } from "@tanstack/react-query";
@@ -19,7 +20,7 @@ export function useUpdateAvatar() {
       const formData = new FormData();
       formData.append("avatar", file);
 
-      return pb.collection("users").update(userId, formData);
+      return pb.collection(Collections.Users).update(userId, formData);
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -33,7 +34,7 @@ export function useRemoveAvatar() {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to remove avatar");
 
-      return pb.collection("users").update(userId, { avatar: "" });
+      return pb.collection(Collections.Users).update(userId, { avatar: "" });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -47,7 +48,7 @@ export function useUpdateUsername() {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to update username");
 
-      return pb.collection("users").update(userId, { name });
+      return pb.collection(Collections.Users).update(userId, { name });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -61,7 +62,7 @@ export function useUpdateBio() {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to update bio");
 
-      return pb.collection("users").update(userId, { bio });
+      return pb.collection(Collections.Users).update(userId, { bio });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });
@@ -75,7 +76,7 @@ export function useUpdateBannerColor() {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to update banner color");
 
-      return pb.collection("users").update(userId, { bannerColor });
+      return pb.collection(Collections.Users).update(userId, { bannerColor });
     },
     onSuccess: () => invalidateUserDependents(queryClient),
   });

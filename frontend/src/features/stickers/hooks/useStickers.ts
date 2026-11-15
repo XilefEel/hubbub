@@ -1,13 +1,13 @@
+import { Collections } from "@/lib/collections";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
-import type { Sticker, UserSticker } from "@/lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useMyStickers() {
   return useQuery({
     queryKey: queryKeys.stickers.list(),
     queryFn: () =>
-      pb.collection<UserSticker>("user_stickers").getFullList({
+      pb.collection(Collections.UserStickers).getFullList({
         expand: "sticker",
         sort: "-created",
       }),
@@ -26,9 +26,9 @@ export function useCreateSticker() {
       form.append("file", file);
       form.append("creator", userId);
 
-      const sticker = await pb.collection<Sticker>("stickers").create(form);
+      const sticker = await pb.collection(Collections.Stickers).create(form);
 
-      await pb.collection<UserSticker>("user_stickers").create({
+      await pb.collection(Collections.UserStickers).create({
         user: userId,
         sticker: sticker.id,
       });
@@ -48,7 +48,7 @@ export function useSaveSticker() {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Must be logged in to save stickers");
 
-      return await pb.collection<UserSticker>("user_stickers").create({
+      return await pb.collection(Collections.UserStickers).create({
         user: userId,
         sticker: stickerId,
       });
@@ -63,7 +63,7 @@ export function useRemoveSticker() {
 
   return useMutation({
     mutationFn: (userStickerId: string) =>
-      pb.collection<UserSticker>("user_stickers").delete(userStickerId),
+      pb.collection(Collections.UserStickers).delete(userStickerId),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.stickers.all() }),
   });

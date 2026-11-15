@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { pb } from "../../../lib/pocketbase";
 import type { User } from "../../../lib/types";
 import { DEFAULT_COLOR } from "@/lib/constants";
+import { Collections } from "@/lib/collections";
 
 export function useAuth() {
   const [isValid, setIsValid] = useState(pb.authStore.isValid);
@@ -35,7 +36,9 @@ export function useLogin() {
         throw new Error("Invalid email address");
       }
 
-      return pb.collection("users").authWithPassword(cleanEmail, password);
+      return pb
+        .collection(Collections.Users)
+        .authWithPassword(cleanEmail, password);
     },
   });
 }
@@ -73,7 +76,7 @@ export function useSignup() {
         throw new Error("Passwords do not match");
       }
 
-      await pb.collection("users").create({
+      await pb.collection(Collections.Users).create({
         name: cleanName,
         email: cleanEmail,
         password,
@@ -81,7 +84,9 @@ export function useSignup() {
         bannerColor: DEFAULT_COLOR,
       });
 
-      return pb.collection("users").authWithPassword(cleanEmail, password);
+      return pb
+        .collection(Collections.Users)
+        .authWithPassword(cleanEmail, password);
     },
   });
 }
@@ -104,7 +109,7 @@ export function useChangePassword() {
         throw new Error("Passwords do not match");
       }
 
-      return pb.collection("users").update(userId, {
+      return pb.collection(Collections.Users).update(userId, {
         oldPassword,
         password,
         passwordConfirm,

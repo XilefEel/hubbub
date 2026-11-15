@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
-import type { ServerMember } from "@/lib/types";
 import { queryKeys } from "@/lib/querykeys";
+import { Collections } from "@/lib/collections";
 
 export function useServerMembers(serverId: string) {
-  return useQuery<ServerMember[]>({
+  return useQuery({
     queryKey: queryKeys.serverMembers.byServer(serverId),
     queryFn: () =>
-      pb.collection("server_members").getFullList<ServerMember>({
+      pb.collection(Collections.ServerMembers).getFullList({
         filter: pb.filter("server = {:id}", { id: serverId }),
         expand: "user",
         sort: "role",
@@ -26,7 +26,8 @@ export function useUpdateMemberRole(serverId: string) {
     }: {
       membershipId: string;
       role: "admin" | "member";
-    }) => pb.collection("server_members").update(membershipId, { role }),
+    }) =>
+      pb.collection(Collections.ServerMembers).update(membershipId, { role }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serverMembers.byServer(serverId),
@@ -40,7 +41,7 @@ export function useBanMember(serverId: string) {
 
   return useMutation({
     mutationFn: (membershipId: string) =>
-      pb.collection("server_members").delete(membershipId),
+      pb.collection(Collections.ServerMembers).delete(membershipId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serverMembers.byServer(serverId),

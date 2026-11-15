@@ -1,3 +1,4 @@
+import { Collections } from "@/lib/collections";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +9,7 @@ function useMyMemberships() {
   return useQuery({
     queryKey: queryKeys.serverMembers.byUser(userId!),
     queryFn: () =>
-      pb.collection("server_members").getFullList({
+      pb.collection(Collections.ServerMembers).getFullList({
         filter: pb.filter("user = {:id}", { id: userId }),
       }),
     enabled: !!userId,

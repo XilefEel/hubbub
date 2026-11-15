@@ -8,12 +8,13 @@ import type {
   SendFriendRequestResult,
   User,
 } from "@/lib/types";
+import { Collections } from "@/lib/collections";
 
 export function useFriendships(userId: string | undefined) {
   return useQuery<Friendship[]>({
     queryKey: queryKeys.friendships.byUser(userId),
     queryFn: () =>
-      pb.collection("friendships").getFullList<Friendship>({
+      pb.collection(Collections.Friendships).getFullList({
         filter: pb.filter("requester = {:id} || addressee = {:id}", {
           id: userId,
         }),
@@ -33,7 +34,7 @@ export function useFriendshipsSubscription() {
     if (!userId) return;
 
     const key = queryKeys.friendships.byUser(userId);
-    const unsubPromise = pb.collection("friendships").subscribe<Friendship>(
+    const unsubPromise = pb.collection(Collections.Friendships).subscribe(
       "*",
       (e) => {
         queryClient.setQueryData<Friendship[]>(key, (old) => {
@@ -99,8 +100,8 @@ export function useSendFriendRequest() {
 
       try {
         existing = await pb
-          .collection("friendships")
-          .getFirstListItem<Friendship>(
+          .collection(Collections.Friendships)
+          .getFirstListItem(
             pb.filter(
               "(requester = {:a} && addressee = {:b}) || (requester = {:b} && addressee = {:a})",
               { a: currentUserId, b: targetUser.id },
@@ -116,7 +117,7 @@ export function useSendFriendRequest() {
           : { status: "already_pending" };
       }
 
-      await pb.collection("friendships").create({
+      await pb.collection(Collections.Friendships).create({
         requester: currentUserId,
         addressee: targetUser.id,
         status: "pending",
@@ -150,11 +151,11 @@ export function useRespondToFriendRequest() {
         throw new Error("Must be logged in to respond to friend requests");
 
       if (accept) {
-        await pb.collection("friendships").update(friendshipId, {
+        await pb.collection(Collections.Friendships).update(friendshipId, {
           status: "accepted",
         });
       } else {
-        await pb.collection("friendships").delete(friendshipId);
+        await pb.collection(Collections.Friendships).delete(friendshipId);
       }
     },
     onSuccess: () =>

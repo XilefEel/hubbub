@@ -1,0 +1,15 @@
+export const Collections = {
+  Users: "users",
+  Servers: "servers",
+  ServerMembers: "server_members",
+  Channels: "channels",
+  Messages: "messages",
+  Reactions: "reactions",
+  VoiceParticipants: "voice_participants",
+  ReadStates: "read_states",
+  Friendships: "friendships",
+  Conversations: "conversations",
+  ConversationMembers: "conversation_members",
+  Stickers: "stickers",
+  UserStickers: "user_stickers",
+} as const;

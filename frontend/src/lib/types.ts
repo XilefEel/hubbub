@@ -1,8 +1,12 @@
 import type { RecordModel } from "pocketbase";
 
-export type DateTime = string & { readonly __type: "DateTime" };
+declare const dateTimeBrand: unique symbol;
+export type DateTime = string & { readonly [dateTimeBrand]: true };
 
-type BaseRecord = RecordModel & {
+type BaseRecord = Pick<
+  RecordModel,
+  "id" | "collectionId" | "collectionName"
+> & {
   created: DateTime;
   updated: DateTime;
 };

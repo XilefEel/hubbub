@@ -7,6 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/querykeys";
+import { Collections } from "@/lib/collections";
 
 export type PresenceStatus = "online" | "invisible";
 
@@ -79,7 +80,9 @@ export function useSetPresenceStatus() {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Not authenticated");
 
-      await pb.collection("users").update(userId, { presenceStatus: status });
+      await pb
+        .collection(Collections.Users)
+        .update(userId, { presenceStatus: status });
     },
     onSuccess: () => sendHeartbeat(queryClient),
   });

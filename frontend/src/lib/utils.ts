@@ -1,4 +1,3 @@
-import { pb } from "./pocketbase";
 import type { DateTime, Message, Reaction, User } from "./types";
 import { ClientResponseError } from "pocketbase";
 import { isToday, isYesterday } from "date-fns";
@@ -56,11 +55,6 @@ export function isSameGroup(
     (1000 * 60);
 
   return diffInMinutes <= minutesWindow;
-}
-
-export function getMessageImageUrl(message: Message) {
-  if (!message.attachment) return null;
-  return pb.files.getURL(message, message.attachment);
 }
 
 export function groupReactionsByMessage(
