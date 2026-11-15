@@ -84,10 +84,8 @@ export function useSendFriendRequest() {
 
       try {
         targetUser = await pb
-          .collection("users")
-          .getFirstListItem<User>(
-            pb.filter("name = {:name}", { name: username }),
-          );
+          .collection(Collections.Users)
+          .getFirstListItem(pb.filter("name = {:name}", { name: username }));
       } catch {
         return { status: "not_found" };
       }

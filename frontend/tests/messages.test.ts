@@ -1,5 +1,4 @@
 import { test, expect } from "vitest";
-import type { Message } from "../src/lib/types.ts";
 import {
   makeUser,
   makeServer,
@@ -7,12 +6,13 @@ import {
   makeTextChannel,
   sendMessageInChannel,
 } from "./helpers.ts";
+import { Collections } from "../src/lib/collections.ts";
 
 test("member cannot post as someone else", async () => {
   const { alice, bob, channel } = await makeServerWithMember();
 
   await expect(
-    bob.pb.collection<Message>("messages").create({
+    bob.pb.collection(Collections.Messages).create({
       channel: channel.id,
       user: alice.id,
       content: "I should not be able to post this as Alice",
@@ -33,13 +33,13 @@ test("author cannot move their own message to another channel", async () => {
   );
 
   await expect(
-    alice.pb.collection<Message>("messages").update(message.id, {
+    alice.pb.collection(Collections.Messages).update(message.id, {
       channel: channel2.id,
     }),
   ).rejects.toMatchObject({ status: 404 });
 
   const afterUpdate = await alice.pb
-    .collection<Message>("messages")
+    .collection(Collections.Messages)
     .getOne(message.id);
 
   expect(afterUpdate.channel).toBe(general.id);
@@ -55,13 +55,13 @@ test("member cannot edit another member's message", async () => {
   );
 
   await expect(
-    bob.pb.collection<Message>("messages").update(message.id, {
+    bob.pb.collection(Collections.Messages).update(message.id, {
       content: "Bob tries to edit Alice's message",
     }),
   ).rejects.toMatchObject({ status: 404 });
 
   const still = await alice.pb
-    .collection<Message>("messages")
+    .collection(Collections.Messages)
     .getOne(message.id);
 
   expect(still.content).toBe("This is Alice's message");
@@ -76,7 +76,7 @@ test("non-member cannot read messages in a server", async () => {
   sendMessageInChannel(alice, channel.id, "secret message");
 
   const messagesForBob = await bob.pb
-    .collection<Message>("messages")
+    .collection(Collections.Messages)
     .getList(1, 20, {
       filter: `channel = "${channel.id}"`,
     });
@@ -84,7 +84,7 @@ test("non-member cannot read messages in a server", async () => {
   expect(messagesForBob.items).toHaveLength(0);
 
   const messagesForAlice = await alice.pb
-    .collection<Message>("messages")
+    .collection(Collections.Messages)
     .getList(1, 20, {
       filter: `channel = "${channel.id}"`,
     });
@@ -102,11 +102,11 @@ test("member cannot delete another member's message", async () => {
   );
 
   await expect(
-    bob.pb.collection<Message>("messages").delete(message.id),
+    bob.pb.collection(Collections.Messages).delete(message.id),
   ).rejects.toMatchObject({ status: 404 });
 
   const still = await alice.pb
-    .collection<Message>("messages")
+    .collection(Collections.Messages)
     .getOne(message.id);
 
   expect(still.content).toBe("This is Alice's message");

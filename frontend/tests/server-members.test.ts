@@ -5,17 +5,17 @@ import {
   makeServerWithMember,
   makeUser,
 } from "./helpers.ts";
-import type { ServerMember } from "../src/lib/types.ts";
+import { Collections } from "../src/lib/collections.ts";
 
 test("owner can change a member's role", async () => {
   const { alice, bob, server } = await makeServerWithMember();
 
   const bobMembership = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${bob.id}"`);
 
   const updated = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .update(bobMembership.id, { role: "admin" });
 
   expect(updated.role).toBe("admin");
@@ -25,17 +25,17 @@ test("non-owner cannot change a member's role", async () => {
   const { alice, bob, server } = await makeServerWithMember();
 
   const bobMembership = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${bob.id}"`);
 
   await expect(
-    bob.pb.collection<ServerMember>("server_members").update(bobMembership.id, {
+    bob.pb.collection(Collections.ServerMembers).update(bobMembership.id, {
       role: "admin",
     }),
   ).rejects.toMatchObject({ status: 404 });
 
   const after = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getOne(bobMembership.id);
 
   expect(after.role).toBe("member");
@@ -46,15 +46,13 @@ test("owner cannot move a membership to another server", async () => {
   const { server: other } = await makeServer(alice);
 
   const bobMembership = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${bob.id}"`);
 
   await expect(
-    alice.pb
-      .collection<ServerMember>("server_members")
-      .update(bobMembership.id, {
-        server: other.id,
-      }),
+    alice.pb.collection(Collections.ServerMembers).update(bobMembership.id, {
+      server: other.id,
+    }),
   ).rejects.toMatchObject({ status: 404 });
 });
 
@@ -62,17 +60,13 @@ test("member can leave a server", async () => {
   const { alice, bob, server } = await makeServerWithMember();
 
   const bobMembership = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${bob.id}"`);
 
-  await bob.pb
-    .collection<ServerMember>("server_members")
-    .delete(bobMembership.id);
+  await bob.pb.collection(Collections.ServerMembers).delete(bobMembership.id);
 
   await expect(
-    alice.pb
-      .collection<ServerMember>("server_members")
-      .getOne(bobMembership.id),
+    alice.pb.collection(Collections.ServerMembers).getOne(bobMembership.id),
   ).rejects.toMatchObject({ status: 404 });
 });
 
@@ -83,17 +77,15 @@ test("member cannot kick another member", async () => {
   await addMember(server.id, carol.id);
 
   const carolMembership = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${carol.id}"`);
 
   await expect(
-    bob.pb
-      .collection<ServerMember>("server_members")
-      .delete(carolMembership.id),
+    bob.pb.collection(Collections.ServerMembers).delete(carolMembership.id),
   ).rejects.toMatchObject({ status: 404 });
 
   const stillExists = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getOne(carolMembership.id);
 
   expect(stillExists.user).toBe(carol.id);
@@ -103,16 +95,12 @@ test("owner can kick a member", async () => {
   const { alice, bob, server } = await makeServerWithMember();
 
   const bobMembership = await alice.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${bob.id}"`);
 
-  await alice.pb
-    .collection<ServerMember>("server_members")
-    .delete(bobMembership.id);
+  await alice.pb.collection(Collections.ServerMembers).delete(bobMembership.id);
 
   await expect(
-    alice.pb
-      .collection<ServerMember>("server_members")
-      .getOne(bobMembership.id),
+    alice.pb.collection(Collections.ServerMembers).getOne(bobMembership.id),
   ).rejects.toMatchObject({ status: 404 });
 });

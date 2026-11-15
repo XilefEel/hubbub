@@ -1,18 +1,13 @@
 import PocketBase from "pocketbase";
-import type {
-  Server,
-  Channel,
-  ServerMember,
-  ServerRole,
-  Friendship,
-  ConversationMember,
-} from "../src/lib/types.ts";
+import type { TypedPocketBase } from "../src/lib/pocketbase.ts";
+import { Collections } from "../src/lib/collections.ts";
+import type { ServerRole } from "../src/lib/types.ts";
 
 export const url = "http://127.0.0.1:8091";
 export const wsUrl = "ws://localhost:7881";
 
 export type TestUser = {
-  pb: PocketBase;
+  pb: TypedPocketBase;
   id: string;
 };
 
@@ -26,32 +21,34 @@ export type ConversationResponse = {
 
 export type VoiceTokenResponse = { token: string; url: string };
 
+const createClient = () => new PocketBase(url) as TypedPocketBase;
+
 export async function makeUser(name: string): Promise<TestUser> {
-  const pb = new PocketBase(url);
+  const pb = createClient();
 
   const uniqueName = `${name}-${Math.random().toString(36).slice(2, 8)}`;
   const email = `${uniqueName}@test.com`;
   const password = "password123";
 
-  const user = await pb.collection("users").create({
+  const user = await pb.collection(Collections.Users).create({
     name: uniqueName,
     email,
     password,
     passwordConfirm: password,
   });
 
-  await pb.collection("users").authWithPassword(email, password);
+  await pb.collection(Collections.Users).authWithPassword(email, password);
 
   return { pb, id: user.id };
 }
 
 export async function makeServer(owner: TestUser) {
-  const server = await owner.pb.collection<Server>("servers").create({
+  const server = await owner.pb.collection(Collections.Servers).create({
     name: `${owner.id}'s Server`,
   });
 
   const channel = await owner.pb
-    .collection<Channel>("channels")
+    .collection(Collections.Channels)
     .getFirstListItem(owner.pb.filter("server = {:id}", { id: server.id }));
 
   return { server, channel };
@@ -79,7 +76,7 @@ export async function makeTextChannel(
   serverId: string,
   channelName: string = "text-channel",
 ) {
-  return owner.pb.collection<Channel>("channels").create({
+  return owner.pb.collection(Collections.Channels).create({
     name: channelName,
     server: serverId,
     type: "text",
@@ -91,7 +88,7 @@ export async function makeVoiceChannel(
   serverId: string,
   channelName: string = "voice-channel",
 ) {
-  return await owner.pb.collection<Channel>("channels").create({
+  return await owner.pb.collection(Collections.Channels).create({
     name: channelName,
     server: serverId,
     type: "voice",
@@ -110,7 +107,7 @@ export async function sendMessageInChannel(
   channelId: string,
   content: string,
 ) {
-  return await user.pb.collection("messages").create({
+  return await user.pb.collection(Collections.Messages).create({
     channel: channelId,
     user: user.id,
     content,
@@ -122,19 +119,19 @@ export async function sendMessageInConversation(
   conversationId: string,
   content: string,
 ) {
-  return await user.pb.collection("messages").create({
+  return await user.pb.collection(Collections.Messages).create({
     conversation: conversationId,
     user: user.id,
     content,
   });
 }
 
-let cachedAdmin: PocketBase | null = null;
+let cachedAdmin: TypedPocketBase | null = null;
 
 export async function admin() {
   if (cachedAdmin?.authStore.isValid) return cachedAdmin;
 
-  const pb = new PocketBase(url);
+  const pb = createClient();
   pb.autoCancellation(false);
 
   await pb
@@ -152,7 +149,7 @@ export async function addMember(
 ) {
   const a = await admin();
 
-  await a.collection<ServerMember>("server_members").create({
+  await a.collection(Collections.ServerMembers).create({
     server: serverId,
     user: userId,
     role,
@@ -161,7 +158,7 @@ export async function addMember(
 
 export async function makeFriends(requester: TestUser, addressee: TestUser) {
   const friendship = await requester.pb
-    .collection<Friendship>("friendships")
+    .collection(Collections.Friendships)
     .create({
       requester: requester.id,
       addressee: addressee.id,
@@ -169,7 +166,7 @@ export async function makeFriends(requester: TestUser, addressee: TestUser) {
     });
 
   await addressee.pb
-    .collection<Friendship>("friendships")
+    .collection(Collections.Friendships)
     .update(friendship.id, { status: "accepted" });
 }
 
@@ -177,13 +174,11 @@ export async function getConversationMembers(
   user: TestUser,
   conversationId: string,
 ) {
-  return await user.pb
-    .collection<ConversationMember>("conversation_members")
-    .getFullList({
-      filter: user.pb.filter("conversation = {:conversationId}", {
-        conversationId,
-      }),
-    });
+  return await user.pb.collection(Collections.ConversationMembers).getFullList({
+    filter: user.pb.filter("conversation = {:conversationId}", {
+      conversationId,
+    }),
+  });
 }
 
 export async function openDm(user: TestUser, target: TestUser) {

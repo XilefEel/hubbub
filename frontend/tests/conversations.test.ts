@@ -1,6 +1,5 @@
 import { expect, test } from "vitest";
 import PocketBase from "pocketbase";
-import type { Conversation } from "../src/lib/types.ts";
 import {
   addMember,
   getConversationMembers,
@@ -9,6 +8,7 @@ import {
   makeUser,
   url,
 } from "./helpers.ts";
+import { Collections } from "../src/lib/collections.ts";
 
 test("logged-out user cannot open a dm", async () => {
   const alice = await makeUser("alice");
@@ -95,7 +95,7 @@ test("friends can open a dm", async () => {
   );
 
   const conversation = await alice.pb
-    .collection<Conversation>("conversations")
+    .collection(Collections.Conversations)
     .getOne(response.conversationId);
 
   expect(conversation.isGroup).toBe(false);
@@ -218,7 +218,7 @@ test("only the group owner can rename the group or add members", async () => {
   expect(updated.conversationId).toBe(created.conversationId);
 
   const conversation = await alice.pb
-    .collection<Conversation>("conversations")
+    .collection(Collections.Conversations)
     .getOne(created.conversationId);
 
   expect(conversation.name).toBe("Renamed");

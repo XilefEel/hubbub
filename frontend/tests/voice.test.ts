@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
 import { makeUser, makeServerWithVoiceChannel } from "./helpers.ts";
+import { Collections } from "../src/lib/collections.ts";
 
 test("non-member cannot join a voice channel", async () => {
   const alice = await makeUser("alice");
@@ -8,25 +9,25 @@ test("non-member cannot join a voice channel", async () => {
   const { voiceChannel } = await makeServerWithVoiceChannel(alice);
 
   await expect(
-    bob.pb.collection("voice_participants").create({
+    bob.pb.collection(Collections.VoiceParticipants).create({
       channel: voiceChannel.id,
       user: bob.id,
     }),
   ).rejects.toMatchObject({ status: 400 });
 
   const participants = await alice.pb
-    .collection("voice_participants")
+    .collection(Collections.VoiceParticipants)
     .getList(1, 20, { filter: `channel = "${voiceChannel.id}"` });
 
   expect(participants.items).toHaveLength(0);
 
-  await alice.pb.collection("voice_participants").create({
+  await alice.pb.collection(Collections.VoiceParticipants).create({
     channel: voiceChannel.id,
     user: alice.id,
   });
 
   const participantsAfter = await alice.pb
-    .collection("voice_participants")
+    .collection(Collections.VoiceParticipants)
     .getList(1, 20, { filter: `channel = "${voiceChannel.id}"` });
 
   expect(participantsAfter.items).toHaveLength(1);

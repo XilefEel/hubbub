@@ -1,12 +1,12 @@
 import { expect, test } from "vitest";
 import { makeServer, makeServerWithMember } from "./helpers.ts";
-import type { Channel } from "../src/lib/types.ts";
+import { Collections } from "../src/lib/collections.ts";
 
 test("regular members cannot create a channel", async () => {
   const { alice, bob, server } = await makeServerWithMember();
 
   await expect(
-    bob.pb.collection<Channel>("channels").create({
+    bob.pb.collection(Collections.Channels).create({
       name: "Bob's Channel",
       server: server.id,
       type: "text",
@@ -14,7 +14,7 @@ test("regular members cannot create a channel", async () => {
   ).rejects.toMatchObject({ status: 400 });
 
   const channels = await alice.pb
-    .collection<Channel>("channels")
+    .collection(Collections.Channels)
     .getFullList(200, {
       filter: `server = "${server.id}"`,
     });
@@ -26,13 +26,13 @@ test("regular members cannot update a channel", async () => {
   const { alice, bob, channel } = await makeServerWithMember();
 
   await expect(
-    bob.pb.collection<Channel>("channels").update(channel.id, {
+    bob.pb.collection(Collections.Channels).update(channel.id, {
       name: "Bob's Channel",
     }),
   ).rejects.toMatchObject({ status: 404 });
 
   const general = await alice.pb
-    .collection<Channel>("channels")
+    .collection(Collections.Channels)
     .getOne(channel.id);
 
   expect(general.name).toBe(channel.name);
@@ -42,11 +42,11 @@ test("regular members cannot delete a channel", async () => {
   const { alice, bob, server, channel } = await makeServerWithMember();
 
   await expect(
-    bob.pb.collection<Channel>("channels").delete(channel.id),
+    bob.pb.collection(Collections.Channels).delete(channel.id),
   ).rejects.toMatchObject({ status: 404 });
 
   const channels = await alice.pb
-    .collection<Channel>("channels")
+    .collection(Collections.Channels)
     .getFullList(200, {
       filter: `server = "${server.id}"`,
     });
@@ -57,7 +57,7 @@ test("regular members cannot delete a channel", async () => {
 test("owner can create, update and delete a channel", async () => {
   const { alice, server } = await makeServerWithMember();
 
-  const created = await alice.pb.collection<Channel>("channels").create({
+  const created = await alice.pb.collection(Collections.Channels).create({
     name: "Alice's Channel",
     server: server.id,
     type: "text",
@@ -66,15 +66,15 @@ test("owner can create, update and delete a channel", async () => {
   expect(created.name).toBe("Alice's Channel");
 
   const updated = await alice.pb
-    .collection<Channel>("channels")
+    .collection(Collections.Channels)
     .update(created.id, { name: "Renamed" });
 
   expect(updated.name).toBe("Renamed");
 
-  await alice.pb.collection<Channel>("channels").delete(created.id);
+  await alice.pb.collection(Collections.Channels).delete(created.id);
 
   await expect(
-    alice.pb.collection<Channel>("channels").getOne(created.id),
+    alice.pb.collection(Collections.Channels).getOne(created.id),
   ).rejects.toMatchObject({ status: 404 });
 });
 
@@ -83,7 +83,7 @@ test("owner cannot move a channel to another server", async () => {
   const { server: other } = await makeServer(alice);
 
   await expect(
-    alice.pb.collection<Channel>("channels").update(channel.id, {
+    alice.pb.collection(Collections.Channels).update(channel.id, {
       server: other.id,
     }),
   ).rejects.toMatchObject({ status: 404 });

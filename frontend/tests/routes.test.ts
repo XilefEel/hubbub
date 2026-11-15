@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import PocketBase from "pocketbase";
 import { makeServer, makeUser, url } from "./helpers.ts";
-import type { ServerMember } from "../src/lib/types.ts";
+import { Collections } from "../src/lib/collections.ts";
 
 test("logged-out user cannot join a server", async () => {
   const alice = await makeUser("alice");
@@ -29,7 +29,7 @@ test("user can join a server with a valid invite code", async () => {
   expect(res.serverId).toBe(server.id);
 
   const membership = await bob.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${bob.id}"`);
 
   expect(membership.role).toBe("member");
@@ -72,7 +72,7 @@ test("user cannot join the same server twice", async () => {
   ).rejects.toMatchObject({ status: 400 });
 
   const memberships = await bob.pb
-    .collection<ServerMember>("server_members")
+    .collection(Collections.ServerMembers)
     .getFullList({ filter: `server = "${server.id}" && user = "${bob.id}"` });
 
   expect(memberships).toHaveLength(1);

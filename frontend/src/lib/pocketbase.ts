@@ -32,7 +32,7 @@ type CollectionRecords = {
   [Collections.UserStickers]: UserSticker;
 };
 
-interface TypedPocketBase extends PocketBase {
+export interface TypedPocketBase extends PocketBase {
   collection<K extends keyof CollectionRecords>(
     idOrName: K,
   ): RecordService<CollectionRecords[K]>;
