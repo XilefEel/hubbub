@@ -5,6 +5,7 @@ import {
   useMyPresenceStatus,
   useSetPresenceStatus,
 } from "@/features/members/hooks/usePresence";
+import Select from "@/components/ui/Select";
 
 const OPTIONS: { value: PresenceStatus; label: string; dot: string }[] = [
   { value: "online", label: "Online", dot: "bg-green-500" },
@@ -35,18 +36,13 @@ export default function PresenceSection() {
       <div className="ml-auto flex items-center gap-3">
         <span className={cn("size-2.5 rounded-full", current.dot)} />
 
-        <select
+        <Select
           value={status}
-          onChange={(e) => setStatus.mutate(e.target.value as PresenceStatus)}
+          onValueChange={(v) => setStatus.mutate(v)}
+          options={OPTIONS}
           disabled={setStatus.isPending}
-          className="rounded-md border border-zinc-200 bg-transparent px-2 py-1.5 text-sm dark:border-zinc-700"
-        >
-          {OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+          className="ml-auto w-36"
+        />
       </div>
     </div>
   );
