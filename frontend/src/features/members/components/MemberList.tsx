@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PanelRight, Search } from "lucide-react";
 import { useCurrentMembership } from "../hooks/useCurrentMembership";
-import { useOnlineUserIds } from "../hooks/usePresence";
+import { useOnlineUsers } from "../hooks/usePresence";
 import { useServerMembers } from "../hooks/useServerMembers";
 import MemberListItem from "./MemberListItem";
 import Tooltip from "@/components/ui/Tooltip";
@@ -17,22 +17,32 @@ export default function MemberList({ serverId }: { serverId: string }) {
     error,
   } = useServerMembers(serverId);
   const { isOwner } = useCurrentMembership(serverId);
-  const onlineUserIds = useOnlineUserIds();
+  const onlineUsers = useOnlineUsers();
   const { toggleMembers } = useUIActions();
 
   const [query, setQuery] = useState("");
 
-  const filteredMembers =
-    members?.filter((m) => {
-      const name = m.expand?.user?.name || "";
-      return name.toLowerCase().includes(query.toLowerCase());
-    }) || [];
+  const filteredMembers = useMemo(() => {
+    const q = query.toLowerCase();
+    return (members ?? []).filter((m) =>
+      (m.expand?.user?.name ?? "").toLowerCase().includes(q),
+    );
+  }, [members, query]);
 
-  const onlineMembers =
-    filteredMembers?.filter((m) => onlineUserIds.includes(m.user)) || [];
+  const { onlineMembers, offlineMembers } = useMemo(() => {
+    const onlineMembers = [];
+    const offlineMembers = [];
 
-  const offlineMembers =
-    filteredMembers?.filter((m) => !onlineUserIds.includes(m.user)) || [];
+    for (const member of filteredMembers) {
+      if (onlineUsers[member.user]) {
+        onlineMembers.push(member);
+      } else {
+        offlineMembers.push(member);
+      }
+    }
+
+    return { onlineMembers, offlineMembers };
+  }, [filteredMembers, onlineUsers]);
 
   return (
     <div className="flex flex-col gap-4 text-zinc-900 dark:text-zinc-100">

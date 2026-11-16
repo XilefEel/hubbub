@@ -8,36 +8,49 @@ import {
 } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/querykeys";
 import { Collections } from "@/lib/collections";
-import type { PresenceStatus } from "@/lib/types";
+import { PRESENCE_STATUSES, type PresenceStatus } from "@/lib/types";
 
-export function useOnlineUserIds() {
+type OnlineMap = Record<string, PresenceStatus>;
+const EMPTY = {} as OnlineMap;
+
+export function useOnlineUsers() {
   const { data } = useQuery({
     queryKey: queryKeys.presence.online(),
-    queryFn: () => [] as string[],
+    queryFn: () => EMPTY,
     enabled: false,
     staleTime: Infinity,
   });
-  return data ?? [];
+  return data ?? EMPTY;
 }
+
+const isOnlineMap = (data: unknown): data is OnlineMap =>
+  typeof data === "object" &&
+  data !== null &&
+  !Array.isArray(data) &&
+  Object.values(data).every((v) =>
+    PRESENCE_STATUSES.includes(v as PresenceStatus),
+  );
 
 async function sendHeartbeat(queryClient: QueryClient) {
   try {
-    const res = await pb.send<{ online?: string[] }>(
+    const res = await pb.send<{ online?: OnlineMap }>(
       "/api/presence/heartbeat",
       { method: "POST" },
     );
-    if (Array.isArray(res.online)) {
-      queryClient.setQueryData<string[]>(
+    if (isOnlineMap(res.online)) {
+      queryClient.setQueryData<OnlineMap>(
         queryKeys.presence.online(),
         res.online,
       );
+    } else {
+      console.warn("unexpected presence payload:", res.online);
     }
   } catch (err) {
     console.warn("heartbeat failed:", err);
   }
 }
 
-export function usePresence() {
+export function usePresenceSubscription() {
   const queryClient = useQueryClient();
   const userId = pb.authStore.record?.id;
 
@@ -45,16 +58,16 @@ export function usePresence() {
     if (!userId) return;
 
     const key = queryKeys.presence.online();
-    const setOnline = (ids: string[]) =>
-      queryClient.setQueryData<string[]>(key, ids);
+    const setOnline = (m: OnlineMap) =>
+      queryClient.setQueryData<OnlineMap>(key, m);
 
     sendHeartbeat(queryClient);
     const interval = setInterval(() => sendHeartbeat(queryClient), 15_000);
 
     const unsubPromise = pb.realtime.subscribe(
       "global_presence",
-      (e: { type?: string; online?: string[] }) => {
-        if (e.type === "presence_update" && Array.isArray(e.online)) {
+      (e: { type?: string; online?: OnlineMap }) => {
+        if (e.type === "presence_update" && isOnlineMap(e.online)) {
           setOnline(e.online);
         }
       },

@@ -11,7 +11,7 @@ import GlobalModals from "@/app/modals/GlobalModals";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useConversationsSubscription } from "@/features/conversations/hooks/useConversations";
 import { useDmCallsSubscription } from "@/features/voice/hooks/useVoiceParticipants";
-import { usePresence } from "@/features/members/hooks/usePresence";
+import { usePresenceSubscription } from "@/features/members/hooks/usePresence";
 import { useReadStatesSubscription } from "@/features/channels/hooks/useReadStates";
 import { useMyChannelsSubscription } from "@/features/channels/hooks/useChannels";
 
@@ -42,7 +42,7 @@ function RootLayout() {
   useFriendshipsSubscription();
   useConversationsSubscription();
   useDmCallsSubscription();
-  usePresence();
+  usePresenceSubscription();
 
   if (isLoginPage) {
     return (

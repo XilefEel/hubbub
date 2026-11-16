@@ -84,7 +84,7 @@ func startPresenceHeartbeat(app core.App) {
 
 // endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
-	status := e.Auth.GetString("status")
+	status := e.Auth.GetString("presenceStatus")
 
 	if status == "" {
 		status = "online"
