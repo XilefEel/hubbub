@@ -13,31 +13,32 @@ import (
 
 var presenceMap sync.Map
 
-type PresenceEvent struct {
-	Type   string   `json:"type"`
-	Online []string `json:"online"`
+type presenceEntry struct {
+	lastSeen time.Time
+	status   string
 }
 
-func onlineUserIds() []string {
-	onlineIds := []string{}
+type PresenceEvent struct {
+	Type   string            `json:"type"`
+	Online map[string]string `json:"online"`
+}
+
+func onlineUsers() map[string]string {
+	online := make(map[string]string)
 	now := time.Now()
 
 	// for each user in the presence map
 	presenceMap.Range(func(key, value any) bool {
-		userId := key.(string)
-		lastSeen := value.(time.Time)
-
-		// Remove users who haven't sent a heartbeat in the last 45 seconds
-		if now.Sub(lastSeen) > 45*time.Second {
-			presenceMap.Delete(userId)
+		entry := value.(presenceEntry)
+		if now.Sub(entry.lastSeen) > 45*time.Second {
+			presenceMap.Delete(key)
 		} else {
-			onlineIds = append(onlineIds, userId)
+			online[key.(string)] = entry.status
 		}
-
 		return true
 	})
 
-	return onlineIds
+	return online
 }
 
 func broadcastPresence(app core.App) {
@@ -46,7 +47,7 @@ func broadcastPresence(app core.App) {
 	// create the presence event payload
 	payload, err := json.Marshal(PresenceEvent{
 		Type:   "presence_update",
-		Online: onlineUserIds(),
+		Online: onlineUsers(),
 	})
 	if err != nil {
 		log.Println("Failed to marshal presence payload:", err)
@@ -83,19 +84,22 @@ func startPresenceHeartbeat(app core.App) {
 
 // endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
-	userId := e.Auth.Id
+	status := e.Auth.GetString("status")
 
-	if e.Auth.GetString("presenceStatus") == "invisible" {
-		if _, wasOnline := presenceMap.LoadAndDelete(userId); wasOnline {
+	if status == "" {
+		status = "online"
+	}
+
+	if status == "invisible" {
+		if _, wasOnline := presenceMap.LoadAndDelete(e.Auth.Id); wasOnline {
 			broadcastPresence(e.App)
 		}
 	} else {
-		if _, wasOnline := presenceMap.Swap(e.Auth.Id, time.Now()); !wasOnline {
+		prev, wasOnline := presenceMap.Swap(e.Auth.Id, presenceEntry{time.Now(), status})
+		if !wasOnline || prev.(presenceEntry).status != status {
 			broadcastPresence(e.App)
 		}
 	}
 
-	return e.JSON(http.StatusOK, map[string]any{
-		"online": onlineUserIds(),
-	})
+	return e.JSON(http.StatusOK, map[string]any{"online": onlineUsers()})
 }

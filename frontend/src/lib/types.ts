@@ -11,11 +11,14 @@ type BaseRecord = Pick<
   updated: DateTime;
 };
 
+export type PresenceStatus = "online" | "dnd" | "invisible";
+
 export type User = BaseRecord & {
   name: string;
   bio?: string;
   bannerColor?: string;
   avatar?: string;
+  presenceStatus?: PresenceStatus;
 };
 
 export type Server = BaseRecord & {

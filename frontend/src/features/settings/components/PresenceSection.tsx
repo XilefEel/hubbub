@@ -1,16 +1,28 @@
 import { Circle } from "lucide-react";
 import { cn } from "cn";
 import {
-  type PresenceStatus,
   useMyPresenceStatus,
   useSetPresenceStatus,
 } from "@/features/members/hooks/usePresence";
 import Select from "@/components/ui/Select";
+import type { PresenceStatus } from "@/lib/types";
 
 const OPTIONS: { value: PresenceStatus; label: string; dot: string }[] = [
   { value: "online", label: "Online", dot: "bg-green-500" },
+  { value: "dnd", label: "Do Not Disturb", dot: "bg-yellow-500" },
   { value: "invisible", label: "Invisible", dot: "bg-zinc-400" },
 ];
+
+function presenceDescription(status: PresenceStatus) {
+  switch (status) {
+    case "online":
+      return "Others can see when you're online.";
+    case "dnd":
+      return "You won’t get notification sounds or popups.";
+    case "invisible":
+      return "You appear offline to everyone else.";
+  }
+}
 
 export default function PresenceSection() {
   const status = useMyPresenceStatus();
@@ -27,9 +39,7 @@ export default function PresenceSection() {
         </span>
 
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          {status === "invisible"
-            ? "You appear offline to everyone else."
-            : "Others can see when you're online."}
+          {presenceDescription(current.value)}
         </p>
       </div>
 
@@ -41,7 +51,7 @@ export default function PresenceSection() {
           onValueChange={(v) => setStatus.mutate(v)}
           options={OPTIONS}
           disabled={setStatus.isPending}
-          className="ml-auto w-36"
+          className="w-40"
         />
       </div>
     </div>

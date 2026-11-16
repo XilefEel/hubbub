@@ -8,8 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/querykeys";
 import { Collections } from "@/lib/collections";
-
-export type PresenceStatus = "online" | "invisible";
+import type { PresenceStatus } from "@/lib/types";
 
 export function useOnlineUserIds() {
   const { data } = useQuery({
