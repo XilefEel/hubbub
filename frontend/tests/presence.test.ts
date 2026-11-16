@@ -15,7 +15,9 @@ test("authenticated user is included in the presence heartbeat response", async 
 
   const response = await heartbeat(alice);
 
-  expect(response.online).toEqual(expect.arrayContaining([alice.id]));
+  expect(response.online).toMatchObject({
+    [alice.id]: "online",
+  });
 });
 
 test("presence heartbeat keeps multiple users online", async () => {
@@ -27,9 +29,11 @@ test("presence heartbeat keeps multiple users online", async () => {
   await heartbeat(bob);
   const response = await heartbeat(carol);
 
-  expect(response.online).toEqual(
-    expect.arrayContaining([alice.id, bob.id, carol.id]),
-  );
+  expect(response.online).toMatchObject({
+    [alice.id]: "online",
+    [bob.id]: "online",
+    [carol.id]: "online",
+  });
 });
 
 test("presence heartbeat refreshes a user's presence", async () => {
@@ -39,5 +43,7 @@ test("presence heartbeat refreshes a user's presence", async () => {
 
   const response = await heartbeat(alice);
 
-  expect(response.online).toEqual(expect.arrayContaining([alice.id]));
+  expect(response.online).toMatchObject({
+    [alice.id]: "online",
+  });
 });

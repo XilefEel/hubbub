@@ -1,7 +1,7 @@
 import PocketBase from "pocketbase";
 import type { TypedPocketBase } from "../src/lib/pocketbase.ts";
 import { Collections } from "../src/lib/collections.ts";
-import type { ServerRole } from "../src/lib/types.ts";
+import type { PresenceStatus, ServerRole } from "../src/lib/types.ts";
 
 export const url = "http://127.0.0.1:8091";
 export const wsUrl = "ws://localhost:7881";
@@ -12,7 +12,7 @@ export type TestUser = {
 };
 
 export type PresenceResponse = {
-  online: string[];
+  online: Record<string, PresenceStatus>;
 };
 
 export type ConversationResponse = {
