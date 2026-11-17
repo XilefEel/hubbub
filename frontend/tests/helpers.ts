@@ -218,3 +218,14 @@ export async function requestVoiceToken(
     body,
   });
 }
+
+export async function updatePresenceStatus(
+  user: TestUser,
+  status: PresenceStatus,
+) {
+  await user.pb
+    .collection(Collections.Users)
+    .update(user.id, { presenceStatus: status });
+
+  return heartbeat(user);
+}
