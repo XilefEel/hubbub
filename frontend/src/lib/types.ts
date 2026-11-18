@@ -11,7 +11,9 @@ type BaseRecord = Pick<
   updated: DateTime;
 };
 
-export const PRESENCE_STATUSES = ["online", "dnd", "invisible"] as const;
+export type PresencePreference = "auto" | "dnd" | "invisible";
+
+export const PRESENCE_STATUSES = ["online", "dnd"] as const;
 export type PresenceStatus = (typeof PRESENCE_STATUSES)[number];
 
 export type User = BaseRecord & {

@@ -84,21 +84,23 @@ func startPresenceHeartbeat(app core.App) {
 
 // endpoint to handle presence heartbeat
 func heartbeatHandler(e *core.RequestEvent) error {
-	status := e.Auth.GetString("presenceStatus")
+	pref := e.Auth.GetString("presencePreference")
 
-	if status == "" {
-		status = "online"
-	}
-
-	if status == "invisible" {
+	if pref == "invisible" {
 		if _, wasOnline := presenceMap.LoadAndDelete(e.Auth.Id); wasOnline {
 			broadcastPresence(e.App)
 		}
-	} else {
-		prev, wasOnline := presenceMap.Swap(e.Auth.Id, presenceEntry{time.Now(), status})
-		if !wasOnline || prev.(presenceEntry).status != status {
-			broadcastPresence(e.App)
-		}
+		return e.JSON(http.StatusOK, map[string]any{"online": onlineUsers()})
+	}
+
+	status := "online"
+	if pref == "dnd" {
+		status = "dnd"
+	}
+
+	prev, wasOnline := presenceMap.Swap(e.Auth.Id, presenceEntry{time.Now(), status})
+	if !wasOnline || prev.(presenceEntry).status != status {
+		broadcastPresence(e.App)
 	}
 
 	return e.JSON(http.StatusOK, map[string]any{"online": onlineUsers()})

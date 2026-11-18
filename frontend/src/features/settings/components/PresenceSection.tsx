@@ -1,21 +1,21 @@
 import { Circle } from "lucide-react";
 import { cn } from "cn";
 import {
-  useMyPresenceStatus,
-  useSetPresenceStatus,
+  useMyPresencePreference,
+  useSetPresencePreference,
 } from "@/features/members/hooks/usePresence";
 import Select from "@/components/ui/Select";
-import type { PresenceStatus } from "@/lib/types";
+import type { PresencePreference } from "@/lib/types";
 
-const OPTIONS: { value: PresenceStatus; label: string; dot: string }[] = [
-  { value: "online", label: "Online", dot: "bg-green-500" },
+const OPTIONS: { value: PresencePreference; label: string; dot: string }[] = [
+  { value: "auto", label: "Online", dot: "bg-green-500" },
   { value: "dnd", label: "Do Not Disturb", dot: "bg-yellow-500" },
   { value: "invisible", label: "Invisible", dot: "bg-zinc-400" },
 ];
 
-function presenceDescription(status: PresenceStatus) {
+function presenceDescription(status: PresencePreference) {
   switch (status) {
-    case "online":
+    case "auto":
       return "Others can see when you're online.";
     case "dnd":
       return "You won’t get notification sounds or popups.";
@@ -25,8 +25,8 @@ function presenceDescription(status: PresenceStatus) {
 }
 
 export default function PresenceSection() {
-  const status = useMyPresenceStatus();
-  const setStatus = useSetPresenceStatus();
+  const status = useMyPresencePreference();
+  const setStatus = useSetPresencePreference();
 
   const current = OPTIONS.find((o) => o.value === status) ?? OPTIONS[0];
 

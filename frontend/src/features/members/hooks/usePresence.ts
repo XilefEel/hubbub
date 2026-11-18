@@ -8,7 +8,11 @@ import {
 } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/querykeys";
 import { Collections } from "@/lib/collections";
-import { PRESENCE_STATUSES, type PresenceStatus } from "@/lib/types";
+import {
+  PRESENCE_STATUSES,
+  type PresencePreference,
+  type PresenceStatus,
+} from "@/lib/types";
 
 type OnlineMap = Record<string, PresenceStatus>;
 const EMPTY = {} as OnlineMap;
@@ -84,34 +88,36 @@ export function usePresenceSubscription() {
   }, [userId, queryClient]);
 }
 
-export function useSetPresenceStatus() {
+export function useSetPresencePreference() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (status: PresenceStatus) => {
+    mutationFn: async (preference: PresencePreference) => {
       const userId = pb.authStore.record?.id;
       if (!userId) throw new Error("Not authenticated");
 
       await pb
         .collection(Collections.Users)
-        .update(userId, { presenceStatus: status });
+        .update(userId, { presencePreference: preference });
     },
     onSuccess: () => sendHeartbeat(queryClient),
   });
 }
 
-export function useMyPresenceStatus() {
-  const [status, setStatus] = useState<PresenceStatus>(
-    pb.authStore.record?.presenceStatus || "online",
+export function useMyPresencePreference() {
+  const [preference, setPreference] = useState<PresencePreference>(
+    (pb.authStore.record?.presencePreference as PresencePreference) || "auto",
   );
 
   useEffect(
     () =>
       pb.authStore.onChange((_, record) => {
-        setStatus(record?.presenceStatus || "online");
+        setPreference(
+          (record?.presencePreference as PresencePreference) || "auto",
+        );
       }),
     [],
   );
 
-  return status;
+  return preference;
 }
