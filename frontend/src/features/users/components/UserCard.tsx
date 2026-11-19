@@ -56,6 +56,8 @@ export default function UserCard({
                 user={user}
                 size="size-20"
                 className="border-6 border-white dark:border-zinc-800"
+                showStatus
+                statusClassName="size-4 right-1 bottom-1 ring-4"
               />
             </div>
 

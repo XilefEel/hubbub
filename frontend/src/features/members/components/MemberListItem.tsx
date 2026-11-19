@@ -35,7 +35,7 @@ export default function MemberListItem({
               !isOnline && "opacity-70 hover:opacity-100",
             )}
           >
-            <UserAvatar user={member.expand?.user} size="size-8" />
+            <UserAvatar user={member.expand?.user} size="size-8" showStatus />
 
             <span
               className={cn(

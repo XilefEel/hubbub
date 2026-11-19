@@ -9,7 +9,7 @@ import type { PresencePreference } from "@/lib/types";
 
 const OPTIONS: { value: PresencePreference; label: string; dot: string }[] = [
   { value: "auto", label: "Online", dot: "bg-green-500" },
-  { value: "dnd", label: "Do Not Disturb", dot: "bg-yellow-500" },
+  { value: "dnd", label: "Do Not Disturb", dot: "bg-red-500" },
   { value: "invisible", label: "Invisible", dot: "bg-zinc-400" },
 ];
 

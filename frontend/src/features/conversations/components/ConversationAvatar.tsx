@@ -11,7 +11,7 @@ export default function ConversationAvatar({
   isGroup: boolean;
   size?: string;
 }) {
-  if (!isGroup) return <UserAvatar user={users[0]} size={size} />;
+  if (!isGroup) return <UserAvatar user={users[0]} size={size} showStatus />;
 
   return (
     <div className={cn("relative shrink-0", size)}>
