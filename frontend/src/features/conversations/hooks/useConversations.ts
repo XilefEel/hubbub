@@ -40,8 +40,11 @@ export function useUnreadConversations() {
 
 export function useConversationsSubscription() {
   const queryClient = useQueryClient();
+  const userId = pb.authStore.record?.id;
 
   useEffect(() => {
+    if (!userId) return;
+
     const key = queryKeys.conversations.list();
 
     const unsubPromise = pb
@@ -80,7 +83,7 @@ export function useConversationsSubscription() {
     return () => {
       unsubPromise.then((unsub) => unsub()).catch(() => {});
     };
-  }, [queryClient]);
+  }, [queryClient, userId]);
 }
 
 export function useMarkConversationRead() {

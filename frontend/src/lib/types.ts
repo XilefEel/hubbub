@@ -34,15 +34,23 @@ export type Server = BaseRecord & {
   };
 };
 
-export type ServerRole = "owner" | "admin" | "member";
+export type Role = BaseRecord & {
+  server: string;
+  name: string;
+  color: string;
+  position: number;
+  permissions: number;
+  mentionable: boolean;
+};
 
 export type ServerMember = BaseRecord & {
   user: string; // user id
   server: string; // server id
-  role: ServerRole;
+  roles: string[]; // role ids
   expand?: {
     user?: User;
     server?: Server;
+    roles?: Role[];
   };
 };
 

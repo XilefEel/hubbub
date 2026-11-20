@@ -1,4 +1,3 @@
-import { Crown } from "lucide-react";
 import { pb } from "@/lib/pocketbase";
 import type { ServerMember } from "@/lib/types";
 import { cn } from "cn";
@@ -40,16 +39,16 @@ export default function MemberListItem({
             <span
               className={cn(
                 isSelf && "font-semibold",
-                member.role === "owner" && "text-teal-500",
-                member.role === "admin" && "text-purple-500",
+                // member.role === "owner" && "text-teal-500",
+                // member.role === "admin" && "text-purple-500",
               )}
             >
               {member.expand?.user?.name || "Unknown User"}{" "}
             </span>
 
-            {member.role === "owner" && (
+            {/*{member.role === "owner" && (
               <Crown className="size-4 text-teal-500 dark:text-teal-400" />
-            )}
+            )}*/}
 
             {isSelf && (
               <span className="text-xs text-zinc-400 dark:text-zinc-500">

@@ -10,7 +10,7 @@ export function useServerMembers(serverId: string) {
       pb.collection(Collections.ServerMembers).getFullList({
         filter: pb.filter("server = {:id}", { id: serverId }),
         expand: "user",
-        sort: "role",
+        // sort: "role",
       }),
     enabled: !!serverId,
   });

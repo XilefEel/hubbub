@@ -1,29 +1,29 @@
-import { Collections } from "@/lib/collections";
-import { pb } from "@/lib/pocketbase";
-import { queryKeys } from "@/lib/querykeys";
-import { useQuery } from "@tanstack/react-query";
+// import { Collections } from "@/lib/collections";
+// import { pb } from "@/lib/pocketbase";
+// import { queryKeys } from "@/lib/querykeys";
+// import { useQuery } from "@tanstack/react-query";
 
-function useMyMemberships() {
-  const userId = pb.authStore.record?.id;
+// function useMyMemberships() {
+//   const userId = pb.authStore.record?.id;
+//
+//   return useQuery({
+//     queryKey: queryKeys.serverMembers.byUser(userId!),
+//     queryFn: () =>
+//       pb.collection(Collections.ServerMembers).getFullList({
+//         filter: pb.filter("user = {:id}", { id: userId }),
+//       }),
+//     enabled: !!userId,
+//   });
+// }
 
-  return useQuery({
-    queryKey: queryKeys.serverMembers.byUser(userId!),
-    queryFn: () =>
-      pb.collection(Collections.ServerMembers).getFullList({
-        filter: pb.filter("user = {:id}", { id: userId }),
-      }),
-    enabled: !!userId,
-  });
-}
-
-export function useCurrentMembership(serverId: string) {
-  const { data: memberships, isLoading } = useMyMemberships();
-  const currentMember = memberships?.find((m) => m.server === serverId);
-
-  return {
-    role: currentMember?.role,
-    isOwner: currentMember?.role === "owner",
-    isAdmin: currentMember?.role === "admin",
-    isLoading,
-  };
-}
+// export function useCurrentMembership(serverId: string) {
+//   const { isLoading } = useMyMemberships();
+//   const currentMember = memberships?.find((m) => m.server === serverId);
+//
+//   return {
+//     role: currentMember?.role,
+//     isOwner: currentMember?.role === "owner",
+//     isAdmin: currentMember?.role === "admin",
+//     isLoading,
+//   };
+// }

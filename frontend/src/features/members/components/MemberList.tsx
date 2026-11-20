@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { PanelRight, Search } from "lucide-react";
-import { useCurrentMembership } from "../hooks/useCurrentMembership";
+// import { useCurrentMembership } from "../hooks/useCurrentMembership";
 import { useOnlineUsers } from "../hooks/usePresence";
 import { useServerMembers } from "../hooks/useServerMembers";
 import MemberListItem from "./MemberListItem";
@@ -16,7 +16,7 @@ export default function MemberList({ serverId }: { serverId: string }) {
     isError,
     error,
   } = useServerMembers(serverId);
-  const { isOwner } = useCurrentMembership(serverId);
+  // const { isOwner } = useCurrentMembership(serverId);
   const onlineUsers = useOnlineUsers();
   const { toggleMembers } = useUIActions();
 
@@ -90,7 +90,7 @@ export default function MemberList({ serverId }: { serverId: string }) {
                   <MemberListItem
                     key={m.id}
                     member={m}
-                    isOwner={isOwner}
+                    isOwner={true}
                     serverId={serverId}
                     isOnline={true}
                   />
@@ -109,7 +109,7 @@ export default function MemberList({ serverId }: { serverId: string }) {
                   <MemberListItem
                     key={m.id}
                     member={m}
-                    isOwner={isOwner}
+                    isOwner={true}
                     serverId={serverId}
                     isOnline={false}
                   />

@@ -5,7 +5,6 @@ import { cn } from "cn";
 import SubmitButton from "@/components/ui/SubmitButton";
 import Input from "@/components/ui/Input";
 import Dialog from "@/components/ui/Dialog";
-import { useCurrentMembership } from "@/features/members/hooks/useCurrentMembership";
 import { useCreateChannel } from "../hooks/useChannels";
 import { useCreateChannelModal } from "./useCreateChannelModal";
 
@@ -32,7 +31,7 @@ function CreateChannelForm({
   serverId: string;
   onSuccess?: () => void;
 }) {
-  const { isOwner } = useCurrentMembership(serverId);
+  // const { isOwner } = useCurrentMembership(serverId);
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"text" | "voice">("text");
@@ -41,7 +40,7 @@ function CreateChannelForm({
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    if (!isOwner) return;
+    // if (!isOwner) return;
 
     createChannel.mutate(
       { name, type },
@@ -54,7 +53,7 @@ function CreateChannelForm({
     );
   };
 
-  if (!isOwner) return null;
+  // if (!isOwner) return null;
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">

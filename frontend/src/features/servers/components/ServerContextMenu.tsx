@@ -3,7 +3,6 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/ContextMenu";
-import { useCurrentMembership } from "@/features/members/hooks/useCurrentMembership";
 import type { Server } from "@/lib/types";
 import { Copy, Settings, Trash2, LogOut } from "lucide-react";
 import { useLeaveServer, useDeleteServer } from "../hooks/useServers";
@@ -21,7 +20,7 @@ export default function ServerContextMenu({
   const leaveServer = useLeaveServer();
   const deleteServer = useDeleteServer();
 
-  const { isOwner } = useCurrentMembership(server.id);
+  // const { isOwner } = useCurrentMembership(server.id);
 
   const isPending = leaveServer.isPending || deleteServer.isPending;
 
@@ -42,7 +41,7 @@ export default function ServerContextMenu({
             action={() => openEdit(server)}
             Icon={Settings}
             label="Server settings"
-            show={isOwner}
+            show={true}
           />
 
           <ContextMenuSeparator />
@@ -52,7 +51,7 @@ export default function ServerContextMenu({
             Icon={Trash2}
             label="Delete server"
             isDelete
-            show={isOwner}
+            show={true}
             disabled={isPending}
           />
 
@@ -61,7 +60,7 @@ export default function ServerContextMenu({
             Icon={LogOut}
             label="Leave server"
             isDelete
-            show={!isOwner}
+            show={false}
             disabled={isPending}
           />
         </>

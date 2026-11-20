@@ -25,9 +25,9 @@ export default function MemberContextMenu({
 
   const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
 
-  const isMember = member.role === "member";
-  const isAdmin = member.role === "admin";
-  const canBeBan = member.role !== "owner";
+  // const isMember = member.role === "member";
+  // const isAdmin = member.role === "admin";
+  // const canBeBan = member.role !== "owner";
 
   const handlePromote = () =>
     updateRoleMutation.mutate({ membershipId: member.id, role: "admin" });
@@ -46,7 +46,7 @@ export default function MemberContextMenu({
             action={handlePromote}
             Icon={ArrowUpCircle}
             label="Promote to Admin"
-            show={isMember}
+            show={true}
             disabled={isPending}
           />
 
@@ -54,18 +54,18 @@ export default function MemberContextMenu({
             action={handleDemote}
             Icon={ArrowDownCircle}
             label="Demote to Member"
-            show={isAdmin}
+            show={true}
             disabled={isPending}
           />
 
-          <ContextMenuSeparator show={canBeBan} />
+          <ContextMenuSeparator show={true} />
 
           <ContextMenuItem
             action={handleBan}
             Icon={ShieldBan}
             label="Ban"
             isDelete
-            show={canBeBan}
+            show={true}
             disabled={isPending}
           />
         </>
