@@ -1,6 +1,6 @@
 import { Reply, Pencil, Trash2 } from "lucide-react";
 import {
-  BaseContextMenu,
+  ContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/ContextMenu";
@@ -24,7 +24,7 @@ export default function MessageContextMenu({
   const { openModal } = useDeleteMessageModal();
 
   return (
-    <BaseContextMenu
+    <ContextMenu
       content={
         <>
           <ContextMenuItem action={onReply} Icon={Reply} label="Reply" />
@@ -51,6 +51,6 @@ export default function MessageContextMenu({
       }
     >
       {children}
-    </BaseContextMenu>
+    </ContextMenu>
   );
 }

@@ -1,5 +1,5 @@
 import {
-  BaseContextMenu,
+  ContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/ContextMenu";
@@ -38,7 +38,7 @@ export default function MemberContextMenu({
   const handleBan = () => banMemberMutation.mutate(member.id);
 
   return (
-    <BaseContextMenu
+    <ContextMenu
       disabled={isSelf || !isOwner}
       content={
         <>
@@ -72,6 +72,6 @@ export default function MemberContextMenu({
       }
     >
       {children}
-    </BaseContextMenu>
+    </ContextMenu>
   );
 }

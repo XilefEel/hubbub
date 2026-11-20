@@ -2,7 +2,7 @@ import * as RadixContextMenu from "@radix-ui/react-context-menu";
 import { cn } from "cn";
 import type { LucideIcon } from "lucide-react";
 
-export function BaseContextMenu({
+export function ContextMenu({
   children,
   content,
   disabled = false,
@@ -61,16 +61,16 @@ export function ContextMenuItem({
   return (
     <RadixContextMenu.Item
       disabled={disabled}
+      onSelect={() => action()}
+      onClick={(e) => e.stopPropagation()}
       className={cn(
         "flex items-center gap-3 rounded px-2 py-1.5 text-sm transition-colors duration-100 outline-none",
         "text-zinc-900 dark:text-zinc-100",
-        "dark:hover:bg-zinc-750",
+        "dark:data-highlighted:bg-zinc-750 data-highlighted:bg-zinc-50",
         isDelete &&
-          "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30",
+          "text-red-600 data-highlighted:bg-red-50 dark:text-red-400 dark:data-highlighted:bg-red-900/30",
         disabled && "pointer-events-none opacity-50",
       )}
-      onSelect={() => action()}
-      onClick={(e) => e.stopPropagation()}
     >
       <Icon className="size-4 shrink-0" />
       {label ? <span>{label}</span> : children}
@@ -80,7 +80,6 @@ export function ContextMenuItem({
 
 export function ContextMenuSeparator({ show = true }: { show?: boolean }) {
   if (!show) return null;
-
   return (
     <RadixContextMenu.Separator className="my-1 shrink-0 border-t border-zinc-200 dark:border-zinc-700" />
   );

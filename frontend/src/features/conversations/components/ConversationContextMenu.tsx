@@ -1,4 +1,4 @@
-import { BaseContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
+import { ContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
 import type { Conversation } from "@/lib/types";
 import { CheckCheck, Edit, LogOut } from "lucide-react";
 import { useGroupModal } from "../modals/useGroupModal";
@@ -15,7 +15,7 @@ export default function ConversationContextMenu({
   const { openModal } = useGroupModal();
 
   return (
-    <BaseContextMenu
+    <ContextMenu
       disabled={!conversation.isGroup}
       content={
         <>
@@ -43,6 +43,6 @@ export default function ConversationContextMenu({
       }
     >
       {children}
-    </BaseContextMenu>
+    </ContextMenu>
   );
 }

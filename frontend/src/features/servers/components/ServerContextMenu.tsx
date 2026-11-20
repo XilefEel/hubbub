@@ -1,5 +1,5 @@
 import {
-  BaseContextMenu,
+  ContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/ContextMenu";
@@ -29,7 +29,7 @@ export default function ServerContextMenu({
     navigator.clipboard.writeText(server.inviteCode);
 
   return (
-    <BaseContextMenu
+    <ContextMenu
       content={
         <>
           <ContextMenuItem
@@ -68,6 +68,6 @@ export default function ServerContextMenu({
       }
     >
       {children}
-    </BaseContextMenu>
+    </ContextMenu>
   );
 }

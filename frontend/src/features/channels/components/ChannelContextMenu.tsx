@@ -1,6 +1,6 @@
 import { CheckCheck, Copy, Edit, Trash } from "lucide-react";
 import {
-  BaseContextMenu,
+  ContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/ContextMenu";
@@ -31,7 +31,7 @@ export default function ChannelContextMenu({
   };
 
   return (
-    <BaseContextMenu
+    <ContextMenu
       content={
         <>
           <ContextMenuItem
@@ -67,6 +67,6 @@ export default function ChannelContextMenu({
       }
     >
       {children}
-    </BaseContextMenu>
+    </ContextMenu>
   );
 }
