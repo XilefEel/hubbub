@@ -45,11 +45,7 @@ export default function ChannelItem({
 
   return (
     <div>
-      <ChannelContextMenu
-        channel={channel}
-        serverId={serverId}
-        isOwner={isOwner}
-      >
+      <ChannelContextMenu channel={channel} isOwner={isOwner}>
         <Link
           to="/servers/$serverId/channels/$channelId"
           params={{ serverId, channelId: channel.id }}

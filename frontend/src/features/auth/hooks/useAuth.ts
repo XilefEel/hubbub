@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { pb } from "../../../lib/pocketbase";
-import type { User } from "../../../lib/types";
+import { pb } from "@/lib/pocketbase";
+import type { User } from "@/lib/types";
 import { DEFAULT_COLOR } from "@/lib/constants";
 import { Collections } from "@/lib/collections";
 

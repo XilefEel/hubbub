@@ -12,12 +12,10 @@ import { useEditChannelModal } from "../modals/useEditChannelModal";
 
 export default function ChannelContextMenu({
   channel,
-  serverId,
   isOwner,
   children,
 }: {
   channel: Channel;
-  serverId: string;
   isOwner: boolean;
   children: React.ReactNode;
 }) {
@@ -59,7 +57,7 @@ export default function ChannelContextMenu({
           <ContextMenuSeparator show={isOwner} />
 
           <ContextMenuItem
-            action={() => openDelete(serverId, channel.id)}
+            action={() => openDelete(channel.id)}
             Icon={Trash}
             label="Delete Channel"
             isDelete
