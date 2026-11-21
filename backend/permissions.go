@@ -70,7 +70,10 @@ func can(app core.App, server *core.Record, member *core.Record, perm Permission
 	return getPerms(app, server, member).Has(perm)
 }
 
-func topPosition(app core.App, server *core.Record, member *core.Record) int {
+// return the highest position of the member's roles in the server.
+// if the member is the server owner, return math.MaxInt
+// if the member has no roles, return -1
+func highestRolePosition(app core.App, server *core.Record, member *core.Record) int {
 	if server.GetString("owner") == member.GetString("user") {
 		return math.MaxInt
 	}
@@ -87,8 +90,8 @@ func topPosition(app core.App, server *core.Record, member *core.Record) int {
 
 	top := -1
 	for _, r := range roles {
-		if r.GetString("server") == server.Id && r.GetInt("position") > top {
-			top = r.GetInt("position")
+		if r.GetString("server") == server.Id {
+			top = max(top, r.GetInt("position"))
 		}
 	}
 

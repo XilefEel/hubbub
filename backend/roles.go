@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -10,14 +11,9 @@ import (
 var hexColor = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
 
 func createRoleHandler(e *core.RequestEvent) error {
-	server, err := e.App.FindRecordById("servers", e.Request.PathValue("serverId"))
+	server, actor, err := getServerAndActor(e)
 	if err != nil {
-		return e.NotFoundError("Server not found", nil)
-	}
-
-	actor, err := findMember(e.App, server.Id, e.Auth.Id)
-	if err != nil {
-		return e.ForbiddenError("You're not in this server", nil)
+		return err
 	}
 
 	var body struct {
@@ -30,10 +26,13 @@ func createRoleHandler(e *core.RequestEvent) error {
 		return e.BadRequestError("Invalid body", nil)
 	}
 
-	if body.Name == "" || len(body.Name) > 32 {
+	cleanName := strings.TrimSpace(body.Name)
+	cleanColor := strings.TrimSpace(body.Color)
+
+	if cleanName == "" || len(cleanName) > 32 {
 		return e.BadRequestError("Name must be 1-32 characters", nil)
 	}
-	if body.Color != "" && !hexColor.MatchString(body.Color) {
+	if cleanColor != "" && !hexColor.MatchString(cleanColor) {
 		return e.BadRequestError("Color must be a hex color code", nil)
 	}
 	if body.Permissions > allPerms {
@@ -54,8 +53,8 @@ func createRoleHandler(e *core.RequestEvent) error {
 	role := core.NewRecord(roles)
 
 	role.Set("server", server.Id)
-	role.Set("name", body.Name)
-	role.Set("color", body.Color)
+	role.Set("name", cleanName)
+	role.Set("color", cleanColor)
 	role.Set("permissions", int(body.Permissions))
 	role.Set("mentionable", body.Mentionable)
 	role.Set("position", 1)
@@ -65,4 +64,71 @@ func createRoleHandler(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(http.StatusOK, role)
+}
+
+func addMemberRoleHandler(e *core.RequestEvent) error {
+	target, role, err := checkRolePermissions(e)
+	if err != nil {
+		return err
+	}
+	target.Set("roles+", role.Id)
+	if err := e.App.Save(target); err != nil {
+		return err
+	}
+	return e.NoContent(http.StatusNoContent)
+}
+
+func removeMemberRoleHandler(e *core.RequestEvent) error {
+	target, role, err := checkRolePermissions(e)
+	if err != nil {
+		return err
+	}
+	target.Set("roles-", role.Id)
+	if err := e.App.Save(target); err != nil {
+		return err
+	}
+	return e.NoContent(http.StatusNoContent)
+}
+
+func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, error) {
+	server, actor, err := getServerAndActor(e)
+	if err != nil {
+		return nil, nil, err
+	}
+	target, err := findMember(e.App, server.Id, e.Request.PathValue("userId"))
+	if err != nil {
+		return nil, nil, e.NotFoundError("Member not found", nil)
+	}
+	role, err := e.App.FindRecordById("roles", e.Request.PathValue("roleId"))
+	if err != nil || role.GetString("server") != server.Id {
+		return nil, nil, e.NotFoundError("Role not found", nil)
+	}
+
+	if !can(e.App, server, actor, PermManageRoles) {
+		return nil, nil, e.ForbiddenError("You can't manage roles", nil)
+	}
+
+	actorPos := highestRolePosition(e.App, server, actor)
+	targetPos := highestRolePosition(e.App, server, target)
+
+	if role.GetInt("position") >= actorPos {
+		return nil, nil, e.ForbiddenError("That role is equal or higher than your top role", nil)
+	}
+	if target.Id != actor.Id && targetPos >= actorPos {
+		return nil, nil, e.ForbiddenError("That member is equal or higher than you", nil)
+	}
+
+	return target, role, nil
+}
+
+func getServerAndActor(e *core.RequestEvent) (*core.Record, *core.Record, error) {
+	server, err := e.App.FindRecordById("servers", e.Request.PathValue("serverId"))
+	if err != nil {
+		return nil, nil, e.NotFoundError("Server not found", nil)
+	}
+	actor, err := findMember(e.App, server.Id, e.Auth.Id)
+	if err != nil {
+		return nil, nil, e.ForbiddenError("You're not in this server", nil)
+	}
+	return server, actor, nil
 }

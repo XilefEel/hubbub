@@ -51,10 +51,10 @@ func userInConversation(app core.App, userId, conversationId string) bool {
 	return err == nil
 }
 
-func findMember(app core.App, serverID, userID string) (*core.Record, error) {
+func findMember(app core.App, serverId string, userId string) (*core.Record, error) {
 	return app.FindFirstRecordByFilter(
 		"server_members",
 		"server = {:server} && user = {:user}",
-		dbx.Params{"server": serverID, "user": userID},
+		dbx.Params{"server": serverId, "user": userId},
 	)
 }

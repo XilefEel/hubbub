@@ -7,6 +7,9 @@ import (
 
 func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/servers/join", joinServerHandler).Bind(apis.RequireAuth())
+	se.Router.POST("/api/servers/{serverId}/roles", createRoleHandler).Bind(apis.RequireAuth())
+	se.Router.POST("/api/servers/{serverId}/members/{userId}/roles/{roleId}", addMemberRoleHandler).Bind(apis.RequireAuth())
+	se.Router.DELETE("/api/servers/{serverId}/members/{userId}/roles/{roleId}", removeMemberRoleHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/channels/{channelId}/typing", channelTypingHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/conversations/{conversationId}/typing", conversationTypingHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/presence/heartbeat", heartbeatHandler).Bind(apis.RequireAuth())
@@ -16,5 +19,4 @@ func registerRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/dms/group", createGroupHandler).Bind(apis.RequireAuth())
 	se.Router.PATCH("/api/dms/group/{id}", editGroupHandler).Bind(apis.RequireAuth())
 	se.Router.GET("/api/mutual/{targetId}", mutualsHandler).Bind(apis.RequireAuth())
-	se.Router.POST("/api/servers/{serverId}/roles", createRoleHandler).Bind(apis.RequireAuth())
 }
