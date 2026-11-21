@@ -53,7 +53,7 @@ func userInConversation(app core.App, userId, conversationId string) bool {
 
 func findMember(app core.App, serverID, userID string) (*core.Record, error) {
 	return app.FindFirstRecordByFilter(
-		"members",
+		"server_members",
 		"server = {:server} && user = {:user}",
 		dbx.Params{"server": serverID, "user": userID},
 	)

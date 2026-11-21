@@ -68,4 +68,8 @@ export const queryKeys = {
     all: () => ["presence"] as const,
     online: () => ["presence", "online"] as const,
   },
+  roles: {
+    all: () => ["roles"] as const,
+    byServer: (serverId: string) => ["roles", "byServer", serverId] as const,
+  },
 };

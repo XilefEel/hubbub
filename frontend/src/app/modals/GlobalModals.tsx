@@ -3,6 +3,7 @@ import DeleteChannelModal from "@/features/channels/modals/DeleteChannelModal";
 import EditChannelModal from "@/features/channels/modals/EditChannelModal";
 import CreateGroupModal from "@/features/conversations/modals/GroupModal";
 import DeleteMessageModal from "@/features/messages/modals/DeleteMessageModal";
+import RoleModal from "@/features/roles/modals/RoleModal";
 import DeleteServerModal from "@/features/servers/modals/DeleteServerModal";
 import JoinServerModal from "@/features/servers/modals/JoinServerModal";
 import ServerModal from "@/features/servers/modals/ServerModal";
@@ -24,6 +25,7 @@ export default function GlobalModals() {
       <UpdateUsernameModal />
       <ChangePasswordModal />
       <CreateGroupModal />
+      <RoleModal />
     </>
   );
 }

@@ -3,6 +3,7 @@ import Tooltip from "@/components/ui/Tooltip";
 import ChannelList from "@/features/channels/components/ChannelList";
 import { useChannelsSubscription } from "@/features/channels/hooks/useChannels";
 import MemberList from "@/features/members/components/MemberList";
+import { useRoleModal } from "@/features/roles/modals/useRoleModal";
 import { usePanelSync } from "@/features/servers/hooks/usePanelSync";
 import {
   serverDetailOptions,
@@ -40,6 +41,8 @@ export const Route = createFileRoute("/servers/$serverId")({
 function ServerPage() {
   const { serverId } = Route.useParams();
   const { data: server, isLoading, isError, error } = useServerDetail(serverId);
+
+  const { openModal } = useRoleModal();
 
   const channelsRef = useRef<PanelImperativeHandle>(null);
   const membersRef = useRef<PanelImperativeHandle>(null);
@@ -97,9 +100,16 @@ function ServerPage() {
               </Tooltip>
             </div>
 
-            <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
               Invite code: {server?.inviteCode}
             </p>
+
+            <div
+              onClick={() => openModal(serverId)}
+              className="mb-4 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+            >
+              Manage Roles
+            </div>
 
             <ChannelList serverId={serverId} />
 

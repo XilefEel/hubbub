@@ -44,6 +44,7 @@ import {
   type UpdateUsernameSlice,
   updateUsernameSlice,
 } from "@/features/settings/modals/updateUsernameSlice";
+import { type RoleSlice, roleSlice } from "@/features/roles/modals/roleSlice";
 
 export type ModalStore = ServerSlice &
   JoinServerSlice &
@@ -55,7 +56,8 @@ export type ModalStore = ServerSlice &
   SettingsSlice &
   UpdateUsernameSlice &
   ChangePasswordSlice &
-  GroupSlice;
+  GroupSlice &
+  RoleSlice;
 
 export type Slice<T> = StateCreator<ModalStore, [], [], T>;
 
@@ -71,4 +73,5 @@ export const useModalStore = create<ModalStore>((...a) => ({
   ...updateUsernameSlice(...a),
   ...changePasswordSlice(...a),
   ...groupSlice(...a),
+  ...roleSlice(...a),
 }));
