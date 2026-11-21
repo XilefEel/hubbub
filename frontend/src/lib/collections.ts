@@ -12,4 +12,5 @@ export const Collections = {
   ConversationMembers: "conversation_members",
   Stickers: "stickers",
   UserStickers: "user_stickers",
+  Roles: "roles",
 } as const;

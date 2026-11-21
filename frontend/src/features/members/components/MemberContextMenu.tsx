@@ -1,11 +1,16 @@
 import {
   ContextMenu,
-  ContextMenuItem,
+  ContextMenuCheckboxItem,
   ContextMenuSeparator,
+  ContextSubMenu,
 } from "@/components/ui/ContextMenu";
 import type { ServerMember } from "@/lib/types";
-import { ArrowUpCircle, ArrowDownCircle, ShieldBan } from "lucide-react";
-import { useUpdateMemberRole, useBanMember } from "../hooks/useServerMembers";
+import { Shield } from "lucide-react";
+import {
+  useRemoveMemberRole,
+  useUpdateMemberRole,
+  useRoles,
+} from "@/features/roles/hooks/useRoles";
 
 export default function MemberContextMenu({
   member,
@@ -20,54 +25,56 @@ export default function MemberContextMenu({
   isSelf: boolean;
   children: React.ReactNode;
 }) {
-  const updateRoleMutation = useUpdateMemberRole(serverId);
-  const banMemberMutation = useBanMember(serverId);
+  const { data: roles } = useRoles(serverId);
+  const updateMemberRole = useUpdateMemberRole(serverId);
+  const removeMemberRole = useRemoveMemberRole(serverId);
 
-  const isPending = updateRoleMutation.isPending || banMemberMutation.isPending;
-
-  // const isMember = member.role === "member";
-  // const isAdmin = member.role === "admin";
-  // const canBeBan = member.role !== "owner";
-
-  const handlePromote = () =>
-    updateRoleMutation.mutate({ membershipId: member.id, role: "admin" });
-
-  const handleDemote = () =>
-    updateRoleMutation.mutate({ membershipId: member.id, role: "member" });
-
-  const handleBan = () => banMemberMutation.mutate(member.id);
+  const isPending = updateMemberRole.isPending || removeMemberRole.isPending;
 
   return (
     <ContextMenu
       disabled={isSelf || !isOwner}
       content={
         <>
-          <ContextMenuItem
-            action={handlePromote}
-            Icon={ArrowUpCircle}
-            label="Promote to Admin"
-            show={true}
-            disabled={isPending}
-          />
+          <ContextSubMenu Icon={Shield} label="Manage Role">
+            {roles?.map((role) => {
+              const hasRole = member.roles.includes(role.id);
 
-          <ContextMenuItem
-            action={handleDemote}
-            Icon={ArrowDownCircle}
-            label="Demote to Member"
-            show={true}
-            disabled={isPending}
-          />
+              return (
+                <ContextMenuCheckboxItem
+                  key={role.id}
+                  checked={member.roles.includes(role.id)}
+                  disabled={isPending}
+                  onToggle={() => {
+                    if (hasRole) {
+                      removeMemberRole.mutate({
+                        userId: member.user,
+                        roleId: role.id,
+                      });
+                    } else {
+                      updateMemberRole.mutate({
+                        userId: member.user,
+                        roleId: role.id,
+                      });
+                    }
+                  }}
+                >
+                  @{role.name}
+                </ContextMenuCheckboxItem>
+              );
+            })}
+          </ContextSubMenu>
 
           <ContextMenuSeparator show={true} />
 
-          <ContextMenuItem
+          {/*<ContextMenuItem
             action={handleBan}
             Icon={ShieldBan}
             label="Ban"
             isDelete
             show={true}
             disabled={isPending}
-          />
+          />*/}
         </>
       }
     >

@@ -14,6 +14,7 @@ import type {
   ConversationMember,
   Sticker,
   UserSticker,
+  Role,
 } from "./types";
 
 type CollectionRecords = {
@@ -30,6 +31,7 @@ type CollectionRecords = {
   [Collections.ConversationMembers]: ConversationMember;
   [Collections.Stickers]: Sticker;
   [Collections.UserStickers]: UserSticker;
+  [Collections.Roles]: Role;
 };
 
 export interface TypedPocketBase extends PocketBase {
