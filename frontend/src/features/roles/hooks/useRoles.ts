@@ -58,7 +58,7 @@ export function useUpdateMemberRole(serverId: string) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.roles.byServer(serverId),
+        queryKey: queryKeys.serverMembers.byServer(serverId),
       });
     },
   });
@@ -74,7 +74,7 @@ export function useRemoveMemberRole(serverId: string) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.roles.byServer(serverId),
+        queryKey: queryKeys.serverMembers.byServer(serverId),
       });
     },
   });

@@ -29,7 +29,21 @@ export default function MemberContextMenu({
   const updateMemberRole = useUpdateMemberRole(serverId);
   const removeMemberRole = useRemoveMemberRole(serverId);
 
-  const isPending = updateMemberRole.isPending || removeMemberRole.isPending;
+  const handleToggleRole = (roleId: string) => {
+    const hasRole = member.roles.includes(roleId);
+
+    if (hasRole) {
+      removeMemberRole.mutate({
+        userId: member.user,
+        roleId,
+      });
+    } else {
+      updateMemberRole.mutate({
+        userId: member.user,
+        roleId,
+      });
+    }
+  };
 
   return (
     <ContextMenu
@@ -37,32 +51,15 @@ export default function MemberContextMenu({
       content={
         <>
           <ContextSubMenu Icon={Shield} label="Manage Role">
-            {roles?.map((role) => {
-              const hasRole = member.roles.includes(role.id);
-
-              return (
-                <ContextMenuCheckboxItem
-                  key={role.id}
-                  checked={member.roles.includes(role.id)}
-                  disabled={isPending}
-                  onToggle={() => {
-                    if (hasRole) {
-                      removeMemberRole.mutate({
-                        userId: member.user,
-                        roleId: role.id,
-                      });
-                    } else {
-                      updateMemberRole.mutate({
-                        userId: member.user,
-                        roleId: role.id,
-                      });
-                    }
-                  }}
-                >
-                  @{role.name}
-                </ContextMenuCheckboxItem>
-              );
-            })}
+            {roles?.map((role) => (
+              <ContextMenuCheckboxItem
+                key={role.id}
+                checked={member.roles.includes(role.id)}
+                onToggle={() => handleToggleRole(role.id)}
+              >
+                @{role.name}
+              </ContextMenuCheckboxItem>
+            ))}
           </ContextSubMenu>
 
           <ContextMenuSeparator show={true} />
