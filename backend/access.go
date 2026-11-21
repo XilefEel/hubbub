@@ -36,11 +36,7 @@ func userCanJoinChannel(app core.App, authRecord *core.Record, channel *core.Rec
 		return false
 	}
 
-	membership, err := app.FindFirstRecordByFilter(
-		"server_members",
-		"server = {:server} && user = {:user}",
-		dbx.Params{"server": serverId, "user": authRecord.Id},
-	)
+	membership, err := findMember(app, serverId, authRecord.Id)
 
 	return err == nil && membership != nil
 }
@@ -53,4 +49,12 @@ func userInConversation(app core.App, userId, conversationId string) bool {
 	)
 
 	return err == nil
+}
+
+func findMember(app core.App, serverID, userID string) (*core.Record, error) {
+	return app.FindFirstRecordByFilter(
+		"members",
+		"server = {:server} && user = {:user}",
+		dbx.Params{"server": serverID, "user": userID},
+	)
 }
