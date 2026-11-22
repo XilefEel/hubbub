@@ -19,7 +19,9 @@ const (
 	PermMentionEveryone                        // 10000000 = 128
 )
 
-const allPerms = math.MaxUint64
+const allPerms = PermAdministrator | PermManageServer | PermManageChannels |
+	PermManageRoles | PermManageMessages | PermKickMembers |
+	PermBanMembers | PermMentionEveryone
 
 func (p Permission) Has(perm Permission) bool {
 	return p&perm == perm
@@ -27,10 +29,6 @@ func (p Permission) Has(perm Permission) bool {
 
 func (p *Permission) Add(flags Permission) {
 	*p |= flags
-}
-
-func (p *Permission) Remove(flags Permission) {
-	*p &^= flags
 }
 
 func getPerms(app core.App, server *core.Record, member *core.Record) Permission {
