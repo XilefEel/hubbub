@@ -1,3 +1,4 @@
+import type { Permission } from "@/features/roles/utils/roles";
 import type { RecordModel } from "pocketbase";
 
 declare const dateTimeBrand: unique symbol;
@@ -39,7 +40,7 @@ export type Role = BaseRecord & {
   name: string;
   color: string;
   position: number;
-  permissions: number;
+  permissions: Permission;
   mentionable: boolean;
 };
 

@@ -3,17 +3,7 @@ import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
 import type { Role } from "@/lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-export const Perm = {
-  Administrator: 1 << 0,
-  ManageServer: 1 << 1,
-  ManageChannels: 1 << 2,
-  ManageRoles: 1 << 3,
-  ManageMessages: 1 << 4,
-  KickMembers: 1 << 5,
-  BanMembers: 1 << 6,
-  MentionEveryone: 1 << 7,
-} as const;
+import type { Permission } from "../utils/roles";
 
 export function useRoles(serverId: string) {
   return useQuery({
@@ -23,6 +13,7 @@ export function useRoles(serverId: string) {
         filter: pb.filter("server = {:serverId}", { serverId }),
         sort: "-position",
       }),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 
@@ -33,7 +24,7 @@ export function useCreateRole(serverId: string) {
     mutationFn: (data: {
       name: string;
       color: string;
-      permissions: number;
+      permissions: Permission;
       mentionable: boolean;
     }) =>
       pb.send<Role>(`/api/servers/${serverId}/roles`, {
@@ -59,7 +50,7 @@ export function useUpdateRole(serverId: string) {
       roleId: string;
       name: string;
       color: string;
-      permissions: number;
+      permissions: Permission;
       mentionable: boolean;
     }) =>
       pb.send<Role>(`/api/servers/${serverId}/roles/${roleId}`, {

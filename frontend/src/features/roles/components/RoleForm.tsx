@@ -3,9 +3,10 @@ import Input from "@/components/ui/Input";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { DEFAULT_COLOR } from "@/lib/constants";
 import { useState } from "react";
-import { useCreateRole, Perm, useUpdateRole } from "../hooks/useRoles";
+import { useCreateRole, useUpdateRole } from "../hooks/useRoles";
 import Checkbox from "@/components/ui/Checkbox";
 import type { Role } from "@/lib/types";
+import { noPerms, Perm, togglePerm, type Permission } from "../utils/roles";
 
 const PERM_LABELS: Record<keyof typeof Perm, string> = {
   Administrator: "Administrator",
@@ -34,14 +35,16 @@ export default function RoleForm({
   const [mentionable, setMentionable] = useState(
     selectedRole?.mentionable ?? false,
   );
-  const [permissions, setPermissions] = useState(
-    selectedRole?.permissions ?? 0,
+  const [permissions, setPermissions] = useState<Permission>(
+    selectedRole?.permissions ?? noPerms,
   );
 
   const createRole = useCreateRole(serverId);
   const updateRole = useUpdateRole(serverId);
 
-  const togglePerm = (bit: number) => setPermissions((p) => p ^ bit);
+  const error = createRole.error || updateRole.error;
+
+  const toggle = (bit: Permission) => setPermissions((p) => togglePerm(p, bit));
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -109,7 +112,7 @@ export default function RoleForm({
           >
             <Checkbox
               checked={(permissions & bit) !== 0}
-              onCheckedChange={() => togglePerm(bit)}
+              onCheckedChange={() => toggle(bit)}
             />
 
             {PERM_LABELS[key as keyof typeof Perm]}
@@ -117,11 +120,9 @@ export default function RoleForm({
         ))}
       </fieldset>
 
-      {createRole.isError && (
-        <p className="text-red-500">
-          {createRole.error instanceof Error
-            ? createRole.error.message
-            : "An error occurred while creating the role."}
+      {error && (
+        <p className="text-sm text-red-500">
+          {error.message || "An error occurred"}
         </p>
       )}
 
