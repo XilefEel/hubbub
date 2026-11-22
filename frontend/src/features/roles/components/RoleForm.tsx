@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useCreateRole, useUpdateRole } from "../hooks/useRoles";
 import Checkbox from "@/components/ui/Checkbox";
 import type { Role } from "@/lib/types";
-import { noPerms, Perm, togglePerm, type Permission } from "../utils/roles";
+import { NO_PERMS, Perm, togglePerm, type Permission } from "../utils/roles";
 
 const PERM_LABELS: Record<keyof typeof Perm, string> = {
   Administrator: "Administrator",
@@ -36,7 +36,7 @@ export default function RoleForm({
     selectedRole?.mentionable ?? false,
   );
   const [permissions, setPermissions] = useState<Permission>(
-    selectedRole?.permissions ?? noPerms,
+    selectedRole?.permissions ?? NO_PERMS,
   );
 
   const createRole = useCreateRole(serverId);

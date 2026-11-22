@@ -9,20 +9,21 @@ import { useMarkChannelRead } from "../hooks/useReadStates";
 import { fetchLastMessage } from "@/features/messages/hooks/useMessages";
 import { useDeleteChannelModal } from "../modals/useDeleteChannelModal";
 import { useEditChannelModal } from "../modals/useEditChannelModal";
+import { useMyPerms } from "@/features/roles/utils/roles";
 
 export default function ChannelContextMenu({
   channel,
-  isOwner,
   children,
 }: {
   channel: Channel;
-  isOwner: boolean;
   children: React.ReactNode;
 }) {
   const { openModal: openEdit } = useEditChannelModal();
   const { openModal: openDelete } = useDeleteChannelModal();
 
   const markRead = useMarkChannelRead();
+
+  const myPerms = useMyPerms(channel.server);
 
   const handleMarkRead = async () => {
     const last = await fetchLastMessage(channel.id);
@@ -38,14 +39,14 @@ export default function ChannelContextMenu({
             action={() => openEdit(channel.id, channel.name)}
             Icon={Edit}
             label="Edit Channel"
-            show={isOwner}
+            show={myPerms.ManageChannels}
           />
 
           <ContextMenuItem
             action={() => {}}
             Icon={Copy}
             label="Duplicate Channel"
-            show={isOwner}
+            show={myPerms.ManageChannels}
           />
 
           <ContextMenuItem
@@ -54,14 +55,14 @@ export default function ChannelContextMenu({
             label="Mark as Read"
           />
 
-          <ContextMenuSeparator show={isOwner} />
+          <ContextMenuSeparator show={myPerms.ManageChannels} />
 
           <ContextMenuItem
             action={() => openDelete(channel.id)}
             Icon={Trash}
             label="Delete Channel"
             isDelete
-            show={isOwner}
+            show={myPerms.ManageChannels}
           />
         </>
       }

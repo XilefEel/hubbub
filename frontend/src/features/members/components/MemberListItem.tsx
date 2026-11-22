@@ -4,6 +4,7 @@ import { cn } from "cn";
 import UserAvatar from "@/features/users/components/UserAvatar";
 import MemberContextMenu from "./MemberContextMenu";
 import UserCard from "@/features/users/components/UserCard";
+import { Crown } from "lucide-react";
 
 export default function MemberListItem({
   member,
@@ -46,9 +47,9 @@ export default function MemberListItem({
               {member.expand?.user?.name || "Unknown User"}{" "}
             </span>
 
-            {/*{member.role === "owner" && (
+            {isOwner && (
               <Crown className="size-4 text-teal-500 dark:text-teal-400" />
-            )}*/}
+            )}
 
             {isSelf && (
               <span className="text-xs text-zinc-400 dark:text-zinc-500">

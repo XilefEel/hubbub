@@ -21,11 +21,13 @@ export default function MessageItem({
   reactions,
   showHeader = true,
   onReply,
+  canManageMessages,
 }: {
   message: Message;
   reactions: Reaction[];
   showHeader?: boolean;
   onReply: (message: Message) => void;
+  canManageMessages: boolean;
 }) {
   const userId = pb.authStore.record?.id;
 
@@ -70,14 +72,14 @@ export default function MessageItem({
     [reactions, userId],
   );
 
-  const isOwner = message.user === userId;
+  const isAuthor = message.user === userId;
   const isPending = editMutation.isPending;
 
   const isMentioned =
     !!userId && !!message.expand?.mentions?.some((u) => u.id === userId);
 
   const isReplyToMe =
-    !!userId && message.expand?.replyTo?.user === userId && !isOwner;
+    !!userId && message.expand?.replyTo?.user === userId && !isAuthor;
 
   const isHighlighted = isMentioned || isReplyToMe;
 
@@ -98,10 +100,11 @@ export default function MessageItem({
   return (
     <MessageContextMenu
       messageId={message.id}
-      isOwner={isOwner}
+      isAuthor={isAuthor}
       isPending={isPending}
       onReply={handleReply}
       onEdit={startEditing}
+      canManageMessages={canManageMessages}
     >
       <div
         className={cn(
@@ -180,9 +183,10 @@ export default function MessageItem({
             messageId={message.id}
             isPending={isPending}
             onEdit={startEditing}
-            isOwner={isOwner}
+            isAuthor={isAuthor}
             onReply={handleReply}
             onToggleReaction={handleToggleReaction}
+            canManageMessages={canManageMessages}
           />
         )}
       </div>

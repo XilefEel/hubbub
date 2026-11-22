@@ -13,6 +13,7 @@ export function useRoles(serverId: string) {
         filter: pb.filter("server = {:serverId}", { serverId }),
         sort: "-position",
       }),
+    enabled: !!serverId,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }

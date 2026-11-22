@@ -12,12 +12,10 @@ import { isChannelUnread } from "../utils/unread";
 export default function ChannelItem({
   channel,
   serverId,
-  isOwner,
   participants,
 }: {
   channel: Channel;
   serverId: string;
-  isOwner: boolean;
   participants: VoiceParticipant[];
 }) {
   const activeScope = useActiveScope();
@@ -45,7 +43,7 @@ export default function ChannelItem({
 
   return (
     <div>
-      <ChannelContextMenu channel={channel} isOwner={isOwner}>
+      <ChannelContextMenu channel={channel}>
         <Link
           to="/servers/$serverId/channels/$channelId"
           params={{ serverId, channelId: channel.id }}

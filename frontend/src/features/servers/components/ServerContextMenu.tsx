@@ -7,6 +7,8 @@ import type { Server } from "@/lib/types";
 import { Copy, Settings, Trash2, LogOut } from "lucide-react";
 import { useLeaveServer, useDeleteServer } from "../hooks/useServers";
 import { useServerModal } from "../modals/useServerModal";
+import { useMyPerms } from "@/features/roles/utils/roles";
+import { pb } from "@/lib/pocketbase";
 
 export default function ServerContextMenu({
   server,
@@ -20,7 +22,8 @@ export default function ServerContextMenu({
   const leaveServer = useLeaveServer();
   const deleteServer = useDeleteServer();
 
-  // const { isOwner } = useCurrentMembership(server.id);
+  const myPerms = useMyPerms(server.id);
+  const isOwner = server.owner === pb.authStore.record?.id;
 
   const isPending = leaveServer.isPending || deleteServer.isPending;
 
@@ -41,17 +44,19 @@ export default function ServerContextMenu({
             action={() => openEdit(server)}
             Icon={Settings}
             label="Server settings"
-            show={true}
+            show={myPerms.ManageServer}
           />
 
-          <ContextMenuSeparator />
+          <ContextMenuSeparator
+            show={myPerms.ManageServer || isOwner || !isOwner}
+          />
 
           <ContextMenuItem
             action={() => deleteServer.mutate(server.id)}
             Icon={Trash2}
             label="Delete server"
             isDelete
-            show={true}
+            show={isOwner}
             disabled={isPending}
           />
 
@@ -60,7 +65,7 @@ export default function ServerContextMenu({
             Icon={LogOut}
             label="Leave server"
             isDelete
-            show={false}
+            show={!isOwner}
             disabled={isPending}
           />
         </>

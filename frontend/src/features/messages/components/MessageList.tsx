@@ -19,6 +19,7 @@ export default function MessageList({
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
+  canManageMessages = false,
 }: {
   messages: Message[] | undefined;
   scope: MessageScope;
@@ -28,6 +29,7 @@ export default function MessageList({
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   fetchNextPage: () => void;
+  canManageMessages?: boolean;
 }) {
   const last = messages?.at(-1);
   const newestMessage = last?.created;
@@ -88,6 +90,7 @@ export default function MessageList({
                   reactions={reactionsByMessage.get(message.id) ?? []}
                   showHeader={showHeader}
                   onReply={onReply}
+                  canManageMessages={canManageMessages}
                 />
               </Fragment>
             );

@@ -8,20 +8,23 @@ import { useDeleteMessageModal } from "../modals/useDeleteMessageModal";
 
 export default function MessageContextMenu({
   messageId,
-  isOwner,
+  isAuthor,
   isPending,
   onReply,
   onEdit,
+  canManageMessages,
   children,
 }: {
   messageId: string;
-  isOwner: boolean;
+  isAuthor: boolean;
   isPending?: boolean;
   onReply: () => void;
   onEdit: () => void;
+  canManageMessages: boolean;
   children: React.ReactNode;
 }) {
   const { openModal } = useDeleteMessageModal();
+  const canDelete = isAuthor || canManageMessages;
 
   return (
     <ContextMenu
@@ -33,18 +36,18 @@ export default function MessageContextMenu({
             action={onEdit}
             Icon={Pencil}
             label="Edit"
-            show={isOwner}
+            show={isAuthor}
             disabled={isPending}
           />
 
-          <ContextMenuSeparator show={isOwner} />
+          <ContextMenuSeparator show={canDelete} />
 
           <ContextMenuItem
             action={() => openModal(messageId)}
             Icon={Trash2}
             label="Delete"
             isDelete
-            show={isOwner}
+            show={canDelete}
             disabled={isPending}
           />
         </>

@@ -23,6 +23,7 @@ import { useChannelReadMarker } from "@/features/messages/hooks/useReadMarker";
 import { useReactionsSubscription } from "@/features/messages/hooks/useReactions";
 import { queryClient } from "@/main";
 import { isNotFoundError } from "@/lib/utils";
+import { useMyPerms } from "@/features/roles/utils/roles";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   loader: async ({ params }) => {
@@ -89,6 +90,8 @@ function ChannelPage() {
   useMessagesSubscription(scope);
   useReactionsSubscription(scope);
 
+  const myPerms = useMyPerms(serverId);
+
   if (channelLoading) return <ChannelPageSkeleton />;
 
   if (channelIsError)
@@ -120,6 +123,7 @@ function ChannelPage() {
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
             fetchNextPage={fetchNextPage}
+            canManageMessages={myPerms.ManageMessages}
             emptyState={<ChannelEmpty channelName={channel.name} />}
           />
         )}

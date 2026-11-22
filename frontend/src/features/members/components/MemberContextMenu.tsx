@@ -1,16 +1,18 @@
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
+  ContextMenuItem,
   ContextMenuSeparator,
   ContextSubMenu,
 } from "@/components/ui/ContextMenu";
 import type { ServerMember } from "@/lib/types";
-import { Shield } from "lucide-react";
+import { Shield, ShieldBan, UserMinus } from "lucide-react";
 import {
   useRemoveMemberRole,
   useUpdateMemberRole,
   useRoles,
 } from "@/features/roles/hooks/useRoles";
+import { useMyPerms } from "@/features/roles/utils/roles";
 
 export default function MemberContextMenu({
   member,
@@ -29,7 +31,14 @@ export default function MemberContextMenu({
   const updateMemberRole = useUpdateMemberRole(serverId);
   const removeMemberRole = useRemoveMemberRole(serverId);
 
+  const myPerms = useMyPerms(serverId);
+
+  const hasActions =
+    myPerms.ManageRoles || myPerms.KickMembers || myPerms.BanMembers;
+
   const handleToggleRole = (roleId: string) => {
+    if (!myPerms.ManageRoles) return;
+
     const hasRole = member.roles.includes(roleId);
 
     if (hasRole) {
@@ -45,12 +54,20 @@ export default function MemberContextMenu({
     }
   };
 
+  // TODO: Add kick and ban functionality
+  // const handleKickMember = () => {...}
+  // const handleBanMember = () => {...}
+
   return (
     <ContextMenu
-      disabled={isSelf || !isOwner}
+      disabled={isSelf || isOwner || !hasActions}
       content={
         <>
-          <ContextSubMenu Icon={Shield} label="Manage Role">
+          <ContextSubMenu
+            Icon={Shield}
+            label="Manage Role"
+            show={myPerms.ManageRoles}
+          >
             {roles?.map((role) => (
               <ContextMenuCheckboxItem
                 key={role.id}
@@ -62,16 +79,26 @@ export default function MemberContextMenu({
             ))}
           </ContextSubMenu>
 
-          <ContextMenuSeparator show={true} />
+          <ContextMenuSeparator
+            show={
+              myPerms.ManageRoles && (myPerms.KickMembers || myPerms.BanMembers)
+            }
+          />
 
-          {/*<ContextMenuItem
-            action={handleBan}
+          <ContextMenuItem
+            action={() => {}}
+            Icon={UserMinus}
+            label="Kick"
+            show={myPerms.KickMembers}
+          />
+
+          <ContextMenuItem
+            action={() => {}}
             Icon={ShieldBan}
             label="Ban"
             isDelete
-            show={true}
-            disabled={isPending}
-          />*/}
+            show={myPerms.BanMembers}
+          />
         </>
       }
     >

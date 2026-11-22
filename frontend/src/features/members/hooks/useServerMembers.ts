@@ -10,30 +10,16 @@ export function useServerMembers(serverId: string) {
       pb.collection(Collections.ServerMembers).getFullList({
         filter: pb.filter("server = {:id}", { id: serverId }),
         expand: "user",
-        // sort: "role",
       }),
     enabled: !!serverId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 
-export function useUpdateMemberRole(serverId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      membershipId,
-      role,
-    }: {
-      membershipId: string;
-      role: "admin" | "member";
-    }) =>
-      pb.collection(Collections.ServerMembers).update(membershipId, { role }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.serverMembers.byServer(serverId),
-      });
-    },
-  });
+export function useCurrentMember(serverId: string) {
+  const { data: members } = useServerMembers(serverId);
+  const userId = pb.authStore.record?.id;
+  return members?.find((m) => m.user === userId) ?? null;
 }
 
 export function useBanMember(serverId: string) {

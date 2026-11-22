@@ -9,14 +9,19 @@ import { useUIActions } from "@/app/stores/useUIStore";
 import Input from "@/components/ui/Input";
 import MemberListSkeleton from "./MemberListSkeleton";
 
-export default function MemberList({ serverId }: { serverId: string }) {
+export default function MemberList({
+  serverId,
+  owner,
+}: {
+  serverId: string;
+  owner: string | undefined;
+}) {
   const {
     data: members,
     isLoading,
     isError,
     error,
   } = useServerMembers(serverId);
-  // const { isOwner } = useCurrentMembership(serverId);
   const onlineUsers = useOnlineUsers();
   const { toggleMembers } = useUIActions();
 
@@ -90,7 +95,7 @@ export default function MemberList({ serverId }: { serverId: string }) {
                   <MemberListItem
                     key={m.id}
                     member={m}
-                    isOwner={true}
+                    isOwner={m.user === owner}
                     serverId={serverId}
                     isOnline={true}
                   />
@@ -104,12 +109,13 @@ export default function MemberList({ serverId }: { serverId: string }) {
               <h3 className="mb-1 text-xs font-semibold text-zinc-400 uppercase">
                 Offline — {offlineMembers.length}
               </h3>
+
               <ul className="flex flex-col gap-1">
                 {offlineMembers.map((m) => (
                   <MemberListItem
                     key={m.id}
                     member={m}
-                    isOwner={true}
+                    isOwner={m.user === owner}
                     serverId={serverId}
                     isOnline={false}
                   />

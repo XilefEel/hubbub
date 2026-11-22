@@ -4,6 +4,7 @@ import ChannelList from "@/features/channels/components/ChannelList";
 import { useChannelsSubscription } from "@/features/channels/hooks/useChannels";
 import MemberList from "@/features/members/components/MemberList";
 import { useRoleModal } from "@/features/roles/modals/useRoleModal";
+import { useMyPerms } from "@/features/roles/utils/roles";
 import { usePanelSync } from "@/features/servers/hooks/usePanelSync";
 import {
   serverDetailOptions,
@@ -62,6 +63,8 @@ function ServerPage() {
   useChannelsSubscription(serverId);
   useServerCallsSubscription(serverId);
 
+  const myPerms = useMyPerms(serverId);
+
   if (isLoading)
     return (
       <div className="h-full bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
@@ -104,12 +107,14 @@ function ServerPage() {
               Invite code: {server?.inviteCode}
             </p>
 
-            <div
-              onClick={() => openModal(serverId)}
-              className="mb-4 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
-            >
-              Manage Roles
-            </div>
+            {myPerms.ManageRoles && (
+              <div
+                onClick={() => openModal(serverId)}
+                className="mb-4 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+              >
+                Manage Roles
+              </div>
+            )}
 
             <ChannelList serverId={serverId} />
 
@@ -135,7 +140,7 @@ function ServerPage() {
           collapsible
         >
           <aside className="flex h-full flex-col gap-2 bg-white p-4 dark:bg-zinc-800">
-            <MemberList serverId={serverId} />
+            <MemberList serverId={serverId} owner={server?.owner} />
           </aside>
         </Panel>
       </Group>
