@@ -48,6 +48,32 @@ export function useCreateRole(serverId: string) {
   });
 }
 
+export function useUpdateRole(serverId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      roleId,
+      ...data
+    }: {
+      roleId: string;
+      name: string;
+      color: string;
+      permissions: number;
+      mentionable: boolean;
+    }) =>
+      pb.send<Role>(`/api/servers/${serverId}/roles/${roleId}`, {
+        method: "PATCH",
+        body: data,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roles.byServer(serverId),
+      });
+    },
+  });
+}
+
 export function useUpdateMemberRole(serverId: string) {
   const queryClient = useQueryClient();
 
