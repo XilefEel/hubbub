@@ -1,8 +1,10 @@
-package main
+package api
 
 import (
 	"database/sql"
 	"errors"
+	"hubbub/backend/friends"
+	"hubbub/backend/membership"
 	"net/http"
 	"strings"
 
@@ -54,7 +56,7 @@ func openDmsHandler(e *core.RequestEvent) error {
 			return e.InternalServerError("Failed to open DM", err)
 		}
 
-		if !canStartDM(tx, me, body.UserId) {
+		if !membership.CanStartDM(tx, me, body.UserId) {
 			return errNotAllowed
 		}
 
@@ -131,7 +133,7 @@ func createGroupHandler(e *core.RequestEvent) error {
 
 	// check that all users are friends with the creator
 	for _, id := range others {
-		if !usersAreFriends(e.App, me, id) {
+		if !friends.AreFriends(e.App, me, id) {
 			return e.ForbiddenError("You can only add friends to a group", nil)
 		}
 	}
@@ -277,7 +279,7 @@ func editGroupHandler(e *core.RequestEvent) error {
 		now := types.NowDateTime()
 
 		for _, userId := range usersToAdd {
-			if !usersAreFriends(tx, me, userId) {
+			if !friends.AreFriends(tx, me, userId) {
 				return e.ForbiddenError("You can only add friends to a group", nil)
 			}
 

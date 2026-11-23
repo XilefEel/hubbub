@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"hubbub/backend/api"
+	"hubbub/backend/hooks"
 	_ "hubbub/backend/migrations"
 
 	"github.com/joho/godotenv"
@@ -21,15 +23,15 @@ func main() {
 		Automigrate: true,
 	})
 
-	registerHooks(app)
+	hooks.Register(app)
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		if os.Getenv("LIVEKIT_API_KEY") == "" || os.Getenv("LIVEKIT_API_SECRET") == "" || os.Getenv("LIVEKIT_URL") == "" {
 			log.Fatal("LIVEKIT_API_KEY, LIVEKIT_API_SECRET and LIVEKIT_URL must be set")
 		}
 
-		registerRoutes(se)
-		startPresenceHeartbeat(app)
+		api.RegisterRoutes(se)
+		api.StartPresenceHeartbeat(app)
 		return se.Next()
 	})
 

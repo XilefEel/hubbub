@@ -1,4 +1,4 @@
-package main
+package permissions
 
 import (
 	"math"
@@ -9,19 +9,17 @@ import (
 type Permission uint64
 
 const (
-	PermAdministrator   Permission = 1 << iota // 00000001 = 1
-	PermManageServer                           // 00000010 = 2
-	PermManageChannels                         // 00000100 = 4
-	PermManageRoles                            // 00001000 = 8
-	PermManageMessages                         // 00010000 = 16
-	PermKickMembers                            // 00100000 = 32
-	PermBanMembers                             // 01000000 = 64
-	PermMentionEveryone                        // 10000000 = 128
+	Administrator   Permission = 1 << iota // 00000001 = 1
+	ManageServer                           // 00000010 = 2
+	ManageChannels                         // 00000100 = 4
+	ManageRoles                            // 00001000 = 8
+	ManageMessages                         // 00010000 = 16
+	KickMembers                            // 00100000 = 32
+	BanMembers                             // 01000000 = 64
+	MentionEveryone                        // 10000000 = 128
 )
 
-const allPerms = PermAdministrator | PermManageServer | PermManageChannels |
-	PermManageRoles | PermManageMessages | PermKickMembers |
-	PermBanMembers | PermMentionEveryone
+const AllPerms = (1 << 8) - 1 // 11111111 = 255
 
 func (p Permission) Has(perm Permission) bool {
 	return p&perm == perm
@@ -31,13 +29,13 @@ func (p *Permission) Add(flags Permission) {
 	*p |= flags
 }
 
-func getPerms(app core.App, server *core.Record, member *core.Record) Permission {
+func GetPerms(app core.App, server *core.Record, member *core.Record) Permission {
 	if member.GetString("server") != server.Id {
 		return 0
 	}
 
 	if server.GetString("owner") == member.GetString("user") {
-		return allPerms
+		return AllPerms
 	}
 
 	roleIDs := member.GetStringSlice("roles")
@@ -57,21 +55,21 @@ func getPerms(app core.App, server *core.Record, member *core.Record) Permission
 		}
 	}
 
-	if perms.Has(PermAdministrator) {
-		return allPerms
+	if perms.Has(Administrator) {
+		return AllPerms
 	}
 
 	return perms
 }
 
-func can(app core.App, server *core.Record, member *core.Record, perm Permission) bool {
-	return getPerms(app, server, member).Has(perm)
+func Can(app core.App, server *core.Record, member *core.Record, perm Permission) bool {
+	return GetPerms(app, server, member).Has(perm)
 }
 
 // return the highest position of the member's roles in the server.
 // if the member is the server owner, return math.MaxInt
 // if the member has no roles, return -1
-func highestRolePosition(app core.App, server *core.Record, member *core.Record) int {
+func HighestRolePosition(app core.App, server *core.Record, member *core.Record) int {
 	if server.GetString("owner") == member.GetString("user") {
 		return math.MaxInt
 	}

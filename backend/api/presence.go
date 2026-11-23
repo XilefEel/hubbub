@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 
 var presenceMap sync.Map
 
-type presenceEntry struct {
+type PresenceEntry struct {
 	lastSeen time.Time
 	status   string
 }
@@ -29,7 +29,7 @@ func onlineUsers() map[string]string {
 
 	// for each user in the presence map
 	presenceMap.Range(func(key, value any) bool {
-		entry := value.(presenceEntry)
+		entry := value.(PresenceEntry)
 		if now.Sub(entry.lastSeen) > 45*time.Second {
 			presenceMap.Delete(key)
 		} else {
@@ -70,7 +70,7 @@ func broadcastPresence(app core.App) {
 	}
 }
 
-func startPresenceHeartbeat(app core.App) {
+func StartPresenceHeartbeat(app core.App) {
 	// start a goroutine to periodically broadcast presence updates
 	go func() {
 		ticker := time.NewTicker(15 * time.Second)
@@ -98,8 +98,8 @@ func heartbeatHandler(e *core.RequestEvent) error {
 		status = "dnd"
 	}
 
-	prev, wasOnline := presenceMap.Swap(e.Auth.Id, presenceEntry{time.Now(), status})
-	if !wasOnline || prev.(presenceEntry).status != status {
+	prev, wasOnline := presenceMap.Swap(e.Auth.Id, PresenceEntry{time.Now(), status})
+	if !wasOnline || prev.(PresenceEntry).status != status {
 		broadcastPresence(e.App)
 	}
 

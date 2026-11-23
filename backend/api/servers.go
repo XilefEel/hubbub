@@ -1,6 +1,7 @@
-package main
+package api
 
 import (
+	"hubbub/backend/membership"
 	"net/http"
 	"strings"
 
@@ -29,11 +30,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 	}
 
 	// check if the user is already a member of the server
-	existing, _ := e.App.FindFirstRecordByFilter(
-		"server_members",
-		"server = {:server} && user = {:user}",
-		dbx.Params{"server": server.Id, "user": e.Auth.Id},
-	)
+	existing, _ := membership.Find(e.App, server.Id, e.Auth.Id)
 	if existing != nil {
 		return e.BadRequestError("You are already a member of this server", nil)
 	}
@@ -47,7 +44,6 @@ func joinServerHandler(e *core.RequestEvent) error {
 	membership := core.NewRecord(collection)
 	membership.Set("server", server.Id)
 	membership.Set("user", e.Auth.Id)
-	membership.Set("role", "member")
 
 	if err := e.App.Save(membership); err != nil {
 		return e.InternalServerError("Failed to join server", err)

@@ -1,6 +1,7 @@
-package main
+package api
 
 import (
+	"hubbub/backend/membership"
 	"log"
 	"net/http"
 	"os"
@@ -38,14 +39,14 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 		if channel.GetString("type") != "voice" {
 			return e.BadRequestError("This channel is not a voice channel", nil)
 		}
-		if !userCanJoinChannel(e.App, e.Auth, channel) {
+		if !membership.CanJoinChannel(e.App, e.Auth, channel) {
 			return e.ForbiddenError("You are not allowed to join this channel", nil)
 		}
 
 		room = body.Id
 
 	case "conversation":
-		if !userInConversation(e.App, e.Auth.Id, body.Id) {
+		if !membership.InConversation(e.App, e.Auth.Id, body.Id) {
 			return e.ForbiddenError("You are not part of this conversation", nil)
 		}
 

@@ -1,11 +1,11 @@
-package main
+package api
 
 import (
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
-func registerRoutes(se *core.ServeEvent) {
+func RegisterRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/servers/join", joinServerHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/servers/{serverId}/roles", createRoleHandler).Bind(apis.RequireAuth())
 	se.Router.PATCH("/api/servers/{serverId}/roles/{roleId}", updateRoleHandler).Bind(apis.RequireAuth())

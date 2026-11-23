@@ -1,6 +1,8 @@
-package main
+package api
 
 import (
+	"hubbub/backend/membership"
+	"hubbub/backend/permissions"
 	"net/http"
 	"regexp"
 	"strings"
@@ -17,10 +19,10 @@ func createRoleHandler(e *core.RequestEvent) error {
 	}
 
 	var body struct {
-		Name        string     `json:"name"`
-		Color       string     `json:"color"`
-		Permissions Permission `json:"permissions"`
-		Mentionable bool       `json:"mentionable"`
+		Name        string                 `json:"name"`
+		Color       string                 `json:"color"`
+		Permissions permissions.Permission `json:"permissions"`
+		Mentionable bool                   `json:"mentionable"`
 	}
 	if err := e.BindBody(&body); err != nil {
 		return e.BadRequestError("Invalid body", nil)
@@ -35,13 +37,13 @@ func createRoleHandler(e *core.RequestEvent) error {
 	if cleanColor != "" && !hexColor.MatchString(cleanColor) {
 		return e.BadRequestError("Color must be a hex color code", nil)
 	}
-	if body.Permissions > allPerms {
+	if body.Permissions > permissions.AllPerms {
 		return e.BadRequestError("Invalid permissions", nil)
 	}
 
-	perms := getPerms(e.App, server, actor)
+	perms := permissions.GetPerms(e.App, server, actor)
 
-	if !perms.Has(PermManageRoles) {
+	if !perms.Has(permissions.ManageRoles) {
 		return e.ForbiddenError("You can't manage roles", nil)
 	}
 	if body.Permissions != 0 && !perms.Has(body.Permissions) {
@@ -80,28 +82,28 @@ func updateRoleHandler(e *core.RequestEvent) error {
 	}
 
 	var body struct {
-		Name        string     `json:"name"`
-		Color       string     `json:"color"`
-		Permissions Permission `json:"permissions"`
-		Mentionable bool       `json:"mentionable"`
+		Name        string                 `json:"name"`
+		Color       string                 `json:"color"`
+		Permissions permissions.Permission `json:"permissions"`
+		Mentionable bool                   `json:"mentionable"`
 	}
 	if err := e.BindBody(&body); err != nil {
 		return e.BadRequestError("Invalid body", nil)
 	}
 
-	perms := getPerms(e.App, server, actor)
+	perms := permissions.GetPerms(e.App, server, actor)
 
-	if !perms.Has(PermManageRoles) {
+	if !perms.Has(permissions.ManageRoles) {
 		return e.ForbiddenError("You can't manage roles", nil)
 	}
-	if role.GetInt("position") >= highestRolePosition(e.App, server, actor) {
+	if role.GetInt("position") >= permissions.HighestRolePosition(e.App, server, actor) {
 		return e.ForbiddenError("That role is equal or higher than your top role", nil)
 	}
-	if body.Permissions > allPerms {
+	if body.Permissions > permissions.AllPerms {
 		return e.BadRequestError("Invalid permissions", nil)
 	}
 
-	changed := Permission(role.GetInt("permissions")) ^ body.Permissions
+	changed := permissions.Permission(role.GetInt("permissions")) ^ body.Permissions
 	if !perms.Has(changed) {
 		return e.ForbiddenError("You can't change permissions you don't have", nil)
 	}
@@ -156,7 +158,7 @@ func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, err
 	if err != nil {
 		return nil, nil, err
 	}
-	target, err := findMember(e.App, server.Id, e.Request.PathValue("userId"))
+	target, err := membership.Find(e.App, server.Id, e.Request.PathValue("userId"))
 	if err != nil {
 		return nil, nil, e.NotFoundError("Member not found", nil)
 	}
@@ -165,16 +167,16 @@ func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, err
 		return nil, nil, e.NotFoundError("Role not found", nil)
 	}
 
-	if !can(e.App, server, actor, PermManageRoles) {
+	if !permissions.Can(e.App, server, actor, permissions.ManageRoles) {
 		return nil, nil, e.ForbiddenError("You can't manage roles", nil)
 	}
 
-	actorPos := highestRolePosition(e.App, server, actor)
+	actorPos := permissions.HighestRolePosition(e.App, server, actor)
 	if role.GetInt("position") >= actorPos {
 		return nil, nil, e.ForbiddenError("That role is equal or higher than your top role", nil)
 	}
 
-	targetPos := highestRolePosition(e.App, server, target)
+	targetPos := permissions.HighestRolePosition(e.App, server, target)
 	if target.Id != actor.Id && targetPos >= actorPos {
 		return nil, nil, e.ForbiddenError("That member is equal or higher than you", nil)
 	}
@@ -187,7 +189,7 @@ func getServerAndActor(e *core.RequestEvent) (*core.Record, *core.Record, error)
 	if err != nil {
 		return nil, nil, e.NotFoundError("Server not found", nil)
 	}
-	actor, err := findMember(e.App, server.Id, e.Auth.Id)
+	actor, err := membership.Find(e.App, server.Id, e.Auth.Id)
 	if err != nil {
 		return nil, nil, e.ForbiddenError("You're not in this server", nil)
 	}
