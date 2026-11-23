@@ -15,6 +15,21 @@ func newInviteCode() string {
 	return security.RandomStringWithAlphabet(8, inviteAlphabet)
 }
 
+func requirePerm(e *core.RequestEvent, serverId string, perm Permission) error {
+	server, err := e.App.FindRecordById("servers", serverId)
+	if err != nil {
+		return e.NotFoundError("Server not found", nil)
+	}
+	member, err := findMember(e.App, server.Id, e.Auth.Id)
+	if err != nil {
+		return e.ForbiddenError("You're not in this server", nil)
+	}
+	if !can(e.App, server, member, perm) {
+		return e.ForbiddenError("You don't have permission to do that", nil)
+	}
+	return nil
+}
+
 func registerHooks(app core.App) {
 	// auto validate realtime subscriptions to ensure the user is allowed to subscribe
 	app.OnRealtimeSubscribeRequest().BindFunc(func(e *core.RealtimeSubscribeRequestEvent) error {
@@ -91,6 +106,66 @@ func registerHooks(app core.App) {
 			channel.Set("type", "text")
 			return tx.Save(channel)
 		})
+	})
+
+	// check if has the permission to update a server
+	app.OnRecordUpdateRequest("servers").BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := requirePerm(e.RequestEvent, e.Record.Id, PermManageServer); err != nil {
+			return err
+		}
+		return e.Next()
+	})
+
+	// check if has the permission to create a channel
+	app.OnRecordCreateRequest("channels").BindFunc(func(e *core.RecordRequestEvent) error {
+		serverId := e.Record.GetString("server")
+		if err := requirePerm(e.RequestEvent, serverId, PermManageChannels); err != nil {
+			return err
+		}
+		return e.Next()
+	})
+
+	// check if has the permission to update the channel
+	app.OnRecordUpdateRequest("channels").BindFunc(func(e *core.RecordRequestEvent) error {
+		serverId := e.Record.Original().GetString("server")
+		if err := requirePerm(e.RequestEvent, serverId, PermManageChannels); err != nil {
+			return err
+		}
+		return e.Next()
+	})
+
+	// check if has the permission to delete the channel
+	app.OnRecordDeleteRequest("channels").BindFunc(func(e *core.RecordRequestEvent) error {
+		serverId := e.Record.GetString("server")
+		if err := requirePerm(e.RequestEvent, serverId, PermManageChannels); err != nil {
+			return err
+		}
+		return e.Next()
+	})
+
+	// check if the user actually can delete the message
+	app.OnRecordDeleteRequest("messages").BindFunc(func(e *core.RecordRequestEvent) error {
+		isAuthor := e.Record.GetString("user") == e.Auth.Id
+
+		// DM message: author only
+		if e.Record.GetString("conversation") != "" {
+			if !isAuthor {
+				return e.ForbiddenError("You can't delete this message", nil)
+			}
+			return e.Next()
+		}
+
+		channel, err := e.App.FindRecordById("channels", e.Record.GetString("channel"))
+		if err != nil {
+			return e.NotFoundError("Channel not found", nil)
+		}
+
+		if !isAuthor {
+			if err := requirePerm(e.RequestEvent, channel.GetString("server"), PermManageMessages); err != nil {
+				return err
+			}
+		}
+		return e.Next()
 	})
 
 	// auto validate messages to ensure they belong to either a channel or a conversation, but not both
