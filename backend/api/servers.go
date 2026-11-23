@@ -1,6 +1,7 @@
 package api
 
 import (
+	"hubbub/backend/collections"
 	"hubbub/backend/membership"
 	"net/http"
 	"strings"
@@ -21,7 +22,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 	cleanInviteCode := strings.ToLower(strings.TrimSpace(body.InviteCode))
 
 	server, err := e.App.FindFirstRecordByFilter(
-		"servers",
+		collections.Servers,
 		"inviteCode = {:code}",
 		dbx.Params{"code": cleanInviteCode},
 	)
@@ -36,7 +37,7 @@ func joinServerHandler(e *core.RequestEvent) error {
 	}
 
 	// add the user to server_members
-	collection, err := e.App.FindCollectionByNameOrId("server_members")
+	collection, err := e.App.FindCollectionByNameOrId(collections.ServerMembers)
 	if err != nil {
 		return e.InternalServerError("Failed to join server", err)
 	}

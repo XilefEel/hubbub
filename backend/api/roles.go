@@ -1,6 +1,7 @@
 package api
 
 import (
+	"hubbub/backend/collections"
 	"hubbub/backend/membership"
 	"hubbub/backend/permissions"
 	"net/http"
@@ -50,7 +51,7 @@ func createRoleHandler(e *core.RequestEvent) error {
 		return e.ForbiddenError("You can't grant permissions you don't have", nil)
 	}
 
-	roles, err := e.App.FindCollectionByNameOrId("roles")
+	roles, err := e.App.FindCollectionByNameOrId(collections.Roles)
 	if err != nil {
 		return err
 	}
@@ -76,7 +77,9 @@ func updateRoleHandler(e *core.RequestEvent) error {
 		return err
 	}
 
-	role, err := e.App.FindRecordById("roles", e.Request.PathValue("roleId"))
+	roleId := e.Request.PathValue("roleId")
+
+	role, err := e.App.FindRecordById(collections.Roles, roleId)
 	if err != nil || role.GetString("server") != server.Id {
 		return e.NotFoundError("Role not found", nil)
 	}
@@ -162,7 +165,7 @@ func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, err
 	if err != nil {
 		return nil, nil, e.NotFoundError("Member not found", nil)
 	}
-	role, err := e.App.FindRecordById("roles", e.Request.PathValue("roleId"))
+	role, err := e.App.FindRecordById(collections.Roles, e.Request.PathValue("roleId"))
 	if err != nil || role.GetString("server") != server.Id {
 		return nil, nil, e.NotFoundError("Role not found", nil)
 	}
@@ -185,7 +188,7 @@ func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, err
 }
 
 func getServerAndActor(e *core.RequestEvent) (*core.Record, *core.Record, error) {
-	server, err := e.App.FindRecordById("servers", e.Request.PathValue("serverId"))
+	server, err := e.App.FindRecordById(collections.Servers, e.Request.PathValue("serverId"))
 	if err != nil {
 		return nil, nil, e.NotFoundError("Server not found", nil)
 	}

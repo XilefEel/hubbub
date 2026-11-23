@@ -1,13 +1,15 @@
 package hooks
 
 import (
+	"hubbub/backend/collections"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
 func registerFriendshipHooks(app core.App) {
-	app.OnRecordCreate("friendships").BindFunc(validateFriendship)
+	app.OnRecordCreate(collections.Friendships).BindFunc(validateFriendship)
 }
 
 func validateFriendship(e *core.RecordEvent) error {
@@ -19,7 +21,7 @@ func validateFriendship(e *core.RecordEvent) error {
 	}
 
 	existing, err := e.App.FindRecordsByFilter(
-		"friendships",
+		collections.Friendships,
 		"(requester = {:requester} && addressee = {:addressee}) || (requester = {:addressee} && addressee = {:requester})",
 		"",
 		1,

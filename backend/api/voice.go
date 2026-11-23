@@ -1,6 +1,7 @@
 package api
 
 import (
+	"hubbub/backend/collections"
 	"hubbub/backend/membership"
 	"log"
 	"net/http"
@@ -32,7 +33,7 @@ func voiceTokenHandler(e *core.RequestEvent) error {
 
 	switch body.Type {
 	case "channel":
-		channel, err := e.App.FindRecordById("channels", body.Id)
+		channel, err := e.App.FindRecordById(collections.Channels, body.Id)
 		if err != nil {
 			return e.NotFoundError("Channel not found", err)
 		}
@@ -115,14 +116,14 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 	switch event.Event {
 	case "participant_joined":
 		if _, err := app.FindFirstRecordByFilter(
-			"voice_participants",
+			collections.VoiceParticipants,
 			field+" = {:id} && user = {:user}",
 			dbx.Params{"id": id, "user": userId},
 		); err == nil {
 			break
 		}
 
-		col, err := app.FindCollectionByNameOrId("voice_participants")
+		col, err := app.FindCollectionByNameOrId(collections.VoiceParticipants)
 		if err != nil {
 			log.Printf("voice webhook: %v", err)
 			break
@@ -138,7 +139,7 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 	case "participant_left":
 		// remove the participant from voice_participants
 		record, err := app.FindFirstRecordByFilter(
-			"voice_participants",
+			collections.VoiceParticipants,
 			field+" = {:id} && user = {:user}",
 			dbx.Params{"id": id, "user": userId},
 		)
@@ -153,7 +154,7 @@ func voiceWebhookHandler(e *core.RequestEvent) error {
 	case "room_finished":
 		// remove all participants from voice_participants for this channel
 		records, err := app.FindRecordsByFilter(
-			"voice_participants",
+			collections.VoiceParticipants,
 			field+" = {:id}",
 			"-created", 200, 0,
 			dbx.Params{"id": id},

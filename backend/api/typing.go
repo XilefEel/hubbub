@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"hubbub/backend/collections"
 	"hubbub/backend/membership"
 	"hubbub/backend/realtime"
 
@@ -13,7 +14,7 @@ import (
 func channelTypingHandler(e *core.RequestEvent) error {
 	channelId := e.Request.PathValue("channelId")
 
-	channel, err := e.App.FindRecordById("channels", channelId)
+	channel, err := e.App.FindRecordById(collections.Channels, channelId)
 	if err != nil {
 		return e.NotFoundError("Channel not found", err)
 	}

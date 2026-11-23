@@ -1,13 +1,15 @@
 package membership
 
 import (
+	"hubbub/backend/collections"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
 func Find(app core.App, serverId, userId string) (*core.Record, error) {
 	return app.FindFirstRecordByFilter(
-		"server_members",
+		collections.ServerMembers,
 		"server = {:server} && user = {:user}",
 		dbx.Params{"server": serverId, "user": userId},
 	)
@@ -15,7 +17,7 @@ func Find(app core.App, serverId, userId string) (*core.Record, error) {
 
 func InConversation(app core.App, userId, conversationId string) bool {
 	_, err := app.FindFirstRecordByFilter(
-		"conversation_members",
+		collections.ConversationMembers,
 		"conversation = {:c} && user = {:u}",
 		dbx.Params{"c": conversationId, "u": userId},
 	)

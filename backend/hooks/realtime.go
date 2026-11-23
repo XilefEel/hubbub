@@ -3,6 +3,7 @@ package hooks
 import (
 	"strings"
 
+	"hubbub/backend/collections"
 	"hubbub/backend/membership"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -24,7 +25,7 @@ func validateSubscription(e *core.RealtimeSubscribeRequestEvent) error {
 		conversationId, isConversation := strings.CutPrefix(topic, "conversation_")
 
 		if isChannel {
-			channel, err := e.App.FindRecordById("channels", channelId)
+			channel, err := e.App.FindRecordById(collections.Channels, channelId)
 			if err != nil || !membership.CanJoinChannel(e.App, e.Auth, channel) {
 				return e.ForbiddenError("You are not allowed to subscribe to this channel.", nil)
 			}

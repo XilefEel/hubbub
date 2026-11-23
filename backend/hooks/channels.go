@@ -1,15 +1,16 @@
 package hooks
 
 import (
+	"hubbub/backend/collections"
 	"hubbub/backend/permissions"
 
 	"github.com/pocketbase/pocketbase/core"
 )
 
 func registerChannelHooks(app core.App) {
-	app.OnRecordCreateRequest("channels").BindFunc(authorizeCreateChannel)
-	app.OnRecordUpdateRequest("channels").BindFunc(authorizeUpdateChannel)
-	app.OnRecordDeleteRequest("channels").BindFunc(authorizeDeleteChannel)
+	app.OnRecordCreateRequest(collections.Channels).BindFunc(authorizeCreateChannel)
+	app.OnRecordUpdateRequest(collections.Channels).BindFunc(authorizeUpdateChannel)
+	app.OnRecordDeleteRequest(collections.Channels).BindFunc(authorizeDeleteChannel)
 }
 
 func authorizeCreateChannel(e *core.RecordRequestEvent) error {

@@ -1,6 +1,7 @@
 package hooks
 
 import (
+	"hubbub/backend/collections"
 	"hubbub/backend/permissions"
 	"hubbub/backend/realtime"
 
@@ -10,9 +11,9 @@ import (
 )
 
 func registerMessageHooks(app core.App) {
-	app.OnRecordDeleteRequest("messages").BindFunc(authorizeDeleteMessage)
-	app.OnRecordCreate("messages").BindFunc(validateMessageTarget)
-	app.OnRecordAfterCreateSuccess("messages").BindFunc(onMessageCreated)
+	app.OnRecordDeleteRequest(collections.Messages).BindFunc(authorizeDeleteMessage)
+	app.OnRecordCreate(collections.Messages).BindFunc(validateMessageTarget)
+	app.OnRecordAfterCreateSuccess(collections.Messages).BindFunc(onMessageCreated)
 }
 
 func authorizeDeleteMessage(e *core.RecordRequestEvent) error {
@@ -26,7 +27,9 @@ func authorizeDeleteMessage(e *core.RecordRequestEvent) error {
 		return e.Next()
 	}
 
-	channel, err := e.App.FindRecordById("channels", e.Record.GetString("channel"))
+	channelId := e.Record.GetString("channel")
+
+	channel, err := e.App.FindRecordById(collections.Channels, channelId)
 	if err != nil {
 		return e.NotFoundError("Channel not found", nil)
 	}
@@ -64,7 +67,7 @@ func onConversationMessageCreated(e *core.RecordEvent) error {
 	conversationId := e.Record.GetString("conversation")
 	userId := e.Record.GetString("user")
 
-	conversation, err := e.App.FindRecordById("conversations", conversationId)
+	conversation, err := e.App.FindRecordById(collections.Conversations, conversationId)
 	if err != nil {
 		return err
 	}
@@ -86,7 +89,7 @@ func onChannelMessageCreated(e *core.RecordEvent) error {
 	channelId := e.Record.GetString("channel")
 	userId := e.Record.GetString("user")
 
-	channel, err := e.App.FindRecordById("channels", channelId)
+	channel, err := e.App.FindRecordById(collections.Channels, channelId)
 	if err != nil {
 		return err
 	}
@@ -105,7 +108,7 @@ func onChannelMessageCreated(e *core.RecordEvent) error {
 }
 
 func bumpMentionCounts(app core.App, msg, channel *core.Record) error {
-	readStates, err := app.FindCollectionByNameOrId("read_states")
+	readStates, err := app.FindCollectionByNameOrId(collections.ReadStates)
 	if err != nil {
 		return err
 	}
@@ -121,7 +124,7 @@ func bumpMentionCounts(app core.App, msg, channel *core.Record) error {
 		seen[id] = true
 
 		if _, err := app.FindFirstRecordByFilter(
-			"server_members",
+			collections.ServerMembers,
 			"server = {:server} && user = {:user}",
 			dbx.Params{"server": serverId, "user": id},
 		); err != nil {
@@ -129,7 +132,7 @@ func bumpMentionCounts(app core.App, msg, channel *core.Record) error {
 		}
 
 		state, err := app.FindFirstRecordByFilter(
-			"read_states",
+			collections.ReadStates,
 			"user = {:user} && channel = {:channel}",
 			dbx.Params{"user": id, "channel": channel.Id},
 		)

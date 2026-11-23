@@ -1,6 +1,7 @@
 package permissions
 
 import (
+	"hubbub/backend/collections"
 	"math"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -38,12 +39,12 @@ func GetPerms(app core.App, server *core.Record, member *core.Record) Permission
 		return AllPerms
 	}
 
-	roleIDs := member.GetStringSlice("roles")
+	roleIDs := member.GetStringSlice(collections.Roles)
 	if len(roleIDs) == 0 {
 		return 0
 	}
 
-	roles, err := app.FindRecordsByIds("roles", roleIDs)
+	roles, err := app.FindRecordsByIds(collections.Roles, roleIDs)
 	if err != nil {
 		return 0
 	}
@@ -74,12 +75,12 @@ func HighestRolePosition(app core.App, server *core.Record, member *core.Record)
 		return math.MaxInt
 	}
 
-	roleIDs := member.GetStringSlice("roles")
+	roleIDs := member.GetStringSlice(collections.Roles)
 	if len(roleIDs) == 0 {
 		return -1
 	}
 
-	roles, err := app.FindRecordsByIds("roles", roleIDs)
+	roles, err := app.FindRecordsByIds(collections.Roles, roleIDs)
 	if err != nil {
 		return -1
 	}

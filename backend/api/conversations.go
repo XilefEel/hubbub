@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"errors"
+	"hubbub/backend/collections"
 	"hubbub/backend/friends"
 	"hubbub/backend/membership"
 	"net/http"
@@ -33,7 +34,7 @@ func openDmsHandler(e *core.RequestEvent) error {
 		return e.BadRequestError("You cannot open a DM with yourself", nil)
 	}
 
-	if _, err := e.App.FindRecordById("users", body.UserId); err != nil {
+	if _, err := e.App.FindRecordById(collections.Users, body.UserId); err != nil {
 		return e.NotFoundError("User not found", err)
 	}
 
@@ -61,7 +62,7 @@ func openDmsHandler(e *core.RequestEvent) error {
 		}
 
 		// create a new conversation and add both users as members
-		convos, err := tx.FindCollectionByNameOrId("conversations")
+		convos, err := tx.FindCollectionByNameOrId(collections.Conversations)
 		if err != nil {
 			return err
 		}
@@ -75,7 +76,7 @@ func openDmsHandler(e *core.RequestEvent) error {
 			return err
 		}
 
-		members, err := tx.FindCollectionByNameOrId("conversation_members")
+		members, err := tx.FindCollectionByNameOrId(collections.ConversationMembers)
 		if err != nil {
 			return err
 		}
@@ -146,7 +147,7 @@ func createGroupHandler(e *core.RequestEvent) error {
 	var convoId string
 
 	err := e.App.RunInTransaction(func(tx core.App) error {
-		convos, err := tx.FindCollectionByNameOrId("conversations")
+		convos, err := tx.FindCollectionByNameOrId(collections.Conversations)
 		if err != nil {
 			return err
 		}
@@ -164,7 +165,7 @@ func createGroupHandler(e *core.RequestEvent) error {
 			return err
 		}
 
-		members, err := tx.FindCollectionByNameOrId("conversation_members")
+		members, err := tx.FindCollectionByNameOrId(collections.ConversationMembers)
 		if err != nil {
 			return err
 		}
@@ -224,7 +225,7 @@ func editGroupHandler(e *core.RequestEvent) error {
 	}
 
 	err := e.App.RunInTransaction(func(tx core.App) error {
-		convo, err := tx.FindRecordById("conversations", convoId)
+		convo, err := tx.FindRecordById(collections.Conversations, convoId)
 		if err != nil {
 			return e.NotFoundError("Conversation not found", err)
 		}
@@ -247,7 +248,7 @@ func editGroupHandler(e *core.RequestEvent) error {
 		}
 
 		members, err := tx.FindRecordsByFilter(
-			"conversation_members",
+			collections.ConversationMembers,
 			"conversation = {:convo}",
 			"", 0, 0,
 			dbx.Params{"convo": convoId},
@@ -272,7 +273,7 @@ func editGroupHandler(e *core.RequestEvent) error {
 			return e.BadRequestError("a group can have at most 10 people", nil)
 		}
 
-		membersCol, err := tx.FindCollectionByNameOrId("conversation_members")
+		membersCol, err := tx.FindCollectionByNameOrId(collections.ConversationMembers)
 		if err != nil {
 			return err
 		}

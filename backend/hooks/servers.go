@@ -1,6 +1,7 @@
 package hooks
 
 import (
+	"hubbub/backend/collections"
 	"hubbub/backend/permissions"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -14,9 +15,9 @@ func newInviteCode() string {
 }
 
 func registerServerHooks(app core.App) {
-	app.OnRecordCreateRequest("servers").BindFunc(validateServerOwner)
-	app.OnRecordCreate("servers").BindFunc(onServerCreated)
-	app.OnRecordUpdateRequest("servers").BindFunc(authorizeUpdateServer)
+	app.OnRecordCreateRequest(collections.Servers).BindFunc(validateServerOwner)
+	app.OnRecordCreate(collections.Servers).BindFunc(onServerCreated)
+	app.OnRecordUpdateRequest(collections.Servers).BindFunc(authorizeUpdateServer)
 }
 
 func validateServerOwner(e *core.RecordRequestEvent) error {
@@ -38,7 +39,7 @@ func onServerCreated(e *core.RecordEvent) error {
 			return err
 		}
 
-		members, err := tx.FindCollectionByNameOrId("server_members")
+		members, err := tx.FindCollectionByNameOrId(collections.ServerMembers)
 		if err != nil {
 			return err
 		}
@@ -51,7 +52,7 @@ func onServerCreated(e *core.RecordEvent) error {
 			return err
 		}
 
-		channels, err := tx.FindCollectionByNameOrId("channels")
+		channels, err := tx.FindCollectionByNameOrId(collections.Channels)
 		if err != nil {
 			return err
 		}

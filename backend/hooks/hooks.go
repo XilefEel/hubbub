@@ -1,6 +1,7 @@
 package hooks
 
 import (
+	"hubbub/backend/collections"
 	"hubbub/backend/membership"
 	"hubbub/backend/permissions"
 
@@ -16,7 +17,7 @@ func Register(app core.App) {
 }
 
 func requirePerm(e *core.RequestEvent, serverId string, perm permissions.Permission) error {
-	server, err := e.App.FindRecordById("servers", serverId)
+	server, err := e.App.FindRecordById(collections.Servers, serverId)
 	if err != nil {
 		return e.NotFoundError("Server not found", nil)
 	}
