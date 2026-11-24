@@ -1,6 +1,11 @@
 import PocketBase from "pocketbase";
 import { expect, test } from "vitest";
-import { heartbeat, makeUser, updatePresenceStatus, url } from "./helpers.ts";
+import {
+  heartbeat,
+  makeUser,
+  updatePresencePreference,
+  url,
+} from "./helpers.ts";
 import { Collections } from "../src/lib/collections.ts";
 
 test("logged-out user cannot send a presence heartbeat", async () => {
@@ -49,25 +54,25 @@ test("presence heartbeat refreshes a user's presence", async () => {
   });
 });
 
-test("user can update their presence status", async () => {
+test("user can update their presence preference", async () => {
   const alice = await makeUser("alice");
 
-  const response = await updatePresenceStatus(alice, "dnd");
+  const response = await updatePresencePreference(alice, "dnd");
   expect(response.online).toMatchObject({
     [alice.id]: "dnd",
   });
 
-  const updated = await updatePresenceStatus(alice, "online");
+  const updated = await updatePresencePreference(alice, "auto");
   expect(updated.online).toMatchObject({
     [alice.id]: "online",
   });
 });
 
-test("user cannot set an invalid presence status", async () => {
+test("user cannot set an invalid presence preference", async () => {
   const alice = await makeUser("alice");
 
   await expect(
-    updatePresenceStatus(alice, "invalid" as never),
+    updatePresencePreference(alice, "invalid" as never),
   ).rejects.toMatchObject({ status: 400 });
 });
 
@@ -75,8 +80,8 @@ test("invisible users are not included in the presence heartbeat response", asyn
   const alice = await makeUser("alice");
   const bob = await makeUser("bob");
 
-  await updatePresenceStatus(bob, "online");
-  const response = await updatePresenceStatus(alice, "invisible");
+  await updatePresencePreference(bob, "auto");
+  const response = await updatePresencePreference(alice, "invisible");
 
   expect(response.online).toMatchObject({
     [bob.id]: "online",
@@ -89,7 +94,7 @@ test("invisible users stay hidden when another user sends a heartbeat", async ()
   const alice = await makeUser("alice");
   const bob = await makeUser("bob");
 
-  await updatePresenceStatus(alice, "invisible");
+  await updatePresencePreference(alice, "invisible");
   const response = await heartbeat(bob);
 
   expect(response.online).not.toHaveProperty(alice.id);
@@ -100,32 +105,32 @@ test("invisible users reappear in the presence heartbeat response when they chan
   const alice = await makeUser("alice");
   await heartbeat(alice);
 
-  const invisible = await updatePresenceStatus(alice, "invisible");
+  const invisible = await updatePresencePreference(alice, "invisible");
   expect(invisible.online).not.toHaveProperty(alice.id);
 
-  const backOnline = await updatePresenceStatus(alice, "online");
+  const backOnline = await updatePresencePreference(alice, "auto");
   expect(backOnline.online).toMatchObject({
     [alice.id]: "online",
   });
 });
 
-test("user cannot update another user's presence status", async () => {
+test("user cannot update another user's presence preference", async () => {
   const alice = await makeUser("alice");
   const bob = await makeUser("bob");
 
   await expect(
     bob.pb
       .collection(Collections.Users)
-      .update(alice.id, { presenceStatus: "dnd" }),
+      .update(alice.id, { presencePreference: "dnd" }),
   ).rejects.toMatchObject({ status: 404 });
 });
 
-test("one user's status does not change another user's status", async () => {
+test("one user's preference does not change another user's presence", async () => {
   const alice = await makeUser("alice");
   const bob = await makeUser("bob");
 
-  await updatePresenceStatus(alice, "dnd");
-  await updatePresenceStatus(bob, "online");
+  await updatePresencePreference(alice, "dnd");
+  await updatePresencePreference(bob, "auto");
 
   const response = await heartbeat(alice);
 

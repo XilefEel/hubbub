@@ -22,7 +22,7 @@ export type User = BaseRecord & {
   bio?: string;
   bannerColor?: string;
   avatar?: string;
-  presenceStatus?: PresenceStatus;
+  presencePreference?: PresencePreference;
 };
 
 export type Server = BaseRecord & {

@@ -1,7 +1,7 @@
 import PocketBase from "pocketbase";
 import type { TypedPocketBase } from "../src/lib/pocketbase.ts";
 import { Collections } from "../src/lib/collections.ts";
-import type { PresenceStatus, ServerRole } from "../src/lib/types.ts";
+import type { PresencePreference, PresenceStatus } from "../src/lib/types.ts";
 
 export const url = "http://127.0.0.1:8091";
 export const wsUrl = "ws://localhost:7881";
@@ -142,17 +142,12 @@ export async function admin() {
   return pb;
 }
 
-export async function addMember(
-  serverId: string,
-  userId: string,
-  role: ServerRole = "member",
-) {
+export async function addMember(serverId: string, userId: string) {
   const a = await admin();
 
   await a.collection(Collections.ServerMembers).create({
     server: serverId,
     user: userId,
-    role,
   });
 }
 
@@ -219,13 +214,13 @@ export async function requestVoiceToken(
   });
 }
 
-export async function updatePresenceStatus(
+export async function updatePresencePreference(
   user: TestUser,
-  status: PresenceStatus,
+  preference: PresencePreference,
 ) {
   await user.pb
     .collection(Collections.Users)
-    .update(user.id, { presenceStatus: status });
+    .update(user.id, { presencePreference: preference });
 
   return heartbeat(user);
 }

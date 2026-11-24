@@ -32,7 +32,7 @@ test("user can join a server with a valid invite code", async () => {
     .collection(Collections.ServerMembers)
     .getFirstListItem(`server = "${server.id}" && user = "${bob.id}"`);
 
-  expect(membership.role).toBe("member");
+  expect(membership).toBeDefined();
 });
 
 test("cannot join a server with an invalid invite code", async () => {
