@@ -9,7 +9,7 @@ import { useMarkChannelRead } from "../hooks/useReadStates";
 import { fetchLastMessage } from "@/features/messages/hooks/useMessages";
 import { useDeleteChannelModal } from "../modals/useDeleteChannelModal";
 import { useEditChannelModal } from "../modals/useEditChannelModal";
-import { useMyPerms } from "@/features/roles/utils/roles";
+import { useMyPerms } from "@/features/roles/hooks/usePermissions";
 
 export default function ChannelContextMenu({
   channel,

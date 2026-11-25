@@ -12,7 +12,7 @@ import {
   useUpdateMemberRole,
   useRoles,
 } from "@/features/roles/hooks/useRoles";
-import { useMyPerms } from "@/features/roles/utils/roles";
+import { useMyPerms } from "@/features/roles/hooks/usePermissions";
 
 export default function MemberContextMenu({
   member,

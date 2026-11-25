@@ -7,7 +7,7 @@ import type { Server } from "@/lib/types";
 import { Copy, Settings, Trash2, LogOut } from "lucide-react";
 import { useLeaveServer, useDeleteServer } from "../hooks/useServers";
 import { useServerModal } from "../modals/useServerModal";
-import { useMyPerms } from "@/features/roles/utils/roles";
+import { useMyPerms } from "@/features/roles/hooks/usePermissions";
 import { pb } from "@/lib/pocketbase";
 
 export default function ServerContextMenu({

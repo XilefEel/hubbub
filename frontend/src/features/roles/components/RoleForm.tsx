@@ -6,7 +6,12 @@ import { useState } from "react";
 import { useCreateRole, useUpdateRole } from "../hooks/useRoles";
 import Checkbox from "@/components/ui/Checkbox";
 import type { Role } from "@/lib/types";
-import { NO_PERMS, Perm, togglePerm, type Permission } from "../utils/roles";
+import {
+  NO_PERMS,
+  Perm,
+  togglePerm,
+  type Permission,
+} from "../utils/permissions";
 
 const PERM_LABELS: Record<keyof typeof Perm, string> = {
   Administrator: "Administrator",

@@ -3,7 +3,7 @@ import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
 import type { Role } from "@/lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Permission } from "../utils/roles";
+import type { Permission } from "../utils/permissions";
 
 export function useRoles(serverId: string) {
   return useQuery({

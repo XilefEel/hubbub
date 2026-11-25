@@ -1,4 +1,4 @@
-import type { Permission } from "@/features/roles/utils/roles";
+import type { Permission } from "@/features/roles/utils/permissions";
 import type { RecordModel } from "pocketbase";
 
 declare const dateTimeBrand: unique symbol;

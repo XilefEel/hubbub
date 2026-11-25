@@ -23,7 +23,7 @@ import { useChannelReadMarker } from "@/features/messages/hooks/useReadMarker";
 import { useReactionsSubscription } from "@/features/messages/hooks/useReactions";
 import { queryClient } from "@/main";
 import { isNotFoundError } from "@/lib/utils";
-import { useMyPerms } from "@/features/roles/utils/roles";
+import { useMyPerms } from "@/features/roles/hooks/usePermissions";
 
 export const Route = createFileRoute("/servers/$serverId/channels/$channelId")({
   loader: async ({ params }) => {

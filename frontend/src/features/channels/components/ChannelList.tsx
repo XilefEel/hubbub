@@ -5,7 +5,7 @@ import Tooltip from "@/components/ui/Tooltip";
 import ChannelListSkeleton from "./ChannelListSkeleton";
 import { useCreateChannelModal } from "../modals/useCreateChannelModal";
 import { useServerActiveCalls } from "@/features/voice/hooks/useVoiceParticipants";
-import { useMyPerms } from "@/features/roles/utils/roles";
+import { useMyPerms } from "@/features/roles/hooks/usePermissions";
 
 export default function ChannelList({ serverId }: { serverId: string }) {
   const { data: channels, isLoading, isError, error } = useChannels(serverId);

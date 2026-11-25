@@ -4,7 +4,7 @@ import ChannelList from "@/features/channels/components/ChannelList";
 import { useChannelsSubscription } from "@/features/channels/hooks/useChannels";
 import MemberList from "@/features/members/components/MemberList";
 import { useRoleModal } from "@/features/roles/modals/useRoleModal";
-import { useMyPerms } from "@/features/roles/utils/roles";
+import { useMyPerms } from "@/features/roles/hooks/usePermissions";
 import { usePanelSync } from "@/features/servers/hooks/usePanelSync";
 import {
   serverDetailOptions,
