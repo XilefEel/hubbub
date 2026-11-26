@@ -14,7 +14,6 @@ export function useRoles(serverId: string) {
         sort: "position",
       }),
     enabled: !!serverId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 

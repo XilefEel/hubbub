@@ -18,7 +18,6 @@ export function useServers() {
       return await pb.collection(Collections.Servers).getFullList();
     },
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -26,7 +25,6 @@ export const serverDetailOptions = (serverId: string) =>
   queryOptions({
     queryKey: queryKeys.servers.detail(serverId),
     queryFn: () => pb.collection(Collections.Servers).getOne(serverId),
-    staleTime: 1000 * 60 * 5,
   });
 
 export function useServerDetail(serverId: string) {
@@ -133,7 +131,6 @@ export function useMutualServers(targetId?: string) {
     queryFn: () =>
       pb.send<{ servers: string[] }>(`/api/mutual/${targetId}`, {}),
     enabled: !!targetId && targetId !== currentUserId,
-    staleTime: 1000 * 60 * 5,
   });
 
   const { data: myServers } = useServers();

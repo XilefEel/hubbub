@@ -22,7 +22,6 @@ export const conversationsOptions = () =>
         sort: "-lastMessageAt",
         expand: "conversation_members_via_conversation.user",
       }),
-    staleTime: 30_000,
   });
 
 export function useConversations() {

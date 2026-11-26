@@ -73,7 +73,6 @@ export const channelDetailOptions = (channelId: string) =>
   queryOptions({
     queryKey: queryKeys.channels.detail(channelId),
     queryFn: () => pb.collection(Collections.Channels).getOne(channelId),
-    staleTime: 30_000,
   });
 
 export function useChannelDetail(channelId: string, serverId: string) {

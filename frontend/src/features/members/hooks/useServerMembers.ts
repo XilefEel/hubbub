@@ -12,7 +12,6 @@ export function useServerMembers(serverId: string) {
         expand: "user",
       }),
     enabled: !!serverId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 

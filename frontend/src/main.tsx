@@ -12,7 +12,14 @@ const router = createRouter({
   defaultNotFoundComponent: () => <Navigate to="/me" replace />,
 });
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 declare module "@tanstack/react-router" {
   interface Register {

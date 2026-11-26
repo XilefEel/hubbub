@@ -12,6 +12,5 @@ export function useConversationMembers(conversationId: string) {
         expand: "user",
       }),
     enabled: !!conversationId,
-    staleTime: 1000 * 15, // 15 seconds
   });
 }

@@ -22,7 +22,6 @@ export function useFriendships(userId: string | undefined) {
         expand: "requester,addressee",
       }),
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -194,7 +193,6 @@ export function useMutualFriends(targetId?: string) {
     queryFn: () =>
       pb.send<{ friends: string[] }>(`/api/mutual/${targetId}`, {}),
     enabled: !!targetId && targetId !== currentUserId,
-    staleTime: 1000 * 60 * 5,
   });
 
   const { data: friendships } = useFriendships(currentUserId);
