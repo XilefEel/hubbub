@@ -2,6 +2,8 @@ import type { Role } from "@/lib/types";
 import { useReorderRoles, useRoles } from "../hooks/useRoles";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useServerDetail } from "@/features/servers/hooks/useServers";
+import { pb } from "@/lib/pocketbase";
 
 export default function RoleManager({
   serverId,
@@ -12,6 +14,8 @@ export default function RoleManager({
   setSelectedRole: (role: Role | null) => void;
   setMode: (mode: "create" | "edit") => void;
 }) {
+  const { data: server } = useServerDetail(serverId);
+
   const { data: roles } = useRoles(serverId);
   const reorder = useReorderRoles(serverId);
 
@@ -31,21 +35,27 @@ export default function RoleManager({
     setDragId(null);
   };
 
+  const isOwner = server?.owner === pb.authStore.record?.id;
+
   return (
     <div className="mr-4 flex w-60 flex-col gap-1 overflow-y-auto border-r border-zinc-200 pr-2 text-sm dark:border-zinc-700">
       <div className="mb-2 px-2">
         <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
           Roles ({roles?.length ?? 0})
         </p>
-        <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">
-          Drag to reorder. Roles higher in the list can manage roles below them.
-        </p>
+
+        {isOwner && (
+          <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">
+            Drag to reorder. Roles higher in the list can manage roles below
+            them.
+          </p>
+        )}
       </div>
 
       {roles?.map((role) => (
         <button
           key={role.id}
-          draggable
+          draggable={isOwner}
           onDragStart={() => setDragId(role.id)}
           onDragOver={(e) => e.preventDefault()}
           onDrop={() => handleDrop(role.id)}

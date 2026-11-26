@@ -32,6 +32,25 @@ export function usePermissions(serverId: string) {
   }, [server, roles, member]);
 }
 
+export function useMyRank(serverId: string): number {
+  const { data: server } = useServerDetail(serverId);
+  const { data: roles } = useRoles(serverId);
+  const member = useCurrentMember(serverId);
+
+  return useMemo(() => {
+    if (!server || !roles || !member) return Infinity;
+    if (server.owner === member.user) return -Infinity;
+
+    let rank = Infinity;
+    for (const role of roles) {
+      if (member.roles.includes(role.id)) {
+        rank = Math.min(rank, role.position);
+      }
+    }
+    return rank;
+  }, [server, roles, member]);
+}
+
 type PermissionMap = Record<keyof typeof Perm, boolean>;
 
 export function useMyPerms(serverId: string): PermissionMap {

@@ -12,7 +12,7 @@ import {
   useUpdateMemberRole,
   useRoles,
 } from "@/features/roles/hooks/useRoles";
-import { useMyPerms } from "@/features/roles/hooks/usePermissions";
+import { useMyPerms, useMyRank } from "@/features/roles/hooks/usePermissions";
 
 export default function MemberContextMenu({
   member,
@@ -32,6 +32,7 @@ export default function MemberContextMenu({
   const removeMemberRole = useRemoveMemberRole(serverId);
 
   const myPerms = useMyPerms(serverId);
+  const myRank = useMyRank(serverId);
 
   const hasActions =
     myPerms.ManageRoles || myPerms.KickMembers || myPerms.BanMembers;
@@ -73,6 +74,7 @@ export default function MemberContextMenu({
                 key={role.id}
                 checked={member.roles.includes(role.id)}
                 onToggle={() => handleToggleRole(role.id)}
+                disabled={role.position <= myRank}
               >
                 @{role.name}
               </ContextMenuCheckboxItem>

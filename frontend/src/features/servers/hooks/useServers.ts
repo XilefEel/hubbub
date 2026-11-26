@@ -26,7 +26,7 @@ export const serverDetailOptions = (serverId: string) =>
   queryOptions({
     queryKey: queryKeys.servers.detail(serverId),
     queryFn: () => pb.collection(Collections.Servers).getOne(serverId),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 60 * 5,
   });
 
 export function useServerDetail(serverId: string) {
