@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -62,7 +63,12 @@ func createRoleHandler(e *core.RequestEvent) error {
 	role.Set("color", cleanColor)
 	role.Set("permissions", int(body.Permissions))
 	role.Set("mentionable", body.Mentionable)
-	role.Set("position", 1)
+
+	count, err := e.App.CountRecords("roles", dbx.HashExp{"server": server.Id})
+	if err != nil {
+		return err
+	}
+	role.Set("position", int(count))
 
 	if err := e.App.Save(role); err != nil {
 		return err
@@ -99,7 +105,7 @@ func updateRoleHandler(e *core.RequestEvent) error {
 	if !perms.Has(permissions.ManageRoles) {
 		return e.ForbiddenError("You can't manage roles", nil)
 	}
-	if role.GetInt("position") >= permissions.HighestRolePosition(e.App, server, actor) {
+	if role.GetInt("position") <= permissions.HighestRolePosition(e.App, server, actor) {
 		return e.ForbiddenError("That role is equal or higher than your top role", nil)
 	}
 	if body.Permissions > permissions.AllPerms {
@@ -156,6 +162,70 @@ func removeMemberRoleHandler(e *core.RequestEvent) error {
 	return e.NoContent(http.StatusNoContent)
 }
 
+func reorderRolesHandler(e *core.RequestEvent) error {
+	server, _, err := getServerAndActor(e)
+	if err != nil {
+		return err
+	}
+	if server.GetString("owner") != e.Auth.Id {
+		return e.ForbiddenError("Only the owner can reorder roles", nil)
+	}
+
+	var body struct {
+		RoleIds []string `json:"roleIds"`
+	}
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("Invalid body", nil)
+	}
+
+	roles, err := e.App.FindRecordsByFilter(
+		collections.Roles,
+		"server = {:server}",
+		"",
+		0,
+		0,
+		dbx.Params{"server": server.Id},
+	)
+	if err != nil {
+		return err
+	}
+	if len(body.RoleIds) != len(roles) {
+		return e.BadRequestError("RoleIds length must match the number of roles in the server", nil)
+	}
+
+	roleMap := make(map[string]*core.Record, len(roles))
+	for _, r := range roles {
+		roleMap[r.Id] = r
+	}
+
+	seen := make(map[string]bool, len(body.RoleIds))
+	for _, id := range body.RoleIds {
+		if roleMap[id] == nil || seen[id] {
+			return e.BadRequestError("Invalid role list", nil)
+		}
+		seen[id] = true
+	}
+
+	err = e.App.RunInTransaction(func(tx core.App) error {
+		for i, id := range body.RoleIds {
+			role := roleMap[id]
+			if role.GetInt("position") == i {
+				continue
+			}
+			role.Set("position", i)
+			if err := tx.Save(role); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return e.NoContent(http.StatusNoContent)
+}
+
 func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, error) {
 	server, actor, err := getServerAndActor(e)
 	if err != nil {
@@ -175,12 +245,12 @@ func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, err
 	}
 
 	actorPos := permissions.HighestRolePosition(e.App, server, actor)
-	if role.GetInt("position") >= actorPos {
+	if role.GetInt("position") <= actorPos {
 		return nil, nil, e.ForbiddenError("That role is equal or higher than your top role", nil)
 	}
 
 	targetPos := permissions.HighestRolePosition(e.App, server, target)
-	if target.Id != actor.Id && targetPos >= actorPos {
+	if target.Id != actor.Id && targetPos <= actorPos {
 		return nil, nil, e.ForbiddenError("That member is equal or higher than you", nil)
 	}
 

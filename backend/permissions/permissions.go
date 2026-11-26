@@ -68,27 +68,27 @@ func Can(app core.App, server *core.Record, member *core.Record, perm Permission
 }
 
 // return the highest position of the member's roles in the server.
-// if the member is the server owner, return math.MaxInt
-// if the member has no roles, return -1
+// if the member is the server owner, return math.MinInt
+// if the member has no roles, return math.MaxInt
 func HighestRolePosition(app core.App, server *core.Record, member *core.Record) int {
 	if server.GetString("owner") == member.GetString("user") {
-		return math.MaxInt
+		return math.MinInt
 	}
 
 	roleIDs := member.GetStringSlice(collections.Roles)
 	if len(roleIDs) == 0 {
-		return -1
+		return math.MaxInt
 	}
 
 	roles, err := app.FindRecordsByIds(collections.Roles, roleIDs)
 	if err != nil {
-		return -1
+		return math.MaxInt
 	}
 
-	top := -1
+	top := math.MaxInt
 	for _, r := range roles {
 		if r.GetString("server") == server.Id {
-			top = max(top, r.GetInt("position"))
+			top = min(top, r.GetInt("position"))
 		}
 	}
 

@@ -8,6 +8,7 @@ import (
 func RegisterRoutes(se *core.ServeEvent) {
 	se.Router.POST("/api/servers/join", joinServerHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/servers/{serverId}/roles", createRoleHandler).Bind(apis.RequireAuth())
+	se.Router.PUT("/api/servers/{serverId}/roles/reorder", reorderRolesHandler).Bind(apis.RequireAuth())
 	se.Router.PATCH("/api/servers/{serverId}/roles/{roleId}", updateRoleHandler).Bind(apis.RequireAuth())
 	se.Router.POST("/api/servers/{serverId}/members/{userId}/roles/{roleId}", addMemberRoleHandler).Bind(apis.RequireAuth())
 	se.Router.DELETE("/api/servers/{serverId}/members/{userId}/roles/{roleId}", removeMemberRoleHandler).Bind(apis.RequireAuth())
