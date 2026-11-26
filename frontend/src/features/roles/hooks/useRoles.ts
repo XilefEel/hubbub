@@ -11,7 +11,7 @@ export function useRoles(serverId: string) {
     queryFn: () =>
       pb.collection(Collections.Roles).getFullList({
         filter: pb.filter("server = {:serverId}", { serverId }),
-        sort: "-position",
+        sort: "position",
       }),
     enabled: !!serverId,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -93,6 +93,23 @@ export function useRemoveMemberRole(serverId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serverMembers.byServer(serverId),
+      });
+    },
+  });
+}
+
+export function useReorderRoles(serverId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (roleIds: string[]) =>
+      pb.send(`/api/servers/${serverId}/roles/reorder`, {
+        method: "PUT",
+        body: { roleIds },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roles.byServer(serverId),
       });
     },
   });
