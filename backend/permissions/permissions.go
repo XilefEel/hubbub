@@ -21,6 +21,7 @@ const (
 )
 
 const AllPerms = (1 << 8) - 1 // 11111111 = 255
+const NoPerms = 0
 
 func (p Permission) Has(perm Permission) bool {
 	return p&perm == perm
@@ -30,9 +31,13 @@ func (p *Permission) Add(flags Permission) {
 	*p |= flags
 }
 
+func (p Permission) IsValid() bool {
+	return p&^AllPerms == 0
+}
+
 func GetPerms(app core.App, server *core.Record, member *core.Record) Permission {
 	if member.GetString("server") != server.Id {
-		return 0
+		return NoPerms
 	}
 
 	if server.GetString("owner") == member.GetString("user") {
@@ -41,12 +46,12 @@ func GetPerms(app core.App, server *core.Record, member *core.Record) Permission
 
 	roleIDs := member.GetStringSlice(collections.Roles)
 	if len(roleIDs) == 0 {
-		return 0
+		return NoPerms
 	}
 
 	roles, err := app.FindRecordsByIds(collections.Roles, roleIDs)
 	if err != nil {
-		return 0
+		return NoPerms
 	}
 
 	var perms Permission
@@ -67,10 +72,11 @@ func Can(app core.App, server *core.Record, member *core.Record, perm Permission
 	return GetPerms(app, server, member).Has(perm)
 }
 
-// return the highest position of the member's roles in the server.
-// if the member is the server owner, return math.MinInt
-// if the member has no roles, return math.MaxInt
-func HighestRolePosition(app core.App, server *core.Record, member *core.Record) int {
+// lower values are stronger, position 0 is the top role
+func MemberRank(app core.App, server *core.Record, member *core.Record) int {
+	if member.GetString("server") != server.Id {
+		return math.MaxInt
+	}
 	if server.GetString("owner") == member.GetString("user") {
 		return math.MinInt
 	}
@@ -93,4 +99,8 @@ func HighestRolePosition(app core.App, server *core.Record, member *core.Record)
 	}
 
 	return top
+}
+
+func Outranks(actorRank, targetRank int) bool {
+	return actorRank < targetRank
 }

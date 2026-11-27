@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"hubbub/backend/collections"
 	"hubbub/backend/membership"
 	"hubbub/backend/permissions"
@@ -20,35 +21,19 @@ func createRoleHandler(e *core.RequestEvent) error {
 		return err
 	}
 
-	var body struct {
-		Name        string                 `json:"name"`
-		Color       string                 `json:"color"`
-		Permissions permissions.Permission `json:"permissions"`
-		Mentionable bool                   `json:"mentionable"`
-	}
-	if err := e.BindBody(&body); err != nil {
-		return e.BadRequestError("Invalid body", nil)
-	}
-
-	cleanName := strings.TrimSpace(body.Name)
-	cleanColor := strings.TrimSpace(body.Color)
-
-	if cleanName == "" || len(cleanName) > 32 {
-		return e.BadRequestError("Name must be 1-32 characters", nil)
-	}
-	if cleanColor != "" && !hexColor.MatchString(cleanColor) {
-		return e.BadRequestError("Color must be a hex color code", nil)
-	}
-	if body.Permissions > permissions.AllPerms {
-		return e.BadRequestError("Invalid permissions", nil)
-	}
-
 	perms := permissions.GetPerms(e.App, server, actor)
-
 	if !perms.Has(permissions.ManageRoles) {
 		return e.ForbiddenError("You can't manage roles", nil)
 	}
-	if body.Permissions != 0 && !perms.Has(body.Permissions) {
+
+	var body roleInput
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("Invalid body", nil)
+	}
+	if err := body.validate(); err != nil {
+		return e.BadRequestError(err.Error(), nil)
+	}
+	if !perms.Has(body.Permissions) {
 		return e.ForbiddenError("You can't grant permissions you don't have", nil)
 	}
 
@@ -56,15 +41,15 @@ func createRoleHandler(e *core.RequestEvent) error {
 	if err != nil {
 		return err
 	}
-	role := core.NewRecord(roles)
 
+	role := core.NewRecord(roles)
 	role.Set("server", server.Id)
-	role.Set("name", cleanName)
-	role.Set("color", cleanColor)
+	role.Set("name", body.Name)
+	role.Set("color", body.Color)
 	role.Set("permissions", int(body.Permissions))
 	role.Set("mentionable", body.Mentionable)
 
-	count, err := e.App.CountRecords("roles", dbx.HashExp{"server": server.Id})
+	count, err := e.App.CountRecords(collections.Roles, dbx.HashExp{"server": server.Id})
 	if err != nil {
 		return err
 	}
@@ -83,6 +68,19 @@ func updateRoleHandler(e *core.RequestEvent) error {
 		return err
 	}
 
+	perms := permissions.GetPerms(e.App, server, actor)
+	if !perms.Has(permissions.ManageRoles) {
+		return e.ForbiddenError("You can't manage roles", nil)
+	}
+
+	var body roleInput
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("Invalid body", nil)
+	}
+	if err := body.validate(); err != nil {
+		return e.BadRequestError(err.Error(), nil)
+	}
+
 	roleId := e.Request.PathValue("roleId")
 
 	role, err := e.App.FindRecordById(collections.Roles, roleId)
@@ -90,26 +88,9 @@ func updateRoleHandler(e *core.RequestEvent) error {
 		return e.NotFoundError("Role not found", nil)
 	}
 
-	var body struct {
-		Name        string                 `json:"name"`
-		Color       string                 `json:"color"`
-		Permissions permissions.Permission `json:"permissions"`
-		Mentionable bool                   `json:"mentionable"`
-	}
-	if err := e.BindBody(&body); err != nil {
-		return e.BadRequestError("Invalid body", nil)
-	}
-
-	perms := permissions.GetPerms(e.App, server, actor)
-
-	if !perms.Has(permissions.ManageRoles) {
-		return e.ForbiddenError("You can't manage roles", nil)
-	}
-	if role.GetInt("position") <= permissions.HighestRolePosition(e.App, server, actor) {
+	actorRank := permissions.MemberRank(e.App, server, actor)
+	if !permissions.Outranks(actorRank, role.GetInt("position")) {
 		return e.ForbiddenError("That role is equal or higher than your top role", nil)
-	}
-	if body.Permissions > permissions.AllPerms {
-		return e.BadRequestError("Invalid permissions", nil)
 	}
 
 	changed := permissions.Permission(role.GetInt("permissions")) ^ body.Permissions
@@ -117,18 +98,8 @@ func updateRoleHandler(e *core.RequestEvent) error {
 		return e.ForbiddenError("You can't change permissions you don't have", nil)
 	}
 
-	cleanName := strings.TrimSpace(body.Name)
-	if cleanName == "" || len(cleanName) > 32 {
-		return e.BadRequestError("Name must be 1-32 characters", nil)
-	}
-
-	cleanColor := strings.TrimSpace(body.Color)
-	if cleanColor != "" && !hexColor.MatchString(cleanColor) {
-		return e.BadRequestError("Color must be a hex color code", nil)
-	}
-
-	role.Set("name", cleanName)
-	role.Set("color", cleanColor)
+	role.Set("name", body.Name)
+	role.Set("color", body.Color)
 	role.Set("permissions", int(body.Permissions))
 	role.Set("mentionable", body.Mentionable)
 	if err := e.App.Save(role); err != nil {
@@ -244,14 +215,16 @@ func checkRolePermissions(e *core.RequestEvent) (*core.Record, *core.Record, err
 		return nil, nil, e.ForbiddenError("You can't manage roles", nil)
 	}
 
-	actorPos := permissions.HighestRolePosition(e.App, server, actor)
-	if role.GetInt("position") <= actorPos {
+	actorRank := permissions.MemberRank(e.App, server, actor)
+	if !permissions.Outranks(actorRank, role.GetInt("position")) {
 		return nil, nil, e.ForbiddenError("That role is equal or higher than your top role", nil)
 	}
 
-	targetPos := permissions.HighestRolePosition(e.App, server, target)
-	if target.Id != actor.Id && targetPos <= actorPos {
-		return nil, nil, e.ForbiddenError("That member is equal or higher than you", nil)
+	if target.Id != actor.Id {
+		targetRank := permissions.MemberRank(e.App, server, target)
+		if !permissions.Outranks(actorRank, targetRank) {
+			return nil, nil, e.ForbiddenError("That member is equal or higher than you", nil)
+		}
 	}
 
 	return target, role, nil
@@ -267,4 +240,27 @@ func getServerAndActor(e *core.RequestEvent) (*core.Record, *core.Record, error)
 		return nil, nil, e.ForbiddenError("You're not in this server", nil)
 	}
 	return server, actor, nil
+}
+
+type roleInput struct {
+	Name        string                 `json:"name"`
+	Color       string                 `json:"color"`
+	Permissions permissions.Permission `json:"permissions"`
+	Mentionable bool                   `json:"mentionable"`
+}
+
+func (r *roleInput) validate() error {
+	r.Name = strings.TrimSpace(r.Name)
+	r.Color = strings.TrimSpace(r.Color)
+
+	switch {
+	case r.Name == "" || len(r.Name) > 32:
+		return errors.New("Name must be 1-32 characters")
+	case r.Color != "" && !hexColor.MatchString(r.Color):
+		return errors.New("Color must be a hex color code")
+	case !r.Permissions.IsValid():
+		return errors.New("Invalid permissions")
+	default:
+		return nil
+	}
 }
