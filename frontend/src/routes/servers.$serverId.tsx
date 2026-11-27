@@ -24,6 +24,7 @@ import {
   Separator,
   Group,
 } from "react-resizable-panels";
+import { useServerMembersSubscription } from "@/features/members/hooks/useServerMembers";
 
 export const Route = createFileRoute("/servers/$serverId")({
   loader: async ({ params }) => {
@@ -61,6 +62,7 @@ function ServerPage() {
   const { toggleChannels } = useUIActions();
 
   useChannelsSubscription(serverId);
+  useServerMembersSubscription(serverId);
   useServerCallsSubscription(serverId);
 
   const myPerms = useMyPerms(serverId);
