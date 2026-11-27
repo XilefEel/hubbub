@@ -9,7 +9,7 @@ import type { ServerMember } from "@/lib/types";
 import { Shield, ShieldBan, UserMinus } from "lucide-react";
 import {
   useRemoveMemberRole,
-  useUpdateMemberRole,
+  useAddMemberRole,
   useRoles,
 } from "@/features/roles/hooks/useRoles";
 import { useMyPerms, useMyRank } from "@/features/roles/hooks/usePermissions";
@@ -28,7 +28,7 @@ export default function MemberContextMenu({
   children: React.ReactNode;
 }) {
   const { data: roles } = useRoles(serverId);
-  const updateMemberRole = useUpdateMemberRole(serverId);
+  const addMemberRole = useAddMemberRole(serverId);
   const removeMemberRole = useRemoveMemberRole(serverId);
 
   const myPerms = useMyPerms(serverId);
@@ -48,7 +48,7 @@ export default function MemberContextMenu({
         roleId,
       });
     } else {
-      updateMemberRole.mutate({
+      addMemberRole.mutate({
         userId: member.user,
         roleId,
       });

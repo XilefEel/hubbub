@@ -65,14 +65,17 @@ export function useUpdateRole(serverId: string) {
   });
 }
 
-export function useUpdateMemberRole(serverId: string) {
+export function useAddMemberRole(serverId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ userId, roleId }: { userId: string; roleId: string }) =>
-      pb.send(`/api/servers/${serverId}/members/${userId}/roles/${roleId}`, {
-        method: "POST",
-      }),
+      pb.send<void>(
+        `/api/servers/${serverId}/members/${userId}/roles/${roleId}`,
+        {
+          method: "POST",
+        },
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serverMembers.byServer(serverId),
@@ -86,9 +89,12 @@ export function useRemoveMemberRole(serverId: string) {
 
   return useMutation({
     mutationFn: ({ userId, roleId }: { userId: string; roleId: string }) =>
-      pb.send(`/api/servers/${serverId}/members/${userId}/roles/${roleId}`, {
-        method: "DELETE",
-      }),
+      pb.send<void>(
+        `/api/servers/${serverId}/members/${userId}/roles/${roleId}`,
+        {
+          method: "DELETE",
+        },
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serverMembers.byServer(serverId),
@@ -102,7 +108,7 @@ export function useReorderRoles(serverId: string) {
 
   return useMutation({
     mutationFn: (roleIds: string[]) =>
-      pb.send(`/api/servers/${serverId}/roles/reorder`, {
+      pb.send<void>(`/api/servers/${serverId}/roles/reorder`, {
         method: "PUT",
         body: { roleIds },
       }),

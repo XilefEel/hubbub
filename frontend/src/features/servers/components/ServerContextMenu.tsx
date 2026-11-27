@@ -17,8 +17,15 @@ export default function ServerContextMenu({
   server: Server;
   children: React.ReactNode;
 }) {
-  const { openEdit } = useServerModal();
+  return (
+    <ContextMenu content={<ServerMenuItems server={server} />}>
+      {children}
+    </ContextMenu>
+  );
+}
 
+function ServerMenuItems({ server }: { server: Server }) {
+  const { openEdit } = useServerModal();
   const leaveServer = useLeaveServer();
   const deleteServer = useDeleteServer();
 
@@ -31,47 +38,41 @@ export default function ServerContextMenu({
     navigator.clipboard.writeText(server.inviteCode);
 
   return (
-    <ContextMenu
-      content={
-        <>
-          <ContextMenuItem
-            action={handleCopyInvite}
-            Icon={Copy}
-            label="Copy invite code"
-          />
+    <>
+      <ContextMenuItem
+        action={handleCopyInvite}
+        Icon={Copy}
+        label="Copy invite code"
+      />
 
-          <ContextMenuItem
-            action={() => openEdit(server)}
-            Icon={Settings}
-            label="Server settings"
-            show={myPerms.ManageServer}
-          />
+      <ContextMenuItem
+        action={() => openEdit(server)}
+        Icon={Settings}
+        label="Server settings"
+        show={myPerms.ManageServer}
+      />
 
-          <ContextMenuSeparator
-            show={myPerms.ManageServer || isOwner || !isOwner}
-          />
+      <ContextMenuSeparator
+        show={myPerms.ManageServer || isOwner || !isOwner}
+      />
 
-          <ContextMenuItem
-            action={() => deleteServer.mutate(server.id)}
-            Icon={Trash2}
-            label="Delete server"
-            isDelete
-            show={isOwner}
-            disabled={isPending}
-          />
+      <ContextMenuItem
+        action={() => deleteServer.mutate(server.id)}
+        Icon={Trash2}
+        label="Delete server"
+        isDelete
+        show={isOwner}
+        disabled={isPending}
+      />
 
-          <ContextMenuItem
-            action={() => leaveServer.mutate(server.id)}
-            Icon={LogOut}
-            label="Leave server"
-            isDelete
-            show={!isOwner}
-            disabled={isPending}
-          />
-        </>
-      }
-    >
-      {children}
-    </ContextMenu>
+      <ContextMenuItem
+        action={() => leaveServer.mutate(server.id)}
+        Icon={LogOut}
+        label="Leave server"
+        isDelete
+        show={!isOwner}
+        disabled={isPending}
+      />
+    </>
   );
 }
