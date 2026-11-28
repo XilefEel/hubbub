@@ -11,7 +11,7 @@ export function useServerMembers(serverId: string) {
     queryFn: () =>
       pb.collection(Collections.ServerMembers).getFullList({
         filter: pb.filter("server = {:id}", { id: serverId }),
-        expand: "user",
+        expand: "user,roles",
       }),
     enabled: !!serverId,
   });
@@ -80,4 +80,10 @@ export function useBanMember(serverId: string) {
       });
     },
   });
+}
+
+export function useMemberRoles(serverId: string, userId: string) {
+  const { data: members } = useServerMembers(serverId);
+
+  return members?.find((m) => m.user === userId)?.expand?.roles ?? [];
 }

@@ -1,5 +1,4 @@
-import { useParams } from "@tanstack/react-router";
-import { useServers } from "../hooks/useServers";
+import { useServerId, useServers } from "../hooks/useServers";
 import { Compass, Plus, Settings } from "lucide-react";
 import { cn } from "cn";
 import ServerSkeleton from "./ServerSkeleton";
@@ -14,7 +13,7 @@ import { useServerUnreads } from "../hooks/useServerReads";
 import { useServerModal } from "../modals/useServerModal";
 
 export default function ServerRail() {
-  const { serverId } = useParams({ strict: false });
+  const serverId = useServerId();
 
   const { data: servers, isLoading, isError, error } = useServers();
   const { openCreate } = useServerModal();

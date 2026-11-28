@@ -78,10 +78,7 @@ function ChannelPage() {
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useMessages({
-    type: "channel",
-    id: channelId,
-  });
+  } = useMessages(scope);
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const typingNames = useTypingIndicator(scope, members);

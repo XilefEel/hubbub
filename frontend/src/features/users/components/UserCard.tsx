@@ -8,6 +8,8 @@ import type { User } from "@/lib/types";
 import { MessageCircle } from "lucide-react";
 import MutualServers from "./MutualServers";
 import MutualFriends from "./MutualFriends";
+import { useServerId } from "@/features/servers/hooks/useServers";
+import UserRoles from "@/features/users/components/UserRoles";
 
 export default function UserCard({
   user,
@@ -18,6 +20,8 @@ export default function UserCard({
 }) {
   const currentUserId = pb.authStore.record?.id;
   const { open, isPending } = useOpenConversation();
+
+  const serverId = useServerId();
 
   if (!user) return null;
 
@@ -68,6 +72,8 @@ export default function UserCard({
                 {user.bio}
               </p>
             )}
+
+            {serverId && <UserRoles userId={user.id} serverId={serverId} />}
 
             {currentUserId !== user.id && (
               <>

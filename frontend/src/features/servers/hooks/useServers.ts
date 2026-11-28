@@ -7,6 +7,7 @@ import {
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/lib/querykeys";
 import { Collections } from "@/lib/collections";
+import { useParams } from "@tanstack/react-router";
 
 export function useServers() {
   const userId = pb.authStore.record?.id;
@@ -137,4 +138,9 @@ export function useMutualServers(targetId?: string) {
   const serverIds = new Set(data?.servers ?? []);
 
   return myServers?.filter((s) => serverIds.has(s.id)) ?? [];
+}
+
+export function useServerId() {
+  const { serverId } = useParams({ strict: false });
+  return serverId as string | undefined;
 }
